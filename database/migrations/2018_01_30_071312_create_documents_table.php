@@ -15,7 +15,7 @@ class CreateDocumentsTable extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->increments('id');
-            $table->varchar('name', 512);
+            $table->string('name', 512);
             $table->text('details');
             $table->string('trackingId', 512);
             $table->integer('userId');

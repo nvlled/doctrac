@@ -24,7 +24,7 @@ class CreateDispatchesTable extends Migration
             $table->integer('srcUserId')->nullable();
             $table->integer('dstUserId')->nullable();
             $table->text('annotations')->nullable();
-            $table->boolean('done')->default('false');
+            $table->boolean('done')->default(false);
             $table->timestamps();
         });
     }

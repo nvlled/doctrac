@@ -17,7 +17,7 @@ class CreateUsersTable extends Migration
             $table->increments('id');
             $table->string('fullname', 255);
             $table->integer('locId');
-            $table->string('type', 'normal');
+            $table->string('type')->default("agent");
             $table->timestamps();
         });
     }
