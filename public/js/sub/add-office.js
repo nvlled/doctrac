@@ -8,12 +8,14 @@ window.addEventListener("load", function() {
 
     function setupAddForm() {
         var $btn = $container.find("button.add");
-        $btn.click(function() {
+        $btn.click(function(e) {
+            e.preventDefault();
             var office = {
                 name:   $container.find(".office-name").val(),
                 campus: $container.find(".campus-name").val(),
             };
             api.office.add(office, function(resp) {
+                // TODO: show error messages
                 addOfficeRow(resp);
                 clearInputs();
             });
@@ -39,7 +41,8 @@ window.addEventListener("load", function() {
         $tr.find(".id").text(office.id);
         $tr.find(".name").text(office.name);
         $tr.find(".campus").text(office.campus);
-        $tr.find(".del").click(function() {
+        $tr.find(".del").click(function(e) {
+            e.preventDefault();
             var proceed = confirm("delete office: " 
                 + office.name + "--" + office.campus); 
             if (!proceed)

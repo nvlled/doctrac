@@ -12,8 +12,8 @@
             <thead>
             <tr>
                 <th>id</th>
-                <th>campus</th>
                 <th>office</th>
+                <th>campus</th>
             </tr>
             </thead>
             <tbody>
@@ -40,6 +40,54 @@
         </table>
     </div>
     <script src="{{asset('js/sub/positions.js')}}"></script>
+</section>
+
+<section id="context">
+    <h2>user privileges</h2>
+    <div class="privileges">
+        <input class="priv-name" placeholder="position title or name">
+        <button class="add">add</button>
+        <table>
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>name</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <script src="{{asset('js/sub/privileges.js')}}"></script>
+</section>
+
+<section id="context">
+    <h2>user accounts</h2>
+    <div class="users">
+        <input class="username full" placeholder="firstname">
+        <input class="middlename full" placeholder="middlename">
+        <input class="lastname full" placeholder="lastname">
+        Position: <select class="positions"></select><br>
+        Privilege: <select class="privileges"></select><br>
+        Office: <select class="offices"></select><br>
+        <br>
+        <button class="add half">add user</button>
+        <hr>
+
+        <table>
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>fullname</th>
+                <th>position</th>
+                <th>privilege</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <script src="{{asset('js/sub/users.js')}}"></script>
 </section>
 
 <section id="context">

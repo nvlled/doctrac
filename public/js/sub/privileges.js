@@ -1,4 +1,5 @@
-var positions = {
+
+var privileges = {
     setup: function ($container) {
         var $rows = $container.find("tbody");
 
@@ -9,10 +10,10 @@ var positions = {
             var $btn = $container.find("button.add");
             $btn.click(function(e) {
                 e.preventDefault();
-                var pos = {
-                    name:   $container.find(".pos-name").val(),
+                var priv = {
+                    name:   $container.find(".priv-name").val(),
                 };
-                api.position.add(pos, function(resp) {
+                api.privilege.add(priv, function(resp) {
                     addRow(resp);
                     clearInputs();
                 });
@@ -20,7 +21,7 @@ var positions = {
         }
 
         function clearInputs() {
-            $container.find(".pos-name").val("");
+            $container.find(".priv-name").val("");
         }
 
         function addRow(row) {
@@ -47,21 +48,21 @@ var positions = {
 
         function deleteRow(row, $tr) {
             $tr.remove();
-            api.position.delete(row.id);
+            api.privilege.delete(row.id);
         }
 
         function fetchPositions() {
-            api.position.fetch(function(poss) {
-                if (!poss.forEach) {
-                    throw "response for position list is not an array";
+            api.privilege.fetch(function(privs) {
+                if (!privs.forEach) {
+                    throw "response for privileges list is not an array";
                 }
-                poss.forEach(function(pos) {
-                    addRow(pos);
+                privs.forEach(function(priv) {
+                    addRow(priv);
                 });
             });
         }
     }
 }
 window.addEventListener("load", function() {
-    positions.setup($("div.positions"));
+    privileges.setup($("div.privileges"));
 });

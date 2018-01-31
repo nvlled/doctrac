@@ -12,16 +12,23 @@ section {
     margin: 10px;
 }
 
-input, textarea, button {
+input, textarea, button, select {
     margin: 5px;
     border-radius: 5px;
     padding: 10px;
 }
 
+input[type=submit], button, select {
+    color: white;
+    background-color: #522;
+}
+
 .full { width: 90%; }
+.half { width: 50%; }
+.center { text-align: center; }
 
 .site-wrap {
-    width: 600px;
+    width: 800px;
 }
 
 table {
