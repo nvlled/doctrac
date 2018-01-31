@@ -15,11 +15,12 @@ class CreateDocumentsTable extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name', 512);
+            $table->string('title', 512);
             $table->text('details');
             $table->string('trackingId', 512);
             $table->integer('userId');
-            $table->integer('locId');
+            $table->integer('srcofficeId');
+            $table->integer('dstOfficeId');
             $table->string('attachmentFilename', 1024);
             $table->timestamps();
         });
@@ -35,3 +36,4 @@ class CreateDocumentsTable extends Migration
         Schema::dropIfExists('documents');
     }
 }
+

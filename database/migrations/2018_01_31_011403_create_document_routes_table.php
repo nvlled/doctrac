@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDispatchesTable extends Migration
+class CreateDocumentRoutesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,20 @@ class CreateDispatchesTable extends Migration
      */
     public function up()
     {
-        Schema::create('dispatches', function (Blueprint $table) {
+        Schema::create('document_routes', function (Blueprint $table) {
             $table->increments('id');
             $table->string('trackingId', 512);
             $table->dateTime('timeSent')->nullable();
             $table->dateTime('timeSeen')->nullable();
             $table->dateTime('timeRecv')->nullable();
-            $table->integer('srcLocId');
-            $table->integer('dstLocId')->nullable();
+            $table->integer('srcOfficeId');
+            $table->integer('dstOfficeId')->nullable();
             $table->integer('srcUserId')->nullable();
             $table->integer('dstUserId')->nullable();
+            $table->integer('prevId')->nullable();
+            $table->integer('nextId')->nullable();
             $table->text('annotations')->nullable();
-            $table->boolean('done')->default(false);
+            $table->boolean('final')->default(false);
             $table->timestamps();
         });
     }
@@ -36,6 +38,6 @@ class CreateDispatchesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('dispatches');
+        Schema::dropIfExists('document_routes');
     }
 }

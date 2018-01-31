@@ -32,3 +32,11 @@ table, th, td {
     padding: 10px 30px;
     border: 1px solid #eee;
 }
+
+td.action a {
+    font-size: 15px;
+    color: gray;
+    text-decoration: none;
+}
+td.action a::before { content: "["; }
+td.action a::after { content: "]"; }

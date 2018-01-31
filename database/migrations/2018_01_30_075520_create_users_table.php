@@ -6,6 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateUsersTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -15,9 +16,13 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('fullname', 255);
-            $table->integer('locId');
-            $table->string('type')->default("agent");
+            $table->text("password");
+            $table->string('firstname', 255);
+            $table->string('middlename', 255);
+            $table->string('lastname', 255);
+            $table->string('positionId', 255);
+            $table->string('privilegeId', 255);
+            $table->integer('officeId');
             $table->timestamps();
         });
     }
@@ -32,3 +37,4 @@ class CreateUsersTable extends Migration
         Schema::dropIfExists('users');
     }
 }
+

@@ -16,3 +16,55 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// ---------------------------
+Route::post('/positions/del/{id}', function (Request $req, $id) {
+    $pos = App\Position::find($id);
+    $pos->delete();
+    return "okay";
+});
+
+Route::post('/positions/add', function (Request $req) {
+    $pos = new App\Position();
+    $pos->name = $req->name;
+
+    $errors = [];
+    if (!$pos->name)
+        $errors[] = "name is required";
+
+    $pos->save();
+    return $pos;
+});
+
+Route::get('/positions/list', function (Request $req) {
+    return App\Position::all();
+});
+
+// -----------------------
+Route::post('/offices/del/{id}', function (Request $req, $id) {
+    $pos = App\Office::find($id);
+    $pos->delete();
+    return "okay";
+});
+
+Route::post('/offices/add', function (Request $req) {
+    $office = new App\Office();
+    $office->name = $req->name;
+    $office->campus = $req->campus;
+
+    $errors = [];
+    if (!$office->name)
+        $errors[] = "name is required";
+    if (!$office->campus)
+        $errors[] = "campus is required";
+
+    $office->save();
+    return $office;
+});
+
+Route::get('/offices/list', function (Request $req) {
+    return App\Office::all();
+});
+
+// -----------------------
+

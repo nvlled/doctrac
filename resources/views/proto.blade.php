@@ -3,34 +3,43 @@
 @section("contents")
 
 <section id="context">
-    <h2>locations</h2>
-    <form>
-    <input name="userId" class="" placeholder="campus">
-    <input name="locId" class="" placeholder="office">
-    <button>add</button>
-    </form>
+    <h2>offices</h2>
+    <div class="add-office">
+        <input class="campus-name" placeholder="campus">
+        <input class="office-name" placeholder="office">
+        <button class="add">add</button>
+        <table>
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>campus</th>
+                <th>office</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <script src="{{asset('js/sub/add-office.js')}}"></script>
+</section>
 
-    <table>
-        <thead>
-        <tr>
-            <th>id</th>
-            <th>campus</th>
-            <th>office</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>1</td>
-            <td>Urdaneta</td>
-            <td>Registrar</td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>Urdaneta</td>
-            <td>MIS</td>
-        </tr>
-        </tbody>
-    </table>
+<section id="context">
+    <h2>staff positions</h2>
+    <div class="positions">
+        <input class="pos-name" placeholder="position title or name">
+        <button class="add">add</button>
+        <table>
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>name</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <script src="{{asset('js/sub/positions.js')}}"></script>
 </section>
 
 <section id="context">
@@ -122,7 +131,3 @@
 </section>
 
 @endsection
-
-
-
-
