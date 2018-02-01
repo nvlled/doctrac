@@ -1,90 +1,107 @@
+function getInternalError(err) {
+    var msg = err.responseJSON.message;
+    return {
+        errors: {"server" : [msg] },
+    };
+}
+function defaultHandler(resp, errors) {
+    console.log("response: ", resp);
+    console.log("errors: ", errors);
+}
 
 var api = {
-    defaultHandler: function(resp, errors) {
-        console.log("response: ", resp);
-        console.log("errors: ", errors);
+    req: {
+        post: function(url, data, handler) {
+            return $.post(url, data, handler)
+                .fail(function(e) {
+                    handler(getInternalError(e));
+                });
+        },
+        get: function(url, data, handler) {
+            return $.get(url, data, handler)
+                .fail(function(e) {
+                    handler(getInternalError(e));
+                });
+        },
     },
 
     user: {
         add: function(user, fn) {
-            fn = fn || this.defaultHandler;
+            fn = fn || defaultHandler;
             var url = "/api/users/add";
-            if (!user.name)
-                return fn({errors: ["name is required"]});
-
-            $.post(url, user, fn);
+            api.req.post(url, user, fn);
         },
 
         fetch: function(fn) {
             var url = "/api/users/list";
-            $.get(url, {}, fn || this.defaultHandler)
+            api.req.get(url, {}, fn || defaultHandler)
         },
 
         delete: function(id, fn) {
-            fn = fn || this.defaultHandler;
+            fn = fn || defaultHandler;
             var url = "/api/users/del/"+id;
-            $.post(url, fn)
+            api.req.post(url, {}, fn)
         },
     },
 
     privilege: {
         add: function(office, fn) {
-            fn = fn || this.defaultHandler;
+            fn = fn || defaultHandler;
             var url = "/api/privileges/add";
             if (!office.name)
                 return fn({errors: ["name is required"]});
 
-            $.post(url, {
+            api.req.post(url, {
                 name: office.name,
             }, fn);
         },
 
         fetch: function(fn) {
             var url = "/api/privileges/list";
-            $.get(url, {}, fn || this.defaultHandler)
+            api.req.get(url, {}, fn || defaultHandler)
         },
 
         delete: function(id, fn) {
-            fn = fn || this.defaultHandler;
+            fn = fn || defaultHandler;
             var url = "/api/privileges/del/"+id;
-            $.post(url, fn)
+            api.req.post(url, {}, fn)
         },
     },
 
     position: {
         add: function(office, fn) {
-            fn = fn || this.defaultHandler;
+            fn = fn || defaultHandler;
             var url = "/api/positions/add";
             if (!office.name)
                 return fn({errors: ["name is required"]});
 
-            $.post(url, {
+            api.req.post(url, {
                 name: office.name,
             }, fn);
         },
 
         fetch: function(fn) {
             var url = "/api/positions/list";
-            $.get(url, {}, fn || this.defaultHandler)
+            api.req.get(url, {}, fn || defaultHandler)
         },
 
         delete: function(id, fn) {
-            fn = fn || this.defaultHandler;
+            fn = fn || defaultHandler;
             var url = "/api/positions/del/"+id;
-            $.post(url, fn)
+            api.req.post(url, {}, fn)
         },
     },
 
     office: {
         add: function(office, fn) {
-            fn = fn || this.defaultHandler;
+            fn = fn || defaultHandler;
             var url = "/api/offices/add";
             if (!office.name)
                 return fn({errors: ["name is required"]});
             if (!office.campus)
                 return fn({errors: ["campus is required"]});
 
-            $.post(url, {
+            api.req.post(url, {
                 name: office.name,
                 campus: office.campus,
             }, fn);
@@ -92,13 +109,13 @@ var api = {
 
         fetch: function(fn) {
             var url = "/api/offices/list";
-            $.get(url, {}, fn || this.defaultHandler)
+            api.req.get(url, {}, fn || defaultHandler)
         },
 
         delete: function(id, fn) {
-            fn = fn || this.defaultHandler;
+            fn = fn || defaultHandler;
             var url = "/api/offices/del/"+id;
-            $.post(url, fn)
+            api.req.post(url, {}, fn)
         },
     }
 };

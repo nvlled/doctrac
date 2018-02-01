@@ -19,27 +19,27 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 // ---------------------------
 Route::post('/users/del/{id}', function (Request $req, $id) {
-    $pos = App\User::find($id);
-    $pos->delete();
+    $user = App\User::findOrFail($id);
+    $user->delete();
     return "okay";
 });
 
 Route::post('/users/add', function (Request $req) {
-    $pos = new App\User();
-    $pos->firstname = $req->firstname;
-    $pos->middlename = $req->middlename;
-    $pos->lastname = $req->lastname;
-    $pos->positionId = $req->positionId;
-    $pos->privilegeId = $req->privilegeId;
-    $pos->officeId = $req->officeId;
+    $user = new App\User();
+    $user->firstname = $req->firstname;
+    $user->middlename = $req->middlename;
+    $user->lastname = $req->lastname;
+    $user->password = $req->password;
+    $user->positionId = $req->positionId;
+    $user->privilegeId = $req->privilegeId;
+    $user->officeId = $req->officeId;
 
-    // TODO: validate
-    $errors = [];
-    if (!$pos->name)
-        $errors[] = "name is required";
+    $v = $user->validate();
+    if ($v->fails())
+        return ["errors"=>$v->errors()];
 
-    $pos->save();
-    return $pos;
+    $user->save();
+    return $user;
 });
 
 Route::get('/users/list', function (Request $req) {
@@ -50,7 +50,7 @@ Route::get('/users/list', function (Request $req) {
 
 // ---------------------------
 Route::post('/privileges/del/{id}', function (Request $req, $id) {
-    $pos = App\Privilege::find($id);
+    $pos = App\User::findOrFail($id);
     $pos->delete();
     return "okay";
 });
@@ -74,7 +74,7 @@ Route::get('/privileges/list', function (Request $req) {
 // ---------------------------
 
 Route::post('/positions/del/{id}', function (Request $req, $id) {
-    $pos = App\Position::find($id);
+    $pos = App\Position::findOrFail($id);
     $pos->delete();
     return "okay";
 });
@@ -97,7 +97,7 @@ Route::get('/positions/list', function (Request $req) {
 
 // -----------------------
 Route::post('/offices/del/{id}', function (Request $req, $id) {
-    $pos = App\Office::find($id);
+    $pos = App\Office::findOrFail($id);
     $pos->delete();
     return "okay";
 });

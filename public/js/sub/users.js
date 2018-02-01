@@ -8,34 +8,43 @@ var users = {
         fetchPositions();
         fetchPrivileges();
         fetchOffices();
+        fetchUsers();
         setupAddForm();
 
         function setupAddForm() {
             var $btn = $container.find("button.add");
             $btn.click(function(e) {
                 e.preventDefault();
-                var pos = {
+                UI.clearErrors($container);
+                var user = {
                     firstname: $container.find(".firstname").val(),
                     middlename: $container.find(".middlename").val(),
                     lastname: $container.find(".lastname").val(),
+                    password: $container.find(".password").val(),
                     positionId: 
                         $container.find("select.positions").val(),
-                    privilegesId: 
+                    privilegeId: 
                         $container.find("select.privileges").val(),
                     officeId: 
                         $container.find("select.offices").val(),
                     // TODO:
                 };
-                api.users.add(pos, function(resp) {
+                api.user.add(user, function(resp) {
+                    if (resp.errors) {
+                        UI.showErrors($container, resp.errors);
+                    } else {
+                        addRow(resp);
+                        clearInputs();
+                    }
                     // TODO: show error messages
-                    addRow(resp);
-                    clearInputs();
                 });
             });
         }
 
         function clearInputs() {
-            $container.find(".pos-name").val("");
+            $container.find(".firstname").val();
+            $container.find(".middlename").val();
+            $container.find(".lastname").val();
         }
 
         function addRow(row) {
@@ -51,9 +60,12 @@ var users = {
                 "</tr>",
             ]);
             $tr.find(".id").text(row.id);
-            $tr.find(".fullname").text(row.fullname);
-            $tr.find(".position").text(row.position);
-            $tr.find(".privilege").text(row.privilege);
+            $tr.find(".fullname").text(
+                row.firstname + " " + row.lastname,
+            );
+            $tr.find(".position").text(row.position_name);
+            $tr.find(".privilege").text(row.privilege_name);
+            $tr.find(".office").text(row.office_name);
             $tr.find(".del").click(function(e) {
                 e.preventDefault();
                 var proceed = confirm("delete row: "+row.name );
@@ -66,7 +78,9 @@ var users = {
 
         function deleteRow(row, $tr) {
             $tr.remove();
-            api.position.delete(row.id);
+            api.user.delete(row.id, function(resp) {
+                UI.showErrors($container, resp.errors);
+            });
         }
 
         function fetchPositions() {
@@ -98,6 +112,15 @@ var users = {
                     $option.val(off.id);
                     $option.text(off.name + " " + off.campus);
                     $selOffices.append($option);
+                });
+            });
+        }
+
+        function fetchUsers() {
+            api.user.fetch(function(users) {
+                users.forEach(function(user) {
+                    console.log(user);
+                    addRow(user);
                 });
             });
         }

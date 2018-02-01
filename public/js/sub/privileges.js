@@ -8,14 +8,19 @@ var privileges = {
 
         function setupAddForm() {
             var $btn = $container.find("button.add");
+            UI.clearErrors($container);
             $btn.click(function(e) {
                 e.preventDefault();
                 var priv = {
                     name:   $container.find(".priv-name").val(),
                 };
                 api.privilege.add(priv, function(resp) {
-                    addRow(resp);
-                    clearInputs();
+                    if (resp.errors)
+                        UI.showErrors($container, resp.errors);
+                    else {
+                        addRow(resp);
+                        clearInputs();
+                    }
                 });
             });
         }
@@ -48,7 +53,9 @@ var privileges = {
 
         function deleteRow(row, $tr) {
             $tr.remove();
-            api.privilege.delete(row.id);
+            api.privilege.delete(row.id, function(resp) {
+                UI.showErrors($container, resp.errors);
+            });
         }
 
         function fetchPositions() {

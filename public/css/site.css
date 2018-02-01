@@ -12,6 +12,11 @@ section {
     margin: 10px;
 }
 
+ul.errors {
+    list-style-type: square;
+    color: #d33;
+}
+
 input, textarea, button, select {
     margin: 5px;
     border-radius: 5px;

@@ -61,16 +61,19 @@
     <script src="{{asset('js/sub/privileges.js')}}"></script>
 </section>
 
-<section id="context">
+<section id="user-accounts">
     <h2>user accounts</h2>
     <div class="users">
-        <input class="username full" placeholder="firstname">
+        <input class="firstname full" placeholder="firstname">
         <input class="middlename full" placeholder="middlename">
         <input class="lastname full" placeholder="lastname">
+        <input type="hidden" class="password full" placeholder="lastname" value="password">
         Position: <select class="positions"></select><br>
         Privilege: <select class="privileges"></select><br>
         Office: <select class="offices"></select><br>
         <br>
+        <ul class="errors">
+        </ul>
         <button class="add half">add user</button>
         <hr>
 
@@ -81,6 +84,7 @@
                 <th>fullname</th>
                 <th>position</th>
                 <th>privilege</th>
+                <th>office</th>
             </tr>
             </thead>
             <tbody>
@@ -90,21 +94,8 @@
     <script src="{{asset('js/sub/users.js')}}"></script>
 </section>
 
-<section id="context">
-    <h2>context</h2>
-    <form>
-    <input name="userId" class="full" placeholder="current userID">
-    <input name="locId" class="full" placeholder="current locId">
-    <p>
-        username: <span id="username">
-    </p>
-    <p>
-        location: <span id="location">
-    </p>
-    </form>
-</section>
-
 <section id="new-dispatch">
+    <h1>Dispatch Document</h1>
     <form>
     <input name="trackingID" class="full" placeholder="tracking ID">
     <textarea name="details" rows="7" class="full"

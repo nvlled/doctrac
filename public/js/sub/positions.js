@@ -9,12 +9,17 @@ var positions = {
             var $btn = $container.find("button.add");
             $btn.click(function(e) {
                 e.preventDefault();
+                UI.clearErrors($container);
                 var pos = {
                     name:   $container.find(".pos-name").val(),
                 };
                 api.position.add(pos, function(resp) {
-                    addRow(resp);
-                    clearInputs();
+                    if (resp.errors)
+                        UI.showErrors($container, resp.errors);
+                    else {
+                        addRow(resp);
+                        clearInputs();
+                    }
                 });
             });
         }
@@ -47,7 +52,9 @@ var positions = {
 
         function deleteRow(row, $tr) {
             $tr.remove();
-            api.position.delete(row.id);
+            api.position.delete(row.id, function(resp) {;
+                UI.showErrors($container, resp.errors);
+            });
         }
 
         function fetchPositions() {

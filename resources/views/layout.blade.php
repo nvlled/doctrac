@@ -14,6 +14,7 @@
     </div>
     <script src="{{asset('js/jquery.min.js')}}"></script>
     <script src="{{asset('js/util.js')}}"></script>
+    <script src="{{asset('js/ui.js')}}"></script>
     <script src="{{asset('js/api.js')}}"></script>
     @yield("scripts")
 </body>

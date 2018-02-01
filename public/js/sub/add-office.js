@@ -10,14 +10,18 @@ window.addEventListener("load", function() {
         var $btn = $container.find("button.add");
         $btn.click(function(e) {
             e.preventDefault();
+            UI.clearErrors($container);
             var office = {
                 name:   $container.find(".office-name").val(),
                 campus: $container.find(".campus-name").val(),
             };
             api.office.add(office, function(resp) {
-                // TODO: show error messages
-                addOfficeRow(resp);
-                clearInputs();
+                if (resp.errors)
+                    UI.showErrors($container, resp.errors);
+                else {
+                    addOfficeRow(resp);
+                    clearInputs();
+                }
             });
         });
     }
@@ -54,7 +58,9 @@ window.addEventListener("load", function() {
 
     function deleteRow(office, $tr) {
         $tr.remove();
-        api.office.delete(office.id);
+        api.office.delete(office.id, function(resp) {;
+            UI.showErrors($container, resp.errors);
+        });
     }
 
     function fetchOffices() {
