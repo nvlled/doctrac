@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Document Tracking</title>
     <link rel="stylesheet" href="{{asset('css/site.css')}}">
+    <script src="{{asset('js/jquery.min.js')}}"></script>
+    <script src="{{asset('js/util.js')}}"></script>
     @yield("styles")
 </head>
 <body>
@@ -12,8 +14,6 @@
     <div class="site-wrap">
         @yield("contents")
     </div>
-    <script src="{{asset('js/jquery.min.js')}}"></script>
-    <script src="{{asset('js/util.js')}}"></script>
     <script src="{{asset('js/ui.js')}}"></script>
     <script src="{{asset('js/api.js')}}"></script>
     @yield("scripts")

@@ -1,5 +1,7 @@
 
 var UI = {
+    
+
     showErrors: function($div, errors) {
         var $errors = $div.find("ul.errors");
         if ($errors.length == 0) {
