@@ -2,19 +2,17 @@
 
 @section("contents")
 
-<section id="single-dispatch">
+<section id="dispatch">
     <h1>Dispatch Document</h1>
     <form>
-    <input name="trackingID" class="full" placeholder="tracking ID">
-    <textarea name="details" rows="7" class="full"
+    <input name="trackingID" class="full trackingID" placeholder="tracking ID">
+    <textarea name="details" rows="7" class="full details"
         placeholder="document details"></textarea>
     </form>
-    <p>Attachment: <input name="attachment" type="file"></p>
-
-    <hr>
+    <p class="hidden">Attachment: <input name="attachment" type="file"></p>
 
     <h3>Office destinations</h3>
-    <table>
+    <table class="route">
         <thead>
         <tr>
             <th>id</th>
@@ -28,14 +26,20 @@
     <div class="add-dest">
         <select class="offices"></select><button class='add'>add</button>
     </div>
-    <script src="{{asset('js/sub/single-dispatch.js')}}"></script>
 
     <br>
     <div class="center">
-        <label><input type="checkbox"> Multiple Recipients</label>
+        <label><input name="dispatch-type" value="serial" type="radio" checked>serial </label>
+        <label><input name="dispatch-type" value="parallel" type="radio">parallel </label>
         <br>
-        <button class="half">Send</button>
+        <button class="half send">Send</button>
     </div>
+    <p style="font-size: 15px; color: gray">
+    *note: <br>
+    serial: documents are passed from one office to another<br>
+    parallel: documents are passed to all the offices at the same time
+    </p>
+    <script src="{{asset('js/sub/dispatch.js')}}"></script>
 </section>
 
 <section id="context">

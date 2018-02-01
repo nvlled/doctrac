@@ -4,11 +4,21 @@ function getInternalError(err) {
         errors: {"server" : [msg] },
     };
 }
+
 function defaultHandler(resp, errors) {
     console.log("response: ", resp);
     console.log("errors: ", errors);
 }
 
+function makeHandler(url) {
+    return function(data, fn) {
+        fn = fn || defaultHandler;
+        api.req.post(url, data, fn);
+    }
+}
+
+
+// TODO: refactor repeated code
 var api = {
     req: {
         post: function(url, data, handler) {
@@ -23,6 +33,10 @@ var api = {
                     handler(getInternalError(e));
                 });
         },
+    },
+
+    doc: {
+        send: makeHandler("/api/docs/send"),
     },
 
     user: {

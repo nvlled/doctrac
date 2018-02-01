@@ -18,6 +18,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 // TODO: Add update routes
+// ---------------------------
+Route::any('/docs/send', function (Request $req) {
+    echo json_encode($req->officeIds[0]);
+});
+
 
 // ---------------------------
 Route::post('/users/del/{id}', function (Request $req, $id) {
