@@ -27,7 +27,6 @@ var users = {
                         $container.find("select.privileges").val(),
                     officeId: 
                         $container.find("select.offices").val(),
-                    // TODO:
                 };
                 api.user.add(user, function(resp) {
                     if (resp.errors) {
@@ -36,7 +35,6 @@ var users = {
                         addRow(resp);
                         clearInputs();
                     }
-                    // TODO: show error messages
                 });
             });
         }

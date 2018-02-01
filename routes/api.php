@@ -17,6 +17,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// TODO: Add update routes
+
 // ---------------------------
 Route::post('/users/del/{id}', function (Request $req, $id) {
     $user = App\User::findOrFail($id);
@@ -43,28 +45,27 @@ Route::post('/users/add', function (Request $req) {
 });
 
 Route::get('/users/list', function (Request $req) {
-    // TODO: lookup json serialization
     return App\User::all();
 });
 
 
 // ---------------------------
 Route::post('/privileges/del/{id}', function (Request $req, $id) {
-    $pos = App\User::findOrFail($id);
-    $pos->delete();
-    return "okay";
+    $priv = App\User::findOrFail($id);
+    $priv->delete();
+    return $priv;
 });
 
 Route::post('/privileges/add', function (Request $req) {
-    $pos = new App\Privilege();
-    $pos->name = $req->name;
+    $priv = new App\Privilege();
+    $priv->name = $req->name;
 
-    $errors = [];
-    if (!$pos->name)
-        $errors[] = "name is required";
+    $v = $priv->validate();
+    if ($v->fails())
+        return ["errors"=>$v->errors()];
 
-    $pos->save();
-    return $pos;
+    $priv->save();
+    return $priv;
 });
 
 Route::get('/privileges/list', function (Request $req) {
@@ -76,16 +77,16 @@ Route::get('/privileges/list', function (Request $req) {
 Route::post('/positions/del/{id}', function (Request $req, $id) {
     $pos = App\Position::findOrFail($id);
     $pos->delete();
-    return "okay";
+    return pos;
 });
 
 Route::post('/positions/add', function (Request $req) {
     $pos = new App\Position();
     $pos->name = $req->name;
 
-    $errors = [];
-    if (!$pos->name)
-        $errors[] = "name is required";
+    $v = $pos->validate();
+    if ($v->fails())
+        return ["errors"=>$v->errors()];
 
     $pos->save();
     return $pos;
@@ -99,7 +100,7 @@ Route::get('/positions/list', function (Request $req) {
 Route::post('/offices/del/{id}', function (Request $req, $id) {
     $pos = App\Office::findOrFail($id);
     $pos->delete();
-    return "okay";
+    return $pos;
 });
 
 Route::post('/offices/add', function (Request $req) {
@@ -107,11 +108,9 @@ Route::post('/offices/add', function (Request $req) {
     $office->name = $req->name;
     $office->campus = $req->campus;
 
-    $errors = [];
-    if (!$office->name)
-        $errors[] = "name is required";
-    if (!$office->campus)
-        $errors[] = "campus is required";
+    $v = $office->validate();
+    if ($v->fails())
+        return ["errors"=>$v->errors()];
 
     $office->save();
     return $office;

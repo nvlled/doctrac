@@ -167,5 +167,4 @@
         placeholder="comments, notes or annotation" ></textarea>
     <button>SEND/RECEIVE/IN-Transit</button>
 </section>
-
 @endsection

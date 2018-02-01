@@ -53,4 +53,3 @@ var singleDispatch = {
 window.addEventListener("load", function() {
     singleDispatch.setup($("section#single-dispatch"));
 });
-
