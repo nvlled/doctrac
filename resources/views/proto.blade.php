@@ -48,8 +48,8 @@
             <thead>
             <tr>
                 <th>id</th>
-                <th>office</th>
                 <th>campus</th>
+                <th>office</th>
             </tr>
             </thead>
             <tbody>

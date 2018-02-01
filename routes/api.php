@@ -77,7 +77,7 @@ Route::get('/privileges/list', function (Request $req) {
 Route::post('/positions/del/{id}', function (Request $req, $id) {
     $pos = App\Position::findOrFail($id);
     $pos->delete();
-    return pos;
+    return $pos;
 });
 
 Route::post('/positions/add', function (Request $req) {

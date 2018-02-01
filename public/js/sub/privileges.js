@@ -8,9 +8,9 @@ var privileges = {
 
         function setupAddForm() {
             var $btn = $container.find("button.add");
-            UI.clearErrors($container);
             $btn.click(function(e) {
                 e.preventDefault();
+                UI.clearErrors($container);
                 var priv = {
                     name:   $container.find(".priv-name").val(),
                 };
