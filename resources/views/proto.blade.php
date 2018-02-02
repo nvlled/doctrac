@@ -5,7 +5,14 @@
 <section id="dispatch">
     <h1>Dispatch Document</h1>
     <form>
-    <input name="trackingID" class="full trackingID" placeholder="tracking ID">
+    <input name="userId" class="userId" placeholder="userId">
+    <span class="userInfo"></span>
+    <script>
+    UI.queryUser("#dispatch input.userId", "#dispatch .userInfo")
+    </script>
+    <hr>
+    <input name="trackingId" class="full trackingId" placeholder="tracking ID">
+    <input name="title" class="full title" placeholder="document name or title">
     <textarea name="details" rows="7" class="full details"
         placeholder="document details"></textarea>
     </form>
@@ -28,6 +35,7 @@
     </div>
 
     <br>
+        <ul class="errors"></ul>
     <div class="center">
         <label><input name="dispatch-type" value="serial" type="radio" checked>serial </label>
         <label><input name="dispatch-type" value="parallel" type="radio">parallel </label>
@@ -134,14 +142,18 @@
     <script src="{{asset('js/sub/users.js')}}"></script>
 </section>
 
-<section id="new-dispatch">
+<section id="doc-fr">
     <form>
-    <input name="trackingID" readonly class="full" value="UR-1112233">
+    <input class="userID" placeholder="user id">
+    <span class="fullname">aaaa bbbb</span>  
+    (<small class="officename">office name</small>)
+    <hr>
+    <input name="trackingId" readonly class="full" value="UR-1112233">
     <textarea name="details" rows="7" class="full"
         placeholder="document details" readonly>Rush, deadline was years ago
     </textarea>
     </form>
-    <p>Attachment: <input name="attachment" type="file"></p>
+    <p class="hidden">Attachment: <input name="attachment" type="file"></p>
     <p>Document Pathway</p>
     <table>
         <thead>

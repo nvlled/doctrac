@@ -20,7 +20,70 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // TODO: Add update routes
 // ---------------------------
 Route::any('/docs/send', function (Request $req) {
-    echo json_encode($req->officeIds[0]);
+    $user = App\User::find($req->userId);
+    if (!$user) {
+        return ["errors"=>["user id"=>"user id is invalid"]];
+    }
+
+    $doc = new App\Document();
+    $doc->title = $req->title;
+    //$doc->type = $req->type;
+    $doc->details = $req->details;
+    $doc->trackingId = $req->trackingId;
+    $doc->userId = $req->userId;
+
+    $v = $doc->validate();
+    if ($v->fails())
+        return ["errors"=>$v->errors()];
+
+    // at least one destination must be given
+    $ids = $req->officeIds;
+    if (!$ids) {
+        $msg = "select at least one destination";
+        return ["errors"=>["officeIds"=>$msg]];
+    }
+
+    $doc->save();
+
+    // if there is no source office id given,
+    // use the office id of the user
+    $srcOfficeId = $req->srcOfficeId;
+    if (!$srcOfficeId) {
+        if (!App\Office::find($user->officeId))
+            return ["errors"=>["srcOfficeId"=>"office id is invalid"]];
+        $srcOfficeId = $user->officeId;
+    }
+
+
+    // TODO: undo DB changes on error
+    
+    $route = new App\DocumentRoute();
+    $route->trackingId = $doc->trackingId;
+    $route->srcOfficeId = $srcOfficeId;
+    $route->srcUserId  = $user->id;
+    $route->timeSent = now();
+    $route->save();
+
+    foreach ($ids as $officeId) {
+        $nextRoute = new App\DocumentRoute();
+        $nextRoute->trackingId = $doc->trackingId;
+        // TODO: check if office id is valid
+        $nextRoute->srcOfficeId = $officeId;
+        $nextRoute->save(); // save first to get an ID
+
+        $route->dstOfficeId = $officeId;
+        $route->nextId     = $nextRoute->id;
+        $nextRoute->prevId = $route->id;
+
+        $route->save();
+        $nextRoute->save();
+
+        $route = $nextRoute;
+    }
+    $route->final = true;
+    $route->save();
+
+    return $doc;
 });
 
 
@@ -51,6 +114,10 @@ Route::post('/users/add', function (Request $req) {
 
 Route::get('/users/list', function (Request $req) {
     return App\User::all();
+});
+
+Route::any('/users/get/{id}', function (Request $req, $id) {
+    return App\User::find($id);
 });
 
 
@@ -125,5 +192,5 @@ Route::get('/offices/list', function (Request $req) {
     return App\Office::all();
 });
 
-// -----------------------
 
+// -----------------------

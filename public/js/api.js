@@ -40,6 +40,11 @@ var api = {
     },
 
     user: {
+        get: function(id, fn) {
+            fn = fn || defaultHandler;
+            var url = "/api/users/get/"+id;
+            api.req.post(url, {}, fn);
+        },
         add: function(user, fn) {
             fn = fn || defaultHandler;
             var url = "/api/users/add";
@@ -133,3 +138,5 @@ var api = {
         },
     }
 };
+
+

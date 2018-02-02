@@ -52,3 +52,8 @@ td.action a {
 }
 td.action a::before { content: "["; }
 td.action a::after { content: "]"; }
+
+.hidden {
+    display: none !important;
+}
+
