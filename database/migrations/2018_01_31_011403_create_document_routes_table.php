@@ -18,7 +18,8 @@ class CreateDocumentRoutesTable extends Migration
             $table->integer("pathId");
             $table->string('trackingId', 512);
             $table->integer('officeId');
-            $table->integer('userId')->nullable();
+            $table->integer('receiverId')->nullable();
+            $table->integer('senderId')->nullable();
             $table->integer('nextId')->nullable();
             $table->integer('prevId')->nullable();
             $table->dateTime('arrivalTime')->nullable();

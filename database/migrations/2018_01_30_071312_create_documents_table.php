@@ -19,7 +19,6 @@ class CreateDocumentsTable extends Migration
             $table->string('type', 64)->default("serial");
             $table->text('details')->nullable();
             $table->char('trackingId', 180)->unique();
-            $table->integer('userId');
             $table->string('attachmentFilename', 1024)->nullable();
             $table->timestamps();
         });

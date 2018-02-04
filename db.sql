@@ -45,9 +45,9 @@ insert into users
 ) values
 (NOW(), NOW(), 1, "Astaroth", "Cosette", "Aida", @head, @admin, 1),
 (NOW(), NOW(), 
-    @officer1:=2, "Rohan", "Othello", "Zuleika", @asst, @officer, 2),
+    @off1:=2, "Rohan", "Othello", "Zuleika", @asst, @officer, 2),
 (NOW(), NOW(), 
-    @officer2:=3, "Igerna", "Aramis", "Gandalf", @clrk, @officer, 3),
+    @off2:=3, "Igerna", "Aramis", "Gandalf", @clrk, @officer, 3),
 (NOW(), NOW(), 4, "Ruslan", "Guenevere", "Mehrab", @clrk, @agent, 3),
 (NOW(), NOW(), 5, "Bedwyr", "Daenerys", "Medraut", @fact, @agent, 2),
 (NOW(), NOW(), 6, "Enobarbus", "Merlin", "Malvina", @asst, @agent, 6),
@@ -62,44 +62,49 @@ insert into documents
     trackingId,
     userId
 ) values
-(1, "Document A", "AA AAAA AAA", @trackID1:="00-12-333", @officer1),
-(2, "Document B", "BB BBBB BBB", @trackID2:="73-12-216", @officer2),
-(3, "Document C", "CC CCCC CCC", @trackID3:="12-32-456", @officer2),
-(4, "Document D", "DD DDDD DDD", @trackID4:="77-31-989", @officer1),
-(5, "Document E", "EE EEEE EEE", @trackID5:="21-54-449", @officer2);
+(1, "Document A", "AA AAAA AAA", @trackID1:="00-12-333", @off1),
+(2, "Document B", "BB BBBB BBB", @trackID2:="73-12-216", @off2),
+(3, "Document C", "CC CCCC CCC", @trackID3:="12-32-456", @off2),
+(4, "Document D", "DD DDDD DDD", @trackID4:="77-31-989", @off1),
+(5, "Document E", "EE EEEE EEE", @trackID5:="21-54-449", @off2);
+
+
+set @day1 = '2017-01-01';
+set @day2 = '2017-01-02';
+set @day3 = '2017-01-03';
+set @day4 = '2017-01-04';
+set @_    = NULL;
 
 insert into document_routes
 (
-    id,
-    pathId,
-    trackingId,
-    officeId,
-    userId,
-    nextId,
-    prevId,
-    arrivalTime,
-    annotations,
-    final
+    id, pathId, trackingId, officeId, receiverId, senderId,
+    prevId, nextId, arrivalTime, final, annotations
 ) values
 
-(1, 1, @trackID1, @rec, @officer1, 2, NULL, '2017-01-01', NULL, false),
-(2, 1, @trackID1, @mis, NULL,   NULL, 1, NULL, NULL, true),
+(1, 1, @trackID1, @rec, @off1, @off1, @_, 2, @day1, false, @_),
+(2, 1, @trackID1, @mis, @_, @_,       1, @_,  @_,   true,  @_),
 
-(3, 2, @trackID2, @mis, @officer2, 4, NULL, '2017-01-01', NULL, false),
-(4, 2, @trackID2, @csh, 3,         5, 3,    '2017-01-02', 'do something', false),
-(5, 2, @trackID2, @acc, NULL,      6, 4,    NULL, NULL, false),
-(6, 2, @trackID2, @coc, NULL,   NULL, 5,    NULL, NULL, true),
+(3, 2, @trackID2, @mis, @off2, @off2, @_, 4,  @day1, false, @_),
+(4, 2, @trackID2, @csh, 3,  @_,       3,  5,  @day2, false, 'something'),
+(5, 2, @trackID2, @acc, @_, @_,       4,  6,  @_,    false, @_),
+(6, 2, @trackID2, @coc, @_, @_,       5,  @_, @_,    true,  @_),
 
-(7,  3, @trackID3, @coc, @officer1, 8, NULL, '2017-01-01', NULL,    false),
-(8,  3, @trackID3, @csh, 5,         9, 7,    '2017-01-02', 'sign ', false),
-(9,  3, @trackID3, @mis, 6,      NULL, 8,    '2017-01-03', 'blah',  true),
+(23, 7, @trackID3, @mis, @off2, @off2, @_,  24,  @day1, false, @_),
+(24, 7, @trackID3, @csh, 3,  4,        23,  25,  @day2, false, 'something'),
+(25, 7, @trackID3, @acc, @_, @_,       24,  26,  @_,    false, @_),
+(26, 7, @trackID3, @coc, @_, @_,       25,  @_, @_,    true,  @_),
 
-(11,  4, @trackID4, @rec, @officer2, 14, NULL, '2017-01-01', NULL, false),
-(12,  5, @trackID4, @rec, @officer2, 15, NULL, '2017-01-01', NULL, false),
-(13,  6, @trackID4, @rec, @officer2, 16, NULL, '2017-01-01', NULL, true),
+(7,  3, @trackID4, @coc, @off1, @off1, @_, 8,  @day1,  false, @_),
+(8,  3, @trackID4, @csh, 5, 5,         7,  9,  @day2, false, 'sign'),
+(9,  3, @trackID4, @mis, 6, @_,        8,  @_, @day3, true, 'blah'),
 
-(14,  4, @trackID4, @coc, @officer2, NULL, 11,  NULL,        NULL, false),
-(15,  5, @trackID4, @csh, @officer2, NULL, 12,  NULL,        NULL, false),
-(16,  6, @trackID4, @mis, @officer2, NULL, 13, '2017-01-02', NULL, true);
+(11,  4, @trackID5, @rec, @off2, @off2, @_, 14, @day1,  false, @_),
+(12,  5, @trackID5, @rec, @off2, @off2, @_, 15, @day1,  false, @_),
+(13,  6, @trackID5, @rec, @off2, @off2, @_, 16, @day1,  true,  @_),
+
+(14,  4, @trackID5, @coc, 3, @_,        11, @_,  @_,    false, @_),
+(15,  5, @trackID5, @csh, 4, @_,        12, @_,  @_,    false, @_),
+(16,  6, @trackID5, @mis, 5, @_,        13, @_,  @day2, true,  @_);
+
 
 
