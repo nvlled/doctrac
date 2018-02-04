@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Validator;
 
 class Office extends Model
 {
-
     public function holdsDoc($doc) {
         foreach ($doc->currentOffices() as $office) {
             if ($this->id == $office->id)
@@ -25,7 +24,7 @@ class Office extends Model
     }
 
     public function canSendDoc($doc) {
-        return $this->holdsDoc($doc) && !$this-isFinal($doc);
+        return $this->holdsDoc($doc) && !$this->isFinal($doc);
     }
 
     public function canReceiveDoc($doc) {

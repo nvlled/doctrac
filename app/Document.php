@@ -9,41 +9,80 @@ class Document extends Model
 {
     public function create($user, $data) {
     }
+    public function finalRouteIds() {
+        $sql = "
+            select pathId, max(id) as id
+            from `document_routes`
+            where trackingId=? and final=1
+            group by `pathId` order by `arrivalTime`, id desc
+        ";
+
+        $ids = [];
+        $rows = \DB::select($sql, [$this->trackingId]);
+        foreach ($rows as $row) {
+            $ids[] = $row->id;
+        }
+        return $ids;
+    }
 
     public function finalRoutes() {
-        return App\DocumentRoute
-            // TODO: I don't think a final flag is
-            // needed if I could establish the following invariants:
-            // prevId of start of routes is always null
-            // next   of final of routes is always null
-            ::where("final", true)
-            ->groupBy("routeId")
-            ->get();
+        return DocumentRoute::whereIn("id", $this->finalRouteIds())->get();
     }
 
-    public function currentRoutes() {
-        return App\DocumentRoute
-            ::whereNull("userId")
-            ->whereNull("arrivalTime")
-            ->orderBy("arrivalTime", "desc")
-            ->groupBy("routeId");
-            ->get();
-    }
-
-    public function nextRoutes() {
-        return $this->currentRoutes(function($route) {
-            return $route->next();
-        });
-    }
-
-    public function currentOffices() {
-        return $this->currentRoutes(function($route) {
+    public function finalOffices() {
+        return $this->finalRoutes()->map(function($route) {
             return $route->office;
         });
     }
 
+    // for serial routes, there is at most one route id
+    // for parallel routes, there may be more than one
+    public function currentRouteIds() {
+        $sql = "
+            select pathId, max(id) as id
+            from `document_routes`
+            where trackingId=? and arrivalTime is not null
+            group by `pathId` order by `arrivalTime`, id desc
+        ";
+
+        $ids = [];
+        $rows = \DB::select($sql, [$this->trackingId]);
+        foreach ($rows as $row) {
+            $ids[] = $row->id;
+        }
+        return $ids;
+    }
+
+    public function currentRoutes() {
+        return DocumentRoute::whereIn("id", $this->currentRouteIds())->get();
+    }
+
+    public function currentOffices() {
+        return $this->currentRoutes()->map(function($route) {
+            return $route->office;
+        });
+    }
+
+    public function nextRoutes() {
+        return $this->currentRoutes()->map(function($route) {
+            return $route->nextRoute;
+        });
+    }
+
     public function nextOffices() {
-        return $this->nextRoutes(function($route) {
+        return $this->nextRoutes()->map(function($route) {
+            return $route->office;
+        });
+    }
+
+    public function prevRoutes() {
+        return $this->currentRoutes()->map(function($route) {
+            return $route->prevRoute;
+        });
+    }
+
+    public function prevOffices() {
+        return $this->prevRoutes()->map(function($route) {
             return $route->office;
         });
     }
@@ -52,7 +91,7 @@ class Document extends Model
         return Validator::make($this->toArray(), [
             'title'  => 'required',
             'trackingId'  => 'required',
-            'userId' => 'required|exists:users,id',
+            //'userId' => 'required|exists:users,id',
         ]);
     }
 }
