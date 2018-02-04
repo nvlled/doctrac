@@ -15,16 +15,13 @@ class CreateDocumentRoutesTable extends Migration
     {
         Schema::create('document_routes', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer("pathId");
             $table->string('trackingId', 512);
-            $table->dateTime('timeSent')->nullable();
-            $table->dateTime('timeSeen')->nullable();
-            $table->dateTime('timeRecv')->nullable();
-            $table->integer('srcOfficeId');
-            $table->integer('dstOfficeId')->nullable();
-            $table->integer('srcUserId')->nullable();
-            $table->integer('dstUserId')->nullable();
-            $table->integer('prevId')->nullable();
+            $table->integer('officeId');
+            $table->integer('userId')->nullable();
             $table->integer('nextId')->nullable();
+            $table->integer('prevId')->nullable();
+            $table->dateTime('arrivalTime')->nullable();
             $table->text('annotations')->nullable();
             $table->boolean('final')->default(false);
             $table->timestamps();
