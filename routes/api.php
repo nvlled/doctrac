@@ -17,7 +17,14 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// TODO: Add update routes
+// ---------------------------
+
+Route::any('/routes/{trackId}', function (Request $req, $trackId) {
+    return response()->json(
+     App\DocumentRoute::where("trackingId", $trackId)->get()
+    )->header("Content-Type", "application/json");
+});
+
 // ---------------------------
 Route::any('/docs/send', function (Request $req) {
     $user = App\User::find($req->userId);

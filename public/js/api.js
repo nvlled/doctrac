@@ -12,11 +12,11 @@ function defaultHandler(resp, errors) {
 
 function makeHandler(url) {
     return function(data, fn) {
+        url = util.interpolate(url, data);
         fn = fn || defaultHandler;
         api.req.post(url, data, fn);
     }
 }
-
 
 // TODO: refactor repeated code
 var api = {

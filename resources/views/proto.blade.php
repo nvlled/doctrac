@@ -2,6 +2,44 @@
 
 @section("contents")
 
+<section id="session">
+    <h2>Current User</h2>
+    <input name="userId" class="userId" placeholder="user ID">
+    <br>
+    <span class="userInfo"></span>
+    <script>
+    UI.queryUser("#session input.userId", "#session .userInfo")
+    </script>
+</section>
+
+<section id="doc-history">
+    <input name="trackingId" class="full trackingId" placeholder="tracking ID">
+    <p>Document Pathway</p>
+    <table>
+        <thead>
+        <tr>
+            <th>id</th>
+            <th>campus</th>
+            <th>office</th>
+            <th>status</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <hr>
+    <br>
+    <button>SEND / RECEIVE / ABORT SEND / </button>
+    <script src="{{asset('js/sub/routes.js')}}"></script>
+</section>
+
+<section id="dispatch">
+    <h1>Office name</h1>
+    <h2>Incoming Documents</h2>
+    <h2>In Progress</h2>
+</section>
+
 <section id="dispatch">
     <h1>Dispatch Document</h1>
     <form>
