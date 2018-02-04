@@ -2,8 +2,8 @@
 var UI = {
 
     queryUser: function(inputSel, outputSel) {
-        $input = $(inputSel);
-        $output = $(outputSel);
+        var $input = $(inputSel);
+        var $output = $(outputSel);
         console.log($input, $output);
         $input.change(function() {
             $output.text("");

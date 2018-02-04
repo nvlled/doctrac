@@ -52,6 +52,7 @@ var users = {
                 " <td class='fullname'></td>",
                 " <td class='position'></td>",
                 " <td class='privilege'></td>",
+                " <td class='office'></td>",
                 " <td class='action'>",
                 "   <a href='#' class='del'>X</a>",
                 "</td>",
