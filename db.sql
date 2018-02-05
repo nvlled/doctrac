@@ -60,13 +60,14 @@ insert into documents
     title,
     details,
     trackingId,
-    userId
+    userId,
+    type
 ) values
-(1, "Document A", "AA AAAA AAA", @trackID1:="00-12-333", @off1),
-(2, "Document B", "BB BBBB BBB", @trackID2:="73-12-216", @off2),
-(3, "Document C", "CC CCCC CCC", @trackID3:="12-32-456", @off2),
-(4, "Document D", "DD DDDD DDD", @trackID4:="77-31-989", @off1),
-(5, "Document E", "EE EEEE EEE", @trackID5:="21-54-449", @off2);
+(1, "Document A", "AA AAAA AAA", @trackID1:="0001", @off1, 'serial'),
+(2, "Document B", "BB BBBB BBB", @trackID2:="0002", @off2, 'serial'),
+(3, "Document C", "CC CCCC CCC", @trackID3:="0003", @off2, 'serial'),
+(4, "Document D", "DD DDDD DDD", @trackID4:="0004", @off1, 'serial'),
+(5, "Document E", "EE EEEE EEE", @trackID5:="0005", @off2, 'parallel');
 
 
 set @day1 = '2017-01-01';

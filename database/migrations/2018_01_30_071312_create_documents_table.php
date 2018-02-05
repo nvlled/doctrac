@@ -16,6 +16,7 @@ class CreateDocumentsTable extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->increments('id');
             $table->string('title', 512);
+            $table->integer('userId');
             $table->string('type', 64)->default("serial");
             $table->text('details')->nullable();
             $table->char('trackingId', 180)->unique();
