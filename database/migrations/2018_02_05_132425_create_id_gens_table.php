@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUIDsTable extends Migration
+class CreateIdGensTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class CreateUIDsTable extends Migration
      */
     public function up()
     {
-        Schema::create('uids', function (Blueprint $table) {
+        Schema::create('id_gens', function (Blueprint $table) {
             $table->increments('id');
+            $table->timestamps();
         });
     }
 
@@ -25,6 +26,6 @@ class CreateUIDsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('uids');
+        Schema::dropIfExists('id_gens');
     }
 }
