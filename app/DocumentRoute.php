@@ -25,7 +25,7 @@ class DocumentRoute extends Model
         $office  = $this->office;
         if (!$office)
             return "";
-        return $office->name . " " . $this->campus;
+        return $office->name . " " . $office->campus;
     }
 
     public function getStatusAttribute() {
@@ -45,7 +45,7 @@ class DocumentRoute extends Model
             if (!$prevRoute)
                 return "preparing";
             if ($prevRoute->senderId && $prevRoute->arrivalTime)
-                return "waiting ";
+                return "waiting";
         }
 
         return "*";
