@@ -30,7 +30,7 @@ class Document extends Model
     }
 
     public function finalOffices() {
-        return $this->finalRoutes()->map(function($route) {
+        return mapFilter($this->finalRoutes(), function($route) {
             return $route->office;
         });
     }
@@ -58,31 +58,31 @@ class Document extends Model
     }
 
     public function currentOffices() {
-        return $this->currentRoutes()->map(function($route) {
+        return mapFilter($this->currentRoutes(), function($route) {
             return $route->office;
         });
     }
 
     public function nextRoutes() {
-        return $this->currentRoutes()->map(function($route) {
+        return mapFilter($this->currentRoutes(), function($route) {
             return $route->nextRoute;
         });
     }
 
     public function nextOffices() {
-        return $this->nextRoutes()->map(function($route) {
+        return mapFilter($this->nextRoutes(), function($route) {
             return $route->office;
         });
     }
 
     public function prevRoutes() {
-        return $this->currentRoutes()->map(function($route) {
+        return mapFilter($this->currentRoutes(), function($route) {
             return $route->prevRoute;
         });
     }
 
     public function prevOffices() {
-        return $this->prevRoutes()->map(function($route) {
+        return mapFilter($this->prevRoutes(), function($route) {
             return $route->office;
         });
     }
@@ -91,7 +91,8 @@ class Document extends Model
         return Validator::make($this->toArray(), [
             'title'  => 'required',
             'trackingId'  => 'required',
-            //'userId' => 'required|exists:users,id',
+            'userId' => 'required|exists:users,id',
         ]);
     }
 }
+
