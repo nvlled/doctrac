@@ -15,6 +15,33 @@ class Office extends Model
         return false;
     }
 
+    function actionForStatus($status) {
+        switch ($status) {
+            case "processing": return "send";
+            case "delivering": return "abort";
+            case "waiting": return "recv";
+        }
+        return "";
+    }
+
+    public function actionFor($doc) {
+        foreach($doc->currentRoutes() as $route) {
+            if ($this->id == $route->officeId) {
+                $action = $this->actionForStatus($route->status);
+                if ($action)
+                    return $action;
+            }
+        }
+        foreach($doc->nextRoutes() as $route) {
+            if ($this->id == $route->officeId) {
+                $action = $this->actionForStatus($route->status);
+                if ($action)
+                    return $action;
+            }
+        }
+        return "";
+    }
+
     public function isFinal($doc) {
         foreach ($doc->finalRoutes() as $route) {
             if ($this->officeId == $route->officeId)
@@ -23,8 +50,14 @@ class Office extends Model
         return false;
     }
 
+    // TODO:
+    public function canAbortSend($doc) {
+        return false;
+    }
+
     public function canSendDoc($doc) {
-        return $this->holdsDoc($doc) && !$this->isFinal($doc);
+        return $this->holdsDoc($doc)
+            && !$this->isFinal($doc);
     }
 
     public function canReceiveDoc($doc) {
