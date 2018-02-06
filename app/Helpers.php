@@ -10,5 +10,10 @@ function mapFilter($coll, $fn) {
     return $coll;
 }
 
+function generateId() {
+    $gen = new App\IdGen();
+    $gen->save();
+    return $gen->id;
+}
 
 ?>
