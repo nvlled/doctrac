@@ -90,7 +90,7 @@ class Document extends Model
     public function validate() {
         return Validator::make($this->toArray(), [
             'title'  => 'required',
-            'trackingId'  => 'required',
+            'trackingId'  => 'required|unique:documents',
             'userId' => 'required|exists:users,id',
         ]);
     }
