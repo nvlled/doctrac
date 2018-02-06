@@ -95,6 +95,7 @@ var UI = {
         $input.change(function() {
             $output.text("");
             api.user.get($input.val(), function(user) {
+                $output.data("user", user);
                 if (!user) {
                     $output.text("(no match)");
                     return;
@@ -103,7 +104,6 @@ var UI = {
                     return;
                 var name = user.firstname + " " + user.lastname;
                 $output.text(name + " | " + user.office_name);
-                $output.data("user", user);
             });
         });
     },

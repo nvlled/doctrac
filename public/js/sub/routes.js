@@ -1,5 +1,6 @@
 window.addEventListener("load", function() {
     var $container = $("section#doc-history");
+    var $input = $container.find("input.trackingId");
     var $table = $container.find("table");
     var $btnAction = $container.find("button.action");
     var $docTitle = $container.find(".title > .contents");
@@ -25,7 +26,6 @@ window.addEventListener("load", function() {
     });
 
     var url = "/api/routes/list/{trackingId}";
-    var $input = $container.find("input.trackingId");
     $input.change(loadDocument);
     $input.keypress(function(e) {
         if (e.key == "Enter" || e.keyCode == 13) {

@@ -26,6 +26,17 @@ Route::any('/routes/list/{trackingId}', function (Request $req, $trackingId) {
 });
 
 // ---------------------------
+
+Route::any('/docs/rand-id', function (Request $req) {
+    $randId = strtolower(str_random(5));
+    $id = $req->officeId;
+    $office = App\Office::find($id);
+
+    if ($office) {
+        return strtolower("{$office->id}-{$office->name}-$randId");
+    }
+    return $randId;
+});
 Route::any('/docs/get/{trackingId}', function (Request $req, $trackingId) {
     return App\Document::where("trackingId", $trackingId)->first();
 });

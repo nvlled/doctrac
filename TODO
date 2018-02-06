@@ -1,5 +1,4 @@
 
-* random UUID for trackingId
 * parallel dispatch
 * document forwarding (e.g. send/recv/abort)
 * edit/update of models

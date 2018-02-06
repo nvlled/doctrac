@@ -4,6 +4,21 @@ var dispatch = {
         var $selOffices = $container.find("select.offices");
         var $table = $container.find("table.route");
         var $message = $container.find(".message");
+        var $btnRand = $container.find("button.rand");
+        var $input = $container.find(".trackingId");
+        var $userInfo =$container.find(".userInfo");
+
+        $btnRand.click(function(e) {
+            e.preventDefault();
+            //var user = api.user.self();
+            var user = $userInfo.data("user");
+            var officeId = user ? user.officeId : "";
+            api.doc.randomId({
+                officeId: officeId,
+            }, function(id) {
+                $input.val(id);
+            });
+        });
 
         fetchOffices();
         setupAddButton();

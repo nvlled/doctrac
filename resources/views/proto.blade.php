@@ -13,7 +13,7 @@
 </section>
 
 <section id="doc-history">
-    <input name="trackingId" class="full trackingId" placeholder="tracking ID">
+    <input name="trackingId" class="half trackingId" placeholder="tracking ID">
     <h3 class="title">
         <span class='contents'></span>
         (<small class='type'>*</small>)
@@ -50,7 +50,8 @@
     UI.queryUser("#dispatch input.userId", "#dispatch .userInfo")
     </script>
     <hr>
-    <input name="trackingId" class="full trackingId" placeholder="tracking ID">
+    <button class="rand">random ID</button>
+    <input name="trackingId" class="half trackingId" placeholder="tracking ID">
     <input name="title" class="full title" placeholder="document name or title">
     <textarea name="details" rows="7" class="full details"
         placeholder="document details"></textarea>
