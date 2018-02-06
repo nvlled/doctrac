@@ -1,9 +1,9 @@
 
 var dispatch = {
     setup: function($container) {
-        var $destinations = $container.find("table");
         var $selOffices = $container.find("select.offices");
         var $table = $container.find("table.route");
+        var $message = $container.find(".message");
 
         fetchOffices();
         setupAddButton();
@@ -12,6 +12,7 @@ var dispatch = {
         function setupSendButton() {
             var $btn = $container.find("button.send");
             $btn.click(function() {
+                $message.text("");
                 UI.clearErrors($container);
                 var officeIds = [];
                 $table.find("tbody tr").each(function(i) {
@@ -26,13 +27,16 @@ var dispatch = {
                     officeIds: officeIds,
                     type: getDispatchType(),
                 }
+                $btn.text("sending...");
                 api.doc.send(doc, function(resp) {
+                    $btn.text("Send");
                     if (resp.errors)
                         UI.showErrors($container, resp.errors);
                     else {
+                        $message.text("document sent: " + doc.trackingId);
                         console.log("okay", resp);
-                        $btn.text("document sent");
-                        $btn[0].disabled = true;
+                        $table.find("tbody").html("");
+                        $container.find("form")[0].reset();
                     }
                 });
             });
@@ -68,7 +72,7 @@ var dispatch = {
                     $tr.remove();
                     $selOffices.append($option);
                 });
-                $destinations.append($tr);
+                $table.append($tr);
             })
         }
 

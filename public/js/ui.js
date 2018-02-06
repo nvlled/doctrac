@@ -56,13 +56,13 @@ Table.prototype = Object.assign(Table.prototype, {
         });
     },
 
-    clearTable: function() {
+    clearData: function() {
         this.$table.find("tbody").html("");
     },
 
     loadData: function(data) {
         var self = this;
-        this.clearTable();
+        this.clearData();
         if (!data || data.length == 0) {
             var n = this.cols.length;
             var $tr = util.jq([
@@ -103,6 +103,7 @@ var UI = {
                     return;
                 var name = user.firstname + " " + user.lastname;
                 $output.text(name + " | " + user.office_name);
+                $output.data("user", user);
             });
         });
     },
