@@ -41,6 +41,14 @@ Route::any('/docs/get/{trackingId}', function (Request $req, $trackingId) {
     return App\Document::where("trackingId", $trackingId)->first();
 });
 
+Route::any('/docs/next-route/{trackingId}/path/{pathId}',
+    function (Request $req, $trackingId, $pathId) {
+    $doc = App\Document::where("trackingId", $trackingId)->first();
+    if (!$doc)
+        return null;
+    $routes = collect();
+});
+
 Route::any('/docs/current-routes/{trackingId}/', function (Request $req, $trackingId) {
     $doc = App\Document::where("trackingId", $trackingId)->first();
     if (!$doc)

@@ -2,4 +2,4 @@
 * parallel dispatch
 * document forwarding (e.g. send/recv/abort)
 * edit/update of models
-
+* single current user for session
