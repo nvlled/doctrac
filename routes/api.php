@@ -19,13 +19,17 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 // ---------------------------
 
-Route::any('/routes/{trackId}', function (Request $req, $trackId) {
+Route::any('/routes/list/{trackingId}', function (Request $req, $trackingId) {
     return response()->json(
-     App\DocumentRoute::where("trackingId", $trackId)->get()
+     App\DocumentRoute::where("trackingId", $trackingId)->get()
     )->header("Content-Type", "application/json");
 });
 
 // ---------------------------
+Route::any('/docs/get/{trackingId}', function (Request $req, $trackingId) {
+    return App\Document::where("trackingId", $trackingId)->first();
+});
+
 Route::any('/docs/send', function (Request $req) {
     $user = App\User::find($req->userId);
     if (!$user) {
@@ -97,6 +101,17 @@ Route::any('/docs/send', function (Request $req) {
 
 
 // ---------------------------
+// TODO: session is not persiting data
+Route::any('/users/self', function (Request $req) {
+    return ["x" => session()->get("self")];
+});
+
+Route::any('/users/self/{userId}', function (Request $req, $userId) {
+    $user = App\User::findOrFail($userId);
+    session()->put("self", 1234);
+    return session()->get("self");
+});
+
 Route::post('/users/del/{id}', function (Request $req, $id) {
     $user = App\User::findOrFail($id);
     $user->delete();
@@ -178,6 +193,37 @@ Route::get('/positions/list', function (Request $req) {
 });
 
 // -----------------------
+
+Route::post('/offices/{officeId}/action-for/{trackingId}',
+    function (Request $req, $officeId, $trackingId) {
+    $office = App\Office::find($officeId);
+    $doc = App\Document::where("trackingId", $trackingId)->first();
+    return $office->actionFor($doc);
+});
+
+Route::post('/offices/{officeId}/abort/{trackingId}',
+    function (Request $req, $officeId, $trackingId) {
+
+});
+
+Route::post('/offices/{officeId}/can-receive/{trackingId}',
+    function (Request $req, $officeId, $trackingId) {
+    $office = App\Office::find($officeId);
+    $doc = App\Document::where("trackingId", $trackingId)->first();
+    if (!($office && $doc))
+        return ["value" => false];
+    return ["value" => $office->canReceiveDoc($doc)];
+});
+
+Route::any('/offices/{officeId}/can-send/{trackingId}',
+    function (Request $req, $officeId, $trackingId) {
+    $office = App\Office::find($officeId);
+    $doc = App\Document::where("trackingId", $trackingId)->first();
+    if (!($office && $doc))
+        return ["value" => false];
+    return ["value" => $office->canSendDoc($doc)];
+});
+
 Route::post('/offices/del/{id}', function (Request $req, $id) {
     $pos = App\Office::findOrFail($id);
     $pos->delete();
@@ -200,6 +246,4 @@ Route::post('/offices/add', function (Request $req) {
 Route::get('/offices/list', function (Request $req) {
     return App\Office::all();
 });
-
-
 // -----------------------

@@ -37,9 +37,20 @@ var api = {
 
     doc: {
         send: makeHandler("/api/docs/send"),
+        get: makeHandler("/api/docs/get/{trackingId}"),
+    },
+
+    route: {
+        list: makeHandler("/api/routes/list/{trackingId}"),
     },
 
     user: {
+        // TODO: this is just a workaround
+        // until I get the session working
+        self: function() {
+            return $("#session .userInfo").data("user");
+        },
+
         get: function(id, fn) {
             fn = fn || defaultHandler;
             var url = "/api/users/get/"+id;
@@ -94,24 +105,38 @@ var api = {
             if (!office.name)
                 return fn({errors: ["name is required"]});
 
-            api.req.post(url, {
+            return api.req.post(url, {
                 name: office.name,
             }, fn);
         },
 
         fetch: function(fn) {
             var url = "/api/positions/list";
-            api.req.get(url, {}, fn || defaultHandler)
+            return api.req.get(url, {}, fn || defaultHandler)
         },
 
         delete: function(id, fn) {
             fn = fn || defaultHandler;
             var url = "/api/positions/del/"+id;
-            api.req.post(url, {}, fn)
+            return api.req.post(url, {}, fn)
         },
     },
 
     office: {
+        actionFor: makeHandler("/api/offices/{officeId}/action-for/{trackingId}"),
+
+        canSend: function(officeId, trackingId, fn) {
+            fn = fn || defaultHandler;
+            var url = util.interpolate(
+                '/api/offices/{officeId}/can-send/{trackingId}',
+                {
+                    officeId: officeId,
+                    trackingId: trackingId,
+                }
+            );
+            return api.req.post(url, {}, fn)
+        },
+
         add: function(office, fn) {
             fn = fn || defaultHandler;
             var url = "/api/offices/add";
