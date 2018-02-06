@@ -33,9 +33,13 @@
         </tbody>
     </table>
     <br>
-    <textarea name="annotation" rows="5" class="full notes"
-        placeholder="comments, notes or annotation" ></textarea>
     <div class="center">
+        <div class="send-data">
+            <textarea name="annotation" rows="5" class="full notes"
+            placeholder="comments, notes or annotation" ></textarea>
+            <br>
+            Destination: <select class="offices"></select>
+        </div>
         <button class='action half'>SEND / RECEIVE / ABORT SEND / </button>
     </div>
     <script src="{{asset('js/sub/routes.js')}}"></script>

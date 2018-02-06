@@ -41,6 +41,13 @@ Route::any('/docs/get/{trackingId}', function (Request $req, $trackingId) {
     return App\Document::where("trackingId", $trackingId)->first();
 });
 
+Route::any('/docs/current-routes/{trackingId}/', function (Request $req, $trackingId) {
+    $doc = App\Document::where("trackingId", $trackingId)->first();
+    if (!$doc)
+        return collect();
+    return $doc->currentRoutes();
+});
+
 Route::any('/docs/send', function (Request $req) {
     $user = App\User::find($req->userId);
     if (!$user) {

@@ -6,6 +6,8 @@ window.addEventListener("load", function() {
     var $docTitle = $container.find(".title > .contents");
     var $docType = $container.find(".type");
     var $docDetails = $container.find(".details");
+    var $sendData = $container.find(".send-data");
+    var $selOffices = $container.find("select.offices");
     var $notes = $container.find(".notes");
 
     var table = UI.createTable($table, {
@@ -13,14 +15,12 @@ window.addEventListener("load", function() {
         colNames: {
             "office_name": "office name",
         },
-        actions: {
-            "x": function (index, data, $tr) {
-            },
-        }
     });
 
-    $notes.hide();
+    fetchOffices();
+    $sendData.hide();
     $btnAction.hide();
+
     $btnAction.click(function(e) {
         e.preventDefault();
     });
@@ -33,8 +33,10 @@ window.addEventListener("load", function() {
         }
     });
     $("#session input.userId").change(function() {
+        // TODO: this is just a workaround
+        // on sort-of race condition
         setTimeout(loadDocument, 300);
-    });//!!!!!!!!!!!!
+    });
 
     var currentDocument;
     function loadDocument() {
@@ -45,7 +47,7 @@ window.addEventListener("load", function() {
             table.clearData();
             clearDocInfo(doc);
             $btnAction.hide();
-            $notes.hide();
+            $sendData.hide();
 
             if (doc.errors) {
                 UI.showErrors($container, doc.errors);
@@ -57,8 +59,44 @@ window.addEventListener("load", function() {
             currentDocument = doc;
             updateDocInfo(doc);
             updateAction(doc);
+            updateOfficeSelection(doc);
+
             table.url = util.interpolate(url, params);
             table.fetchData();
+        });
+    }
+
+    function updateOfficeSelection(doc) {
+        api.doc.currentRoutes({
+            trackingId: doc.trackingId,
+        }, function(routes) {
+            if (!routes || !routes.map) {
+                return;
+            }
+            var officeIds = routes.map(function(r) {
+                return r.officeId;
+            });
+            disableOffices(officeIds);
+        });
+    }
+    function disableOffices(officeIds) {
+        $selOffices.find("option").each(function(_, opt) {
+            opt.disabled = false;
+            var offId = parseInt(opt.value);
+            if (officeIds.indexOf(offId) >= 0)
+                opt.disabled = true;
+        });
+    }
+
+    function fetchOffices() {
+        api.office.fetch(function(offices) {
+            $selOffices.html("");
+            offices.forEach(function(off) {
+                var $option = $("<option>");
+                $option.val(off.id);
+                $option.text(off.name + " " + off.campus);
+                $selOffices.append($option);
+            });
         });
     }
 
@@ -96,7 +134,7 @@ window.addEventListener("load", function() {
             switch(resp) {
                 case "send":
                     $btnAction.text("send");
-                    $notes.show();
+                    $sendData.show();
                     break;
                 case "recv": $btnAction.text("receive");break;
                 case "abort": $btnAction.text("abort send");break;
