@@ -33,7 +33,7 @@ input[type=submit], button, select {
 .center { text-align: center; }
 
 .site-wrap {
-    width: 950px;
+    width: 900px;
 }
 
 table {
@@ -52,6 +52,10 @@ td.action a {
 }
 td.action a::before { content: "["; }
 td.action a::after { content: "]"; }
+
+button.action {
+    font-size: 20px;
+}
 
 .hidden {
     display: none !important;

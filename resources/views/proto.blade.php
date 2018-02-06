@@ -14,7 +14,12 @@
 
 <section id="doc-history">
     <input name="trackingId" class="full trackingId" placeholder="tracking ID">
-    <p>Document Pathway</p>
+    <h3 class="title">
+        <span class='contents'></span>
+        (<small class='type'>*</small>)
+    </h3>
+    <pre class='details'></pre>
+    <p>Routes</p>
     <table>
         <thead>
         <tr>
@@ -27,17 +32,13 @@
         <tbody>
         </tbody>
     </table>
-
-    <hr>
     <br>
-    <button>SEND / RECEIVE / ABORT SEND / </button>
+    <textarea name="annotation" rows="5" class="full notes"
+        placeholder="comments, notes or annotation" ></textarea>
+    <div class="center">
+        <button class='action half'>SEND / RECEIVE / ABORT SEND / </button>
+    </div>
     <script src="{{asset('js/sub/routes.js')}}"></script>
-</section>
-
-<section id="dispatch">
-    <h1>Office name</h1>
-    <h2>Incoming Documents</h2>
-    <h2>In Progress</h2>
 </section>
 
 <section id="dispatch">
@@ -78,7 +79,8 @@
         <label><input name="dispatch-type" value="serial" type="radio" checked>serial </label>
         <label><input name="dispatch-type" value="parallel" type="radio">parallel </label>
         <br>
-        <button class="half send">Send</button>
+        <button class="half send action">Send</button>
+        <p class='message' style='color: #050'><p>
     </div>
     <p style="font-size: 15px; color: gray">
     *note: <br>
@@ -180,7 +182,7 @@
     <script src="{{asset('js/sub/users.js')}}"></script>
 </section>
 
-<section id="doc-fr">
+<section id="doc-fr" class='hidden'>
     <form>
     <input class="userID" placeholder="user id">
     <span class="fullname">aaaa bbbb</span>  
@@ -192,7 +194,7 @@
     </textarea>
     </form>
     <p class="hidden">Attachment: <input name="attachment" type="file"></p>
-    <p>Document Pathway</p>
+    <p>Document Routes</p>
     <table>
         <thead>
         <tr>
