@@ -33,11 +33,11 @@ Route::any('/docs/send', function (Request $req) {
     }
 
     $doc = new App\Document();
+    $doc->userId = $user->id;
     $doc->title = $req->title;
-    //$doc->type = $req->type;
+    $doc->type = $req->type;
     $doc->details = $req->details;
     $doc->trackingId = $req->trackingId;
-    $doc->userId = $req->userId;
 
     $v = $doc->validate();
     if ($v->fails())
@@ -54,31 +54,33 @@ Route::any('/docs/send', function (Request $req) {
 
     // if there is no source office id given,
     // use the office id of the user
-    $srcOfficeId = $req->srcOfficeId;
-    if (!$srcOfficeId) {
+    $officeId = $req->officeId;
+    if (!$officeId) {
         if (!App\Office::find($user->officeId))
-            return ["errors"=>["srcOfficeId"=>"office id is invalid"]];
-        $srcOfficeId = $user->officeId;
+            return ["errors"=>["officeId"=>"office id is invalid"]];
+        $officeId = $user->officeId;
     }
 
 
     // TODO: undo DB changes on error
-    
+
     $route = new App\DocumentRoute();
-    $route->trackingId = $doc->trackingId;
-    $route->srcOfficeId = $srcOfficeId;
-    $route->srcUserId  = $user->id;
-    $route->timeSent = now();
+    $route->trackingId  = $doc->trackingId;
+    $route->officeId    = $officeId;
+    $route->receiverId  = $user->id;
+    $route->senderId    = $user->id;
+    $route->pathId      = generateId();
+    $route->arrivalTime = now();
     $route->save();
 
     foreach ($ids as $officeId) {
         $nextRoute = new App\DocumentRoute();
         $nextRoute->trackingId = $doc->trackingId;
         // TODO: check if office id is valid
-        $nextRoute->srcOfficeId = $officeId;
+        $nextRoute->officeId = $officeId;
+        $nextRoute->pathId = generateId();
         $nextRoute->save(); // save first to get an ID
 
-        $route->dstOfficeId = $officeId;
         $route->nextId     = $nextRoute->id;
         $nextRoute->prevId = $route->id;
 
