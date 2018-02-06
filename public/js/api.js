@@ -7,14 +7,14 @@ function getInternalError(err) {
 
 function defaultHandler(resp, errors) {
     console.log("response: ", resp);
-    console.log("errors: ", errors);
+    console.warn("errors: ", errors);
 }
 
 function makeHandler(url) {
     return function(data, fn) {
-        url = util.interpolate(url, data);
+        var url_ = util.interpolate(url, data);
         fn = fn || defaultHandler;
-        api.req.post(url, data, fn);
+        api.req.post(url_, data, fn);
     }
 }
 

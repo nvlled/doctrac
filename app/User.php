@@ -27,7 +27,10 @@ class User extends Model
         return optional($this->privilege)->name;
     }
     public function getOfficeNameAttribute() {
-        return optional($this->office)->name;
+        $office = $this->office;
+        if (!$office)
+            return "";
+        return $office->campus . " " . $office->name;
     }
 
     public function validate() {
