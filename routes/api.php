@@ -74,6 +74,61 @@ Route::any('/docs/next-routes/{trackingId}/', function (Request $req, $trackingI
     return $doc->nextRoutes();
 });
 
+Route::any('/docs/abort-send/{trackingId}', function (Request $req, $trackingId) {
+    $doc = App\Document::where("trackingId", $trackingId)->first();
+    if (!$doc)
+        return ["errors"=>["doc"=>"invalid tracking id"]];
+    $user = App\User::find($req->userId);
+    if (!$user)
+        return ["errors"=>["user"=>"invalid user"]];
+
+    if (!$user->office)
+        return ["errors"=>["user"=>"user has no valid office"]];
+
+    if (!$user->office->canAbortSend($doc)) {
+        return ["errors"=>["doc"=>"cannot abort send"]];
+    }
+
+    $errors = [];
+    foreach ($doc->currentRoutes() as $route) {
+        $office = $user->office;
+        if ($office->id != $route->officeId)
+            continue;
+        $route->senderId = null;
+        $route->save();
+    }
+});
+
+Route::any('/docs/receive/{trackingId}', function (Request $req, $trackingId) {
+    $doc = App\Document::where("trackingId", $trackingId)->first();
+    if (!$doc)
+        return ["errors"=>["doc"=>"invalid tracking id"]];
+    $user = App\User::find($req->userId);
+    if (!$user)
+        return ["errors"=>["user"=>"invalid user"]];
+
+    if (!$user->office)
+        return ["errors"=>["user"=>"user has no valid office"]];
+
+    if (!$user->office->canReceiveDoc($doc)) {
+        return ["errors"=>["doc"=>"cannot receive document"]];
+    }
+
+    // TODO: handle parallel routes 
+    $errors = [];
+    foreach ($doc->nextRoutes() as $route) {
+        $office = $user->office;
+        if ($office->id != $route->officeId)
+            continue;
+        $prevRoute = $route->prevRoute;
+        if (!$prevRoute)
+            continue;
+        $route->receiverId = $user->id;
+        $route->arrivalTime = now();
+        $route->save();
+    }
+});
+
 Route::any('/docs/forward/{trackingId}', function (Request $req, $trackingId) {
     $doc = App\Document::where("trackingId", $trackingId)->first();
     if (!$doc)

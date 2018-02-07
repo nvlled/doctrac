@@ -52,6 +52,12 @@ class Office extends Model
 
     // TODO:
     public function canAbortSend($doc) {
+        foreach ($doc->currentRoutes() as $route) {
+            $nextRoute = $route->nextRoute;
+            if ($route->officeId == $this->id &&
+                $nextRoute && $nextRoute->receiverId == null)
+                return true;
+        }
         return false;
     }
 

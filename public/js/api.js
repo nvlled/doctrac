@@ -42,6 +42,8 @@ var api = {
         currentRoutes: makeHandler("/api/docs/current-routes/{trackingId}"),
         nextRoutes:    makeHandler("/api/docs/next-routes/{trackingId}"),
         forward:       makeHandler("/api/docs/forward/{trackingId}"),
+        receive:       makeHandler("/api/docs/receive/{trackingId}"),
+        abortSend:     makeHandler("/api/docs/abort-send/{trackingId}"),
     },
 
     route: {
