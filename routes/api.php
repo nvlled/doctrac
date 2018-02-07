@@ -252,37 +252,15 @@ Route::any('/docs/send', function (Request $req) {
         $officeId = $user->officeId;
     }
 
-
-    // TODO: undo DB changes on error
-
-    $pathId = generateId();
-    $route = new App\DocumentRoute();
-    $route->trackingId  = $doc->trackingId;
-    $route->officeId    = $officeId;
-    $route->receiverId  = $user->id;
-    $route->senderId    = $user->id;
-    $route->pathId      = $pathId;
-    $route->arrivalTime = now();
-    $route->save();
-
-    foreach ($ids as $officeId) {
-        $nextRoute = new App\DocumentRoute();
-        $nextRoute->trackingId = $doc->trackingId;
-        // TODO: check if office id is valid
-        $nextRoute->officeId = $officeId;
-        $nextRoute->pathId = $pathId;
-        $nextRoute->save(); // save first to get an ID
-
-        $route->nextId     = $nextRoute->id;
-        $nextRoute->prevId = $route->id;
-
-        $route->save();
-        $nextRoute->save();
-
-        $route = $nextRoute;
+    if ($doc->type == "serial") {
+        DB::transaction(function() use ($doc) {
+            $doc->createSerialRoutes($officeId, $user->id);
+        });
+    } else {
+        DB::transaction(function() use ($doc) {
+            $doc->createParallelRoutes($officeId, $user->id);
+        });
     }
-    $route->final = true;
-    $route->save();
 
     return $doc;
 });

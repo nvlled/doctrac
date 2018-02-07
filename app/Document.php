@@ -101,5 +101,74 @@ class Document extends Model
             'userId' => 'required|exists:users,id',
         ]);
     }
+
+    public function createParallelRoutes($officeId, $userId) {
+        foreach ($ids as $officeId) {
+            if ($officeId == $route->officeId) {
+                throw new Exception("routes cannot point to self");
+            }
+
+            $pathId = generateId();
+            $route = new App\DocumentRoute();
+            $route->trackingId  = $doc->trackingId;
+            $route->officeId    = $officeId;
+            $route->receiverId  = $user->id;
+            $route->senderId    = $user->id;
+            $route->pathId      = $pathId;
+            $route->arrivalTime = now();
+            $route->save();
+
+            $nextRoute = new App\DocumentRoute();
+            $nextRoute->trackingId = $doc->trackingId;
+            // TODO: check if office id is valid
+            // TODO: route and nextRoute must not be the same
+            $nextRoute->officeId = $officeId;
+            $nextRoute->pathId = $pathId;
+            $nextRoute->final = true;
+            $nextRoute->save(); // save first to get an ID
+
+            $route->nextId     = $nextRoute->id;
+            $nextRoute->prevId = $route->id;
+
+            $route->save();
+            $nextRoute->save();
+        }
+    }
+
+    public function createSerialRoutes($officeId, $userId) {
+        $pathId = generateId();
+        $route = new App\DocumentRoute();
+        $route->trackingId  = $this->trackingId;
+        $route->officeId    = $officeId;
+        $route->receiverId  = $user->id;
+        $route->senderId    = $user->id;
+        $route->pathId      = $pathId;
+        $route->arrivalTime = now();
+        $route->save();
+
+        foreach ($ids as $officeId) {
+            if ($officeId == $route->officeId) {
+                throw new Exception("routes cannot point to self");
+            }
+
+            $nextRoute = new App\DocumentRoute();
+            $nextRoute->trackingId = $this->trackingId;
+            // TODO: check if office id is valid
+            $nextRoute->officeId = $officeId;
+            $nextRoute->pathId = $pathId;
+            $nextRoute->save(); // save first to get an ID
+
+            $route->nextId     = $nextRoute->id;
+            $nextRoute->prevId = $route->id;
+
+            $route->save();
+            $nextRoute->save();
+
+            $route = $nextRoute;
+        }
+        $route->final = true;
+        $route->save();
+
+    }
 }
 
