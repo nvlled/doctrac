@@ -94,12 +94,13 @@ Route::any('/docs/send', function (Request $req) {
 
     // TODO: undo DB changes on error
 
+    $pathId = generateId();
     $route = new App\DocumentRoute();
     $route->trackingId  = $doc->trackingId;
     $route->officeId    = $officeId;
     $route->receiverId  = $user->id;
     $route->senderId    = $user->id;
-    $route->pathId      = generateId();
+    $route->pathId      = $pathId;
     $route->arrivalTime = now();
     $route->save();
 
@@ -108,7 +109,7 @@ Route::any('/docs/send', function (Request $req) {
         $nextRoute->trackingId = $doc->trackingId;
         // TODO: check if office id is valid
         $nextRoute->officeId = $officeId;
-        $nextRoute->pathId = generateId();
+        $nextRoute->pathId = $pathId;
         $nextRoute->save(); // save first to get an ID
 
         $route->nextId     = $nextRoute->id;
@@ -272,4 +273,5 @@ Route::post('/offices/add', function (Request $req) {
 Route::get('/offices/list', function (Request $req) {
     return App\Office::all();
 });
+
 // -----------------------
