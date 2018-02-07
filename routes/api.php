@@ -89,9 +89,8 @@ Route::any('/docs/forward/{trackingId}', function (Request $req, $trackingId) {
         return ["errors"=>["doc"=>""]];
     }
 
-
     $errors = [];
-    foreach ($doc->currentRoutes as $route) {
+    foreach ($doc->currentRoutes() as $route) {
         $office = $user->office;
         if ($office->id != $route->officeId)
             continue;
@@ -103,7 +102,7 @@ Route::any('/docs/forward/{trackingId}', function (Request $req, $trackingId) {
             continue;
         }
 
-        $destOfficeId = $req->destOfficeId;
+        $destOfficeId = $req->officeId;
         $nextRoute = $route->nextRoute;
         if (!$destOfficeId && !$nextRoute) {
             $errors[] =
@@ -116,17 +115,18 @@ Route::any('/docs/forward/{trackingId}', function (Request $req, $trackingId) {
             continue;
         }
 
+        $route->senderId = $user->id;
         $annotations = $req->annotations;
         if ($destOfficeId == $nextRoute->officeId) {
-            $route->senderId = $user->id;
             $nextRoute->annotations = $annotations;
             $route->save();
             $nextRoute->save();
         } else {
             $shortcut = $route->findNextRoute($destOfficeId);
             if ($shortcut) {
+                // TODO: delete skipped routes
+                
                 // take a shortcut route
-                $route->senderId = $user->id;
                 $route->nextId = $shortcut->id;
                 $shortcut->prevId = $route->id;
                 $shortcut->annotations = $annotations;

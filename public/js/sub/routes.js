@@ -26,7 +26,7 @@ window.addEventListener("load", function() {
 
     $btnAction.click(function(e) {
         e.preventDefault();
-        // TODO:
+        forwardDocument();
     });
 
     var url = "/api/routes/list/{trackingId}";
@@ -73,6 +73,17 @@ window.addEventListener("load", function() {
             table.url = util.interpolate(url, params);
             table.fetchData();
         });
+    }
+
+    function forwardDocument() {
+        var user = api.user.self();
+        var params = {
+            userId: user ? user.id : null,
+            officeId: parseInt($selOffices.val()),
+            annotations: $annots.val(),
+            trackingId: $input.val(),
+        }
+        api.doc.forward(params);
     }
 
     function updateOfficeSelection(doc) {
