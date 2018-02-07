@@ -9,4 +9,14 @@ var util = {
             return data[k] || args[0];
         });
     },
+
+    storeGet: function(k) {
+        try {
+        return JSON.parse(localStorage[k]);
+        } catch (e) { }
+        return null;
+    },
+    storeSet: function(k, v) {
+        localStorage[k] = JSON.stringify(v);
+    },
 }

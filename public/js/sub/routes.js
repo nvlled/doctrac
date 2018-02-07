@@ -9,6 +9,7 @@ window.addEventListener("load", function() {
     var $sendData = $container.find(".send-data");
     var $selOffices = $container.find("select.offices");
     var $annots = $container.find(".annots");
+    var $inputUserId = $("#session input.userId");
 
     var table = UI.createTable($table, {
         cols: ["id", "office_name", "status"],
@@ -21,6 +22,8 @@ window.addEventListener("load", function() {
     $sendData.hide();
     $btnAction.hide();
 
+    loadSavedInput();
+
     $btnAction.click(function(e) {
         e.preventDefault();
         // TODO:
@@ -30,18 +33,23 @@ window.addEventListener("load", function() {
     $input.change(loadDocument);
     $input.keypress(function(e) {
         if (e.key == "Enter" || e.keyCode == 13) {
+            util.storeSet("trackingId", this.value);
             loadDocument();
         }
     });
-    $("#session input.userId").change(function() {
+    $inputUserId.change(function() {
         // TODO: this is just a workaround
         // on sort-of race condition
         setTimeout(loadDocument, 300);
+        util.storeSet("userId", this.value);
     });
+
+    loadDocument();
 
     var currentDocument;
     function loadDocument() {
         var id = $input.val();
+
         var params = {trackingId: id};
         api.doc.get(params, function(doc) {
             UI.clearErrors($container);
@@ -90,6 +98,15 @@ window.addEventListener("load", function() {
                 selectOffices(officeIds);
             }
         });
+    }
+
+    function loadSavedInput() {
+        var userId = util.storeGet("userId")
+        if (userId) {
+            $inputUserId.val(userId);
+            $inputUserId.change();
+        }
+        $input.val(util.storeGet("trackingId"));
     }
 
     function selectOffices(officeIds) {
