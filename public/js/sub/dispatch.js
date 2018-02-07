@@ -6,8 +6,15 @@ var dispatch = {
         var $message = $container.find(".message");
         var $btnRand = $container.find("button.rand");
         var $input = $container.find(".trackingId");
-        var $userInfo =$container.find(".userInfo");
+        var $userId = $container.find(".userId");
+        var $userInfo = $container.find(".userInfo");
 
+        $userId.change(function() {
+            setTimeout(function() {
+                var user = $userInfo.data("user");
+                disableOffice(user.officeId);
+            }, 100);
+        });
         $btnRand.click(function(e) {
             e.preventDefault();
             //var user = api.user.self();
@@ -23,6 +30,28 @@ var dispatch = {
         fetchOffices();
         setupAddButton();
         setupSendButton();
+
+        function disableOffice(id) {
+            var officeId = -1;
+            $selOffices.find("option").each(function(_, opt) {
+                opt.disabled = false;
+                var offId = parseInt(opt.value);
+                if (offId == id) {
+                    opt.disabled = true;
+                    officeId = offId;
+                }
+            });
+            var sel = $selOffices[0];
+            if (isSelected(sel, officeId))
+                sel.selectedIndex++;
+            if (sel.selectedIndex < 0)
+                sel.selectedIndex = 0;
+        }
+        function isSelected(sel, value) {
+            var i = sel.selectedIndex;
+            var opt = sel.children[i];
+            return opt.value+"" == value+"";
+        }
 
         function setupSendButton() {
             var $btn = $container.find("button.send");
