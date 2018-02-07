@@ -26,6 +26,12 @@ class Document extends Model
         return $ids;
     }
 
+    public function startingRoutes() {
+        return DocumentRoute
+            ::where("trackingId", $this->trackingId)
+            ->whereNull("prevId")
+            ->get();
+    }
     public function finalRoutes() {
         return DocumentRoute::whereIn("id", $this->finalRouteIds())->get();
     }

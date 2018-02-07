@@ -62,4 +62,15 @@ class DocumentRoute extends Model
         return "*";
     }
 
+    public function followRoutesInPath() {
+        $route = $this;
+        $sortedRoutes = collect();
+
+        while($route) {
+            $sortedRoutes->push($route);
+            $route = $route->nextRoute;
+        }
+
+        return $sortedRoutes;
+    }
 }

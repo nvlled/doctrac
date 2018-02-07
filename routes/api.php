@@ -20,9 +20,17 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // ---------------------------
 
 Route::any('/routes/list/{trackingId}', function (Request $req, $trackingId) {
-    return response()->json(
-     App\DocumentRoute::where("trackingId", $trackingId)->get()
-    )->header("Content-Type", "application/json");
+    $doc = App\Document::where("trackingId", $trackingId)->first();
+    if (!$doc)
+        return collect();
+
+    $routes = collect();
+    foreach ($doc->startingRoutes() as $startRoute) {
+        $path = $startRoute->followRoutesInPath();
+        foreach ($path as $route)
+            $routes->push($route);
+    }
+    return $routes;
 });
 
 // ---------------------------
