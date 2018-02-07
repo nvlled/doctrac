@@ -46,7 +46,11 @@ Route::any('/docs/next-route/{trackingId}/path/{pathId}',
     $doc = App\Document::where("trackingId", $trackingId)->first();
     if (!$doc)
         return null;
-    $routes = collect();
+    foreach ($doc->nextRoutes() as $route) {
+        if ($pathId == $route->pathId)
+            return $route;
+    }
+    return null;
 });
 
 Route::any('/docs/current-routes/{trackingId}/', function (Request $req, $trackingId) {
