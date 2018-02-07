@@ -27,11 +27,17 @@ window.addEventListener("load", function() {
     $btnAction.click(function(e) {
         e.preventDefault();
         var action = $btnAction.data("action");
+        var req;
         switch (action) {
-            case "send" : forwardDocument(); break;
-            case "recv" : receiveDocument(); break;
-            case "abort" : abortSendDocument(); break;
+            case "send"  : req = forwardDocument(); break;
+            case "recv"  : req = receiveDocument(); break;
+            case "abort" : req = abortSendDocument(); break;
+            default:
+                return;
         }
+        req.then(function() {
+            loadDocument();
+        });
     });
 
     var url = "/api/routes/list/{trackingId}";
@@ -88,7 +94,7 @@ window.addEventListener("load", function() {
             annotations: $annots.val(),
             trackingId: $input.val(),
         }
-        api.doc.forward(params);
+        return api.doc.forward(params);
     }
 
     function receiveDocument() {
@@ -98,7 +104,7 @@ window.addEventListener("load", function() {
             officeId: parseInt($selOffices.val()),
             trackingId: $input.val(),
         }
-        api.doc.receive(params);
+        return api.doc.receive(params);
     }
 
     function abortSendDocument() {
@@ -108,7 +114,7 @@ window.addEventListener("load", function() {
             officeId: parseInt($selOffices.val()),
             trackingId: $input.val(),
         }
-        api.doc.abortSend(params);
+        return api.doc.abortSend(params);
     }
 
     function updateOfficeSelection(doc) {
