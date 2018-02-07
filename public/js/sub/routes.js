@@ -8,7 +8,7 @@ window.addEventListener("load", function() {
     var $docDetails = $container.find(".details");
     var $sendData = $container.find(".send-data");
     var $selOffices = $container.find("select.offices");
-    var $notes = $container.find(".notes");
+    var $annots = $container.find(".annots");
 
     var table = UI.createTable($table, {
         cols: ["id", "office_name", "status"],
@@ -67,17 +67,43 @@ window.addEventListener("load", function() {
     }
 
     function updateOfficeSelection(doc) {
-        api.doc.currentRoutes({
+        var param = {
             trackingId: doc.trackingId,
-        }, function(routes) {
-            if (!routes || !routes.map) {
-                return;
+        }
+        var p1 = api.doc.currentRoutes(param);
+        var p2 = api.doc.nextRoutes(param);
+        Promise.all([p1, p2]).then(function(values) {
+            var routes = values[0];
+            var nextRoutes = values[1];
+            if (routes && routes.map) {
+                var officeIds = routes.map(function(r) {
+                    return r.officeId;
+                });
+                console.log("disable", officeIds);
+                disableOffices(officeIds);
             }
-            var officeIds = routes.map(function(r) {
-                return r.officeId;
-            });
-            disableOffices(officeIds);
+            if (nextRoutes && nextRoutes.map) {
+                var officeIds = nextRoutes.map(function(r) {
+                    return r.officeId;
+                });
+                selectOffices(officeIds);
+            }
         });
+    }
+
+    function selectOffices(officeIds) {
+        var index = -1;
+        var value = -1;
+        $selOffices.find("option").each(function(i, opt) {
+            var offId = parseInt(opt.value);
+            if (officeIds.indexOf(offId) >= 0) {
+                opt.selected = true;
+                index = i;
+                value = offId;
+            }
+        });
+        if (value >= 0)
+            $selOffices.val(value);
     }
     function disableOffices(officeIds) {
         $selOffices.find("option").each(function(_, opt) {

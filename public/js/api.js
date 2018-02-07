@@ -14,7 +14,7 @@ function makeHandler(url) {
     return function(data, fn) {
         var url_ = util.interpolate(url, data);
         fn = fn || defaultHandler;
-        api.req.post(url_, data, fn);
+        return api.req.post(url_, data, fn);
     }
 }
 

@@ -35,7 +35,7 @@
     <br>
     <div class="center">
         <div class="send-data">
-            <textarea name="annotation" rows="5" class="full notes"
+            <textarea name="annotation" rows="5" class="full annots"
             placeholder="comments, notes or annotation" ></textarea>
             <br>
             Destination: <select class="offices"></select>
