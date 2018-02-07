@@ -55,7 +55,101 @@ Route::any('/docs/current-routes/{trackingId}/', function (Request $req, $tracki
         return collect();
     return $doc->currentRoutes();
 });
+Route::any('/docs/next-routes/{trackingId}/', function (Request $req, $trackingId) {
+    $doc = App\Document::where("trackingId", $trackingId)->first();
+    if (!$doc)
+        return collect();
+    return $doc->nextRoutes();
+});
 
+Route::any('/docs/forward/{trackingId}', function (Request $req, $trackingId) {
+    $doc = App\Document::where("trackingId", $trackingId)->first();
+    if (!$doc)
+        return ["errors"=>["doc"=>"invalid tracking id"]];
+    $user = App\User::find($req->userId);
+    if (!$user)
+        return ["errors"=>["user"=>"invalid user"]];
+
+    if (!$user->office)
+        return ["errors"=>["user"=>"user has no valid office"]];
+
+    if (!$user->office->canSendDoc($doc)) {
+        return ["errors"=>["doc"=>""]];
+    }
+
+
+    $errors = [];
+    foreach ($doc->currentRoutes as $route) {
+        $office = $user->office;
+        if ($office->id != $route->officeId)
+            continue;
+
+        if ($route->final) {
+            $errors[] =
+                "cannot forward document on path={$route->$pathId},
+                 route={$route->id}, destination is final";
+            continue;
+        }
+
+        $destOfficeId = $req->destOfficeId;
+        $nextRoute = $route->nextRoute;
+        if (!$destOfficeId && !$nextRoute) {
+            $errors[] =
+                "no next destination specified";
+            continue;
+        }
+        if (!$destOfficeId == $route->officeId) {
+            $errors[] =
+                "cannot forward documents to the same place";
+            continue;
+        }
+
+        $annotations = $req->annotations;
+        if ($destOfficeId == $nextRoute->officeId) {
+            $route->senderId = $user->id;
+            $nextRoute->annotations = $annotations;
+            $route->save();
+            $nextRoute->save();
+        } else {
+            $shortcut = $route->findNextRoute($destOfficeId);
+            if ($shortcut) {
+                // take a shortcut route
+                $route->senderId = $user->id;
+                $route->nextId = $shortcut->id;
+                $shortcut->prevId = $route->id;
+                $shortcut->annotations = $annotations;
+                $route->save();
+                $shortcut->save();
+            } else {
+                // insert a detour route
+                $detour = new App\DocumentRoute();
+                $detour->trackingId = $doc->trackingId;
+                $detour->officeId = $destOfficeId;
+                $detour->pathId = $route->pathId;
+                $detour->annotations = $annotations;
+                $detour->save(); // save first to get an ID
+
+                $route->nextId = $detour->id;
+                $detour->prevId = $route->id;
+                if ($nextRoute) {
+                    $detour->nextId = $nextRoute->id;
+                    $nextRoute->prevId = $detour->id;
+                }
+
+                $route->save();
+                $detour->save();
+                if ($nextRoute)
+                    $nextRoute->save();
+            }
+        }
+    }
+    if ($errors) {
+        return ["errors"=>["forward"=>$errors]];
+    }
+
+});
+
+// TODO: rename to create
 Route::any('/docs/send', function (Request $req) {
     $user = App\User::find($req->userId);
     if (!$user) {

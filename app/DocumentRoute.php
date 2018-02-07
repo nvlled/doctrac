@@ -28,6 +28,17 @@ class DocumentRoute extends Model
         return $office->name . " " . $office->campus;
     }
 
+    public function findNextRoute($officeId) {
+        $route = $this->nextRoute;
+        while ($route) {
+            if ($route->officeId == $officeId)
+                return $route;
+            // TODO: make sure no cycles are made
+            $route = $route->nextRoute;
+        }
+        return null;
+    }
+
     public function getStatusAttribute() {
         if ($this->arrivalTime) {
             $nextRoute = $this->nextRoute;

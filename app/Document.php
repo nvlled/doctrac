@@ -9,6 +9,7 @@ class Document extends Model
 {
     public function create($user, $data) {
     }
+
     public function finalRouteIds() {
         $sql = "
             select pathId, max(id) as id

@@ -40,6 +40,8 @@ var api = {
         get: makeHandler("/api/docs/get/{trackingId}"),
         randomId: makeHandler("/api/docs/rand-id"),
         currentRoutes: makeHandler("/api/docs/current-routes/{trackingId}"),
+        nextRoutes:    makeHandler("/api/docs/next-routes/{trackingId}"),
+        forward:       makeHandler("/api/docs/forward/{trackingId}"),
     },
 
     route: {
