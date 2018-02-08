@@ -18,5 +18,3 @@ Route::get('/', function () {
 Route::get('/proto', function () {
     return view('proto');
 });
-
-

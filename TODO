@@ -1,4 +1,11 @@
 
-* document forwarding (e.g. send/recv/abort)
+* User view
+- Incoming documents
+- Currently-held documents
+- Received documents
+
+
 * edit/update of models
 * single current user for session
+* handle deletion (or prevent)
+

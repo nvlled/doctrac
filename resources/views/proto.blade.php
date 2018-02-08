@@ -4,7 +4,9 @@
 
 <section id="session">
     <h2>Current User</h2>
-    <input name="userId" class="userId" placeholder="user ID">
+    <input name="userId" class="userId autocomplete" placeholder="user ID"
+        data-format="{lastname}, {firstname} | {office_name}"
+        data-url="/api/users/search">
     <br>
     <span class="userInfo"></span>
     <script>
@@ -13,7 +15,11 @@
 </section>
 
 <section id="doc-history">
-    <input name="trackingId" class="half trackingId" placeholder="tracking ID">
+    <input name="trackingId" class="half trackingId autocomplete"
+        placeholder="tracking ID"
+        data-format="{title}"
+        data-key="trackingId"
+        data-url="/api/docs/search">
     <h3 class="title">
         <span class='contents'></span>
         (<small class='type'>*</small>)
@@ -48,11 +54,8 @@
 <section id="dispatch">
     <h1>Dispatch Document</h1>
     <form>
-    <input name="userId" class="userId" placeholder="userId">
-    <span class="userInfo"></span>
-    <script>
-    UI.queryUser("#dispatch input.userId", "#dispatch .userInfo")
-    </script>
+    <p class='user-name'></p>
+    <p class='user-office'></p>
     <hr>
     <button class="rand">random ID</button>
     <input name="trackingId" class="half trackingId" placeholder="tracking ID">

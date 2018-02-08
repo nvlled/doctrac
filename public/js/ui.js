@@ -91,17 +91,25 @@ var UI = {
     queryUser: function(inputSel, outputSel) {
         var $input = $(inputSel);
         var $output = $(outputSel);
-        console.log($input, $output);
+        api.user.self()
+           .then(function(user) {
+               if (!user)
+                   return;
+               api.user.setSelf({userId: user.id});
+               var name = user.firstname + " " + user.lastname;
+               $input.val(user.id);
+               $output.text(name + " | " + user.office_name);
+           });
         $input.change(function() {
             $output.text("");
             api.user.get($input.val(), function(user) {
-                $output.data("user", user);
-                if (!user) {
+                api.user.emit(user);
+                if (!user || user.errors) {
+                    api.user.clearSelf();
                     $output.text("(no match)");
                     return;
                 }
-                if (user.errors)
-                    return;
+                api.user.setSelf({userId: user.id});
                 var name = user.firstname + " " + user.lastname;
                 $output.text(name + " | " + user.office_name);
             });

@@ -35,6 +35,14 @@ Route::any('/routes/list/{trackingId}', function (Request $req, $trackingId) {
 
 // ---------------------------
 
+Route::any('/docs/search', function (Request $req) {
+    $q = "%{$req->q}%";
+    return App\Document::where("trackingId", "like", $q)
+        ->orWhere("title", "like", $q)
+        ->limit(10)
+        ->get();
+});
+
 Route::any('/docs/rand-id', function (Request $req) {
     $randId = strtolower(str_random(5));
     $id = $req->officeId;
@@ -67,6 +75,7 @@ Route::any('/docs/current-routes/{trackingId}/', function (Request $req, $tracki
         return collect();
     return $doc->currentRoutes();
 });
+
 Route::any('/docs/next-routes/{trackingId}/', function (Request $req, $trackingId) {
     $doc = App\Document::where("trackingId", $trackingId)->first();
     if (!$doc)
@@ -265,15 +274,29 @@ Route::any('/docs/send', function (Request $req) {
 });
 
 // ---------------------------
-// TODO: session is not persiting data
-Route::any('/users/self', function (Request $req) {
-    return ["x" => session()->get("self")];
+Route::any('/users/search', function (Request $req) {
+    $q = "%{$req->q}%";
+    return App\User::where("firstname", "like", $q)
+        ->orWhere("lastname", "like", $q)
+        ->orWhere("lastname", "like", $q)
+        ->limit(10)
+        ->get();
 });
 
+Route::any('/users/self', function (Request $req) {
+    return Auth::user();
+});
+
+Route::any('/users/self/clear', function (Request $req) {
+    $user = Auth::user();
+    if ($user)
+        Auth::logout($user);
+});
 Route::any('/users/self/{userId}', function (Request $req, $userId) {
-    $user = App\User::findOrFail($userId);
-    session()->put("self", 1234);
-    return session()->get("self");
+    $user = App\User::find($userId);
+    if ($user)
+        Auth::login($user);
+    return $user;
 });
 
 Route::post('/users/del/{id}', function (Request $req, $id) {
@@ -414,3 +437,4 @@ Route::get('/offices/list', function (Request $req) {
 });
 
 // -----------------------
+

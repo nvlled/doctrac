@@ -51,11 +51,18 @@ var api = {
     },
 
     user: {
-        // TODO: this is just a workaround
-        // until I get the session working
-        self: function() {
-            return $("#session .userInfo").data("user");
+        emit: function(data) {
+            events.trigger("user-change", data);
         },
+        change: function(handler) {
+            events.on("user-change", function(_, arg) {
+                handler(arg);
+            });
+        },
+
+        self: makeHandler("/api/users/self"),
+        setSelf: makeHandler("/api/users/self/{userId}"),
+        clearSelf: makeHandler("/api/users/self/clear"),
 
         get: function(id, fn) {
             fn = fn || defaultHandler;

@@ -9,7 +9,7 @@ window.addEventListener("load", function() {
     var $sendData = $container.find(".send-data");
     var $selOffices = $container.find("select.offices");
     var $annots = $container.find(".annots");
-    var $inputUserId = $("#session input.userId");
+    var currentUser = null;
 
     var table = UI.createTable($table, {
         cols: ["id", "office_name", "status"],
@@ -23,6 +23,10 @@ window.addEventListener("load", function() {
     $btnAction.hide();
 
     loadSavedInput();
+    api.user.self()
+       .then(function(user) {
+           currentUser = user;
+       });
 
     $btnAction.click(function(e) {
         e.preventDefault();
@@ -42,17 +46,9 @@ window.addEventListener("load", function() {
 
     var url = "/api/routes/list/{trackingId}";
     $input.change(loadDocument);
-    $input.keypress(function(e) {
-        if (e.key == "Enter" || e.keyCode == 13) {
-            util.storeSet("trackingId", this.value);
-            loadDocument();
-        }
-    });
-    $inputUserId.change(function() {
-        // TODO: this is just a workaround
-        // on sort-of race condition
-        setTimeout(loadDocument, 300);
-        util.storeSet("userId", this.value);
+    api.user.change(function(user) {
+        currentUser = user;
+        loadDocument();
     });
 
     loadDocument();
@@ -87,7 +83,7 @@ window.addEventListener("load", function() {
     }
 
     function forwardDocument() {
-        var user = api.user.self();
+        var user = currentUser;
         var params = {
             userId: user ? user.id : null,
             officeId: parseInt($selOffices.val()),
@@ -98,7 +94,7 @@ window.addEventListener("load", function() {
     }
 
     function receiveDocument() {
-        var user = api.user.self();
+        var user = currentUser;
         var params = {
             userId: user ? user.id : null,
             officeId: parseInt($selOffices.val()),
@@ -108,7 +104,7 @@ window.addEventListener("load", function() {
     }
 
     function abortSendDocument() {
-        var user = api.user.self();
+        var user = currentUser;
         var params = {
             userId: user ? user.id : null,
             officeId: parseInt($selOffices.val()),
@@ -142,12 +138,9 @@ window.addEventListener("load", function() {
         });
     }
 
+    // TODO:  <input class='local-save'>
     function loadSavedInput() {
         var userId = util.storeGet("userId")
-        if (userId) {
-            $inputUserId.val(userId);
-            $inputUserId.change();
-        }
         $input.val(util.storeGet("trackingId"));
     }
 
@@ -202,18 +195,18 @@ window.addEventListener("load", function() {
     function updateAction(doc) {
         if (!currentDocument)
             return;
-        var user = api.user.self();
-        if (!user) {
+
+        if (!currentUser) {
             $btnAction.hide();
             return;
         }
         var params = {
-            officeId: user.officeId,
+            officeId: currentUser.officeId,
             trackingId: doc.trackingId,
         }
         api.office.actionFor(params, function(resp) {
             $btnAction.show();
-            console.log("user", user);
+            console.log("currentUser", currentUser);
             console.log("doc", doc);
             console.log("action", resp);
             $btnAction.data("action", resp);

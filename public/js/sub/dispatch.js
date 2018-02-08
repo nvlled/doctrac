@@ -5,20 +5,20 @@ var dispatch = {
         var $table = $container.find("table.route");
         var $message = $container.find(".message");
         var $btnRand = $container.find("button.rand");
+        var $btnSend = $container.find("button.send");
         var $input = $container.find(".trackingId");
-        var $userId = $container.find(".userId");
-        var $userInfo = $container.find(".userInfo");
+        var $userName = $container.find(".user-name");
+        var $userOffice = $container.find(".user-office");
 
-        $userId.change(function() {
-            setTimeout(function() {
-                var user = $userInfo.data("user");
-                disableOffice(user.officeId);
-            }, 100);
-        });
+        var currentUser = null;
+        api.user.change(setCurrentUser);
+        api.user.self()
+            .then(setCurrentUser);
+
         $btnRand.click(function(e) {
             e.preventDefault();
             //var user = api.user.self();
-            var user = $userInfo.data("user");
+            var user = currentUser;
             var officeId = user ? user.officeId : "";
             api.doc.randomId({
                 officeId: officeId,
@@ -30,6 +30,20 @@ var dispatch = {
         fetchOffices();
         setupAddButton();
         setupSendButton();
+
+        function setCurrentUser(user) {
+            currentUser = user;
+            if (user) {
+                $userName.text(user.firstname + " " + user.lastname);
+                $userOffice.text(user.office_name);
+                disableOffice(user.officeId);
+                $btnSend.attr("disabled", false);
+            } else {
+                $userName.text(user.firstname + " " + user.lastname);
+                $userOffice.text(user.office_name);
+                $btnSend.attr("disabled", true);
+            }
+        }
 
         function disableOffice(id) {
             var officeId = -1;
@@ -54,8 +68,7 @@ var dispatch = {
         }
 
         function setupSendButton() {
-            var $btn = $container.find("button.send");
-            $btn.click(function() {
+            $btnSend.click(function() {
                 $message.text("");
                 UI.clearErrors($container);
                 var officeIds = [];
@@ -64,16 +77,16 @@ var dispatch = {
                     officeIds.push(id);
                 });
                 var doc = {
-                    userId: $container.find(".userId").val(),
+                    userId: currentUser ? currentUser.id : null,
                     title: $container.find(".title").val(),
                     trackingId: $container.find(".trackingId").val(),
                     details: $container.find(".details").val(),
                     officeIds: officeIds,
                     type: getDispatchType(),
                 }
-                $btn.text("sending...");
+                $btnSend.text("sending...");
                 api.doc.send(doc, function(resp) {
-                    $btn.text("Send");
+                    $btnSend.text("Send");
                     if (resp.errors)
                         UI.showErrors($container, resp.errors);
                     else {
