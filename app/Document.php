@@ -102,14 +102,14 @@ class Document extends Model
         ]);
     }
 
-    public function createParallelRoutes($officeId, $userId) {
-        foreach ($ids as $officeId) {
+    public function createParallelRoutes($officeIds, $officeId, $user) {
+        foreach ($officeIds as $officeId) {
             if ($officeId == $route->officeId) {
                 throw new Exception("routes cannot point to self");
             }
 
             $pathId = generateId();
-            $route = new App\DocumentRoute();
+            $route = new \App\DocumentRoute();
             $route->trackingId  = $doc->trackingId;
             $route->officeId    = $officeId;
             $route->receiverId  = $user->id;
@@ -118,7 +118,7 @@ class Document extends Model
             $route->arrivalTime = now();
             $route->save();
 
-            $nextRoute = new App\DocumentRoute();
+            $nextRoute = new \App\DocumentRoute();
             $nextRoute->trackingId = $doc->trackingId;
             // TODO: check if office id is valid
             // TODO: route and nextRoute must not be the same
@@ -135,9 +135,9 @@ class Document extends Model
         }
     }
 
-    public function createSerialRoutes($officeId, $userId) {
+    public function createSerialRoutes($officeIds, $officeId, $user) {
         $pathId = generateId();
-        $route = new App\DocumentRoute();
+        $route = new \App\DocumentRoute();
         $route->trackingId  = $this->trackingId;
         $route->officeId    = $officeId;
         $route->receiverId  = $user->id;
@@ -146,12 +146,12 @@ class Document extends Model
         $route->arrivalTime = now();
         $route->save();
 
-        foreach ($ids as $officeId) {
+        foreach ($officeIds as $officeId) {
             if ($officeId == $route->officeId) {
                 throw new Exception("routes cannot point to self");
             }
 
-            $nextRoute = new App\DocumentRoute();
+            $nextRoute = new \App\DocumentRoute();
             $nextRoute->trackingId = $this->trackingId;
             // TODO: check if office id is valid
             $nextRoute->officeId = $officeId;

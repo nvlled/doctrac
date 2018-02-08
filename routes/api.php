@@ -231,8 +231,9 @@ Route::any('/docs/send', function (Request $req) {
     $doc->trackingId = $req->trackingId;
 
     $v = $doc->validate();
-    if ($v->fails())
+    if ($v->fails()) {
         return ["errors"=>$v->errors()];
+    }
 
     // at least one destination must be given
     $ids = $req->officeIds;
@@ -240,31 +241,28 @@ Route::any('/docs/send', function (Request $req) {
         $msg = "select at least one destination";
         return ["errors"=>["officeIds"=>$msg]];
     }
-
-    $doc->save();
-
     // if there is no source office id given,
     // use the office id of the user
     $officeId = $req->officeId;
     if (!$officeId) {
-        if (!App\Office::find($user->officeId))
+        if (!App\Office::find($user->officeId)) {
             return ["errors"=>["officeId"=>"office id is invalid"]];
+        }
         $officeId = $user->officeId;
     }
 
-    if ($doc->type == "serial") {
-        DB::transaction(function() use ($doc) {
-            $doc->createSerialRoutes($officeId, $user->id);
-        });
-    } else {
-        DB::transaction(function() use ($doc) {
-            $doc->createParallelRoutes($officeId, $user->id);
-        });
-    }
+    DB::transaction(function() use ($doc, $ids, $user, $officeId) {
+        $doc->save();
+
+        if ($doc->type == "serial") {
+            $doc->createSerialRoutes($ids, $officeId, $user);
+        } else {
+            $doc->createParallelRoutes($ids, $officeId, $user);
+        }
+    });
 
     return $doc;
 });
-
 
 // ---------------------------
 // TODO: session is not persiting data
@@ -364,7 +362,9 @@ Route::post('/offices/{officeId}/action-for/{trackingId}',
     function (Request $req, $officeId, $trackingId) {
     $office = App\Office::find($officeId);
     $doc = App\Document::where("trackingId", $trackingId)->first();
-    return $office->actionFor($doc);
+    if ($office)
+        return $office->actionFor($doc);
+    return "";
 });
 
 Route::post('/offices/{officeId}/abort/{trackingId}',
