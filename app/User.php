@@ -4,9 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Model
+class User extends Authenticatable
 {
+    use Notifiable;
+
     protected $appends = ["position_name", "office_name", "privilege_name"];
     protected $hidden = ["position", "office", "privilege", "password"];
 

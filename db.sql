@@ -31,11 +31,17 @@ insert into privileges(id, name, created_at, updated_at) values
 (@officer := 2,  'record officer', NOW(), NOW()),
 (@agent   := 3,  'agent', NOW(), NOW());
 
+set @t = NOW();
+
+-- password == bcrypt('x')
+set @p = "$2y$10$eW9b3pHETP.xhdww1nUare66H39WqlQW6rLS8gGvH7OK3IN6ji66.";
 insert into users
 (
     created_at, 
     updated_at,
     id, 
+    email,
+    password,
     firstname, 
     middlename, 
     lastname, 
@@ -43,16 +49,14 @@ insert into users
     privilegeId,
     officeId
 ) values
-(NOW(), NOW(), 1, "Astaroth", "Cosette", "Aida", @head, @admin, 1),
-(NOW(), NOW(), 
-    @off1:=2, "Rohan", "Othello", "Zuleika", @asst, @officer, 2),
-(NOW(), NOW(), 
-    @off2:=3, "Igerna", "Aramis", "Gandalf", @clrk, @officer, 3),
-(NOW(), NOW(), 4, "Ruslan", "Guenevere", "Mehrab", @clrk, @agent, 3),
-(NOW(), NOW(), 5, "Bedwyr", "Daenerys", "Medraut", @fact, @agent, 2),
-(NOW(), NOW(), 6, "Enobarbus", "Merlin", "Malvina", @asst, @agent, 6),
-(NOW(), NOW(), 7, "Ossian", "Bayard", "Lalage", @head, @agent, 5),
-(NOW(), NOW(), 8, "Morgen", "Cyrano", "Turin", @fact, @agent, 1);
+(@t, @t, 1,        "a@x.y", @p, "Astaroth", "Cosette", "Aida", @head, @admin, 1),
+(@t, @t, @off1:=2, "b@x.y", @p, "Rohan", "Othello", "Zuleika", @asst, @officer, 2),
+(@t, @t, @off2:=3, "c@x.y", @p, "Igerna", "Aramis", "Gandalf", @clrk, @officer, 3),
+(@t, @t, 4,        "d@x.y", @p, "Ruslan", "Guenevere", "Mehrab", @clrk, @agent, 3),
+(@t, @t, 5,        "e@x.y", @p, "Bedwyr", "Daenerys", "Medraut", @fact, @agent, 2),
+(@t, @t, 6,        "f@x.y", @p, "Enobarbus", "Merlin", "Malvina", @asst, @agent, 6),
+(@t, @t, 7,        "g@x.y", @p, "Ossian", "Bayard", "Lalage", @head, @agent, 5),
+(@t, @t, 8,        "h@x.y", @p, "Morgen", "Cyrano", "Turin", @fact, @agent, 1);
 
 insert into documents
 (
