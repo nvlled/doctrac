@@ -304,11 +304,17 @@ Route::any('/docs/send', function (Request $req) {
 // ---------------------------
 Route::any('/users/search', function (Request $req) {
     $q = "%{$req->q}%";
-    return App\User::where("firstname", "like", $q)
-        ->orWhere("lastname", "like", $q)
+    $users = App\User::where("firstname", "like", $q)
         ->orWhere("lastname", "like", $q)
         ->limit(10)
         ->get();
+    if ($q == '%%')
+        return $users;
+    return $users->filter(function($u) use ($req) {
+        if (!$u->office)
+            return false;
+        return str_contains($u->office->name, $req->q);
+    });
 });
 
 Route::any('/users/self', function (Request $req) {

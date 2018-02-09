@@ -165,7 +165,6 @@ window.addEventListener("load", function() {
                 var officeIds = routes.map(function(r) {
                     return r.officeId;
                 });
-                console.log("disable", officeIds);
                 disableOffices(officeIds);
             }
             if (nextRoutes && nextRoutes.map) {

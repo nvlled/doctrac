@@ -93,7 +93,6 @@ Table.prototype = Object.assign(Table.prototype, {
             this.$table.find("tbody").append($tr);
         } else {
             data.forEach(function(row) {
-                console.log("***", row);
                 self.addRow(row);
             });
         }

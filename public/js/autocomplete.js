@@ -16,7 +16,6 @@ var autocomplete = {
 
         $input.keyup(function() {
             var url = $input.data("url");
-            console.log(">", $input.val(), url);
             $.get(url, {q: $input.val()})
              .then(function(data) {
                  if (!data || !data.forEach)
@@ -38,7 +37,6 @@ var autocomplete = {
                          text: text,
                          value: value,
                      });
-                     console.log("data", key, text, value, $option);
                      $datalist.append($option);
                  });
              });

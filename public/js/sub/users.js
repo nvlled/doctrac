@@ -118,7 +118,6 @@ var users = {
         function fetchUsers() {
             api.user.fetch(function(users) {
                 users.forEach(function(user) {
-                    console.log(user);
                     addRow(user);
                 });
             });
