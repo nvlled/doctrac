@@ -5,7 +5,7 @@
 <section id="session">
     <h2>Current User</h2>
     <input id="session-userid" name="userId"
-        class="userId autocomplete local-save half"
+        class="userId autocomplete half"
         placeholder="search for user or office name"
         data-format="{lastname}, {firstname} | {office_name}"
         data-url="/api/users/search">

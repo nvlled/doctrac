@@ -113,7 +113,6 @@ var UI = {
            .then(function(user) {
                if (!user)
                    return;
-               api.user.setSelf({userId: user.id});
                var name = user.firstname + " " + user.lastname;
                $input.val(user.id);
                $output.text(name + " | " + user.office_name);
