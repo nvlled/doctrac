@@ -26,6 +26,7 @@
     </h3>
     <pre class='details'></pre>
     <p>Routes</p>
+    <h4 class='origin hidden'>Document origin: <span class='contents'></span></h4>
     <table>
         <thead>
         <tr>

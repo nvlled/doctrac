@@ -19,7 +19,35 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 // ---------------------------
 
-Route::any('/routes/list/{trackingId}', function (Request $req, $trackingId) {
+
+Route::any('/routes/origins/{trackingId}', function (Request $req, $trackingId) {
+    $doc = App\Document::where("trackingId", $trackingId)->first();
+    if ($doc) {
+        return $doc->startingRoutes();
+    }
+    return collect();
+});
+
+Route::any('/routes/parallel/{trackingId}', function (Request $req, $trackingId) {
+    $doc = App\Document::where("trackingId", $trackingId)->first();
+    if (!$doc)
+        return collect();
+
+    $routes = collect();
+    foreach ($doc->startingRoutes() as $startRoute) {
+        $path = $startRoute->followRoutesInPath();
+        $i = 0;
+        foreach ($path as $route) {
+            // TODO: search for function that shifts an array element
+            if ($i++ == 0)
+                continue;
+            $routes->push($route);
+        }
+    }
+    return $routes;
+});
+
+Route::any('/routes/serial/{trackingId}', function (Request $req, $trackingId) {
     $doc = App\Document::where("trackingId", $trackingId)->first();
     if (!$doc)
         return collect();

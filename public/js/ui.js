@@ -9,6 +9,10 @@ function Table($table, opts) {
     //if (cols.indexOf("actions") < 0)
     //    cols = cols.concat(["actions"]);
     this.setColumns(cols);
+    this.selectableRows = opts.selectableRows || false;
+    if (this.selectableRows) {
+        $table.addClass("sel");
+    }
 
     if (!$table.find("tbody"))
         $table.append("<tbody>");
@@ -26,11 +30,19 @@ Table.prototype = Object.assign(Table.prototype, {
         $thead.html("");
         var self = this;
         var tds = cols.map(function(col) {
-            var name = self.colNames[col] || col;
+            var name = self.colNames[col];
+            if (name == null)
+                name = col;
             return "<th>"+name+"</th>";
         });
         var $tr = util.jq(["<tr>"].concat(tds).concat(["</tr>"]));
         $thead.append($tr);
+    },
+
+    eachRow: function(fn) {
+        this.$table.find("tbody > tr").each(function() {
+            fn($(this));
+        });
     },
 
     addRow: function(data) {
@@ -40,8 +52,15 @@ Table.prototype = Object.assign(Table.prototype, {
         });
         var $tr = util.jq(["<tr>"].concat(tds).concat(["</tr>"]));
         cols.forEach(function(k) {
-            $tr.find("."+k).text(data[k]);
+            if (k)
+                $tr.find("."+k).text(data[k]);
         });
+        $tr.data("value", data);
+        if (this.selectableRows) {
+            $tr.click(function(e) {
+                $tr.toggleClass("sel");
+            });
+        }
         this.$table.find("tbody").append($tr);
     },
 

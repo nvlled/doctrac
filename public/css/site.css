@@ -53,6 +53,18 @@ td.action a {
 td.action a::before { content: "["; }
 td.action a::after { content: "]"; }
 
+table tr.sel {
+    background-color: #6f6;
+}
+table tr:hover {
+    background-color: gray;
+    cursor: pointer;
+}
+table tr.sel:hover {
+    background-color: #3f3;
+    cursor: pointer;
+}
+
 button.action {
     font-size: 20px;
 }

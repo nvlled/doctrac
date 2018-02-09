@@ -9,12 +9,14 @@ window.addEventListener("load", function() {
     var $sendData = $container.find(".send-data");
     var $selOffices = $container.find("select.offices");
     var $annots = $container.find(".annots");
+    var $origin = $container.find(".origin");
     var currentUser = null;
 
     var table = UI.createTable($table, {
-        cols: ["id", "office_name", "status"],
+        cols: ["sel", "id", "office_name", "status"],
         colNames: {
             "office_name": "office name",
+            "sel": "",
         },
     });
 
@@ -44,7 +46,6 @@ window.addEventListener("load", function() {
         });
     });
 
-    var url = "/api/routes/list/{trackingId}";
     $input.change(loadDocument);
     api.user.change(function(user) {
         currentUser = user;
@@ -77,9 +78,48 @@ window.addEventListener("load", function() {
             updateAction(doc);
             updateOfficeSelection(doc);
 
-            table.url = util.interpolate(url, params);
-            table.fetchData();
+            if (doc.type == "parallel") {
+                loadParallelRoutes(id);
+            } else {
+                loadSerialRoutes(id);
+            }
         });
+    }
+
+    function loadParallelRoutes(id) {
+        var params = {trackingId: id};
+        Promise.all([
+            api.route.parallel(params),
+            api.route.origins(params),
+        ]).then(function(values) {
+            var data = values[0];
+            var origins = values[1];
+
+            if (origins.length > 0) {
+                $origin.removeClass("hidden");
+                $origin.show();
+                $origin.find(".contents").text(
+                    origins[0].office_name
+                );
+            }
+
+            table.loadData(data);
+        });
+    }
+
+    function loadSerialRoutes(id) {
+        $origin.hide();
+        api.route.serial({trackingId: id})
+           .then(function(data) {
+               table.loadData(data);
+               if (!currentUser)
+                   return;
+               var officeId = currentUser.officeId;
+               table.eachRow(function($tr) {
+                   if ($tr.data("value").officeId == officeId)
+                       $tr.addClass("sel");
+               });
+           });
     }
 
     function forwardDocument() {
@@ -223,4 +263,3 @@ window.addEventListener("load", function() {
         });
     }
 });
-

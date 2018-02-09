@@ -39,8 +39,8 @@ var dispatch = {
                 disableOffice(user.officeId);
                 $btnSend.attr("disabled", false);
             } else {
-                $userName.text(user.firstname + " " + user.lastname);
-                $userOffice.text(user.office_name);
+                $userName.text("");
+                $userOffice.text("");
                 $btnSend.attr("disabled", true);
             }
         }
