@@ -39,6 +39,7 @@ class User extends Authenticatable
 
     public function validate() {
         return Validator::make($this->toArray(), [
+            'email'  => 'required|unique:users|email',
             'firstname'  => 'required',
             'middlename'   => 'required',
             'lastname'   => 'required',

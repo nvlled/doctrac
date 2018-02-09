@@ -17,6 +17,7 @@ var users = {
                 e.preventDefault();
                 UI.clearErrors($container);
                 var user = {
+                    email: $container.find(".email").val(),
                     firstname: $container.find(".firstname").val(),
                     middlename: $container.find(".middlename").val(),
                     lastname: $container.find(".lastname").val(),
@@ -40,9 +41,10 @@ var users = {
         }
 
         function clearInputs() {
-            $container.find(".firstname").val();
-            $container.find(".middlename").val();
-            $container.find(".lastname").val();
+            $container.find(".email").val("");
+            $container.find(".firstname").val("");
+            $container.find(".middlename").val("");
+            $container.find(".lastname").val("");
         }
 
         function addRow(row) {

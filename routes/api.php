@@ -341,6 +341,7 @@ Route::post('/users/del/{id}', function (Request $req, $id) {
 
 Route::post('/users/add', function (Request $req) {
     $user = new App\User();
+    $user->email = $req->email;
     $user->firstname = $req->firstname;
     $user->middlename = $req->middlename;
     $user->lastname = $req->lastname;

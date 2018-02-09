@@ -165,6 +165,7 @@
 <section id="user-accounts">
     <h2>user accounts</h2>
     <div class="users">
+        <input class="email full" type="email" placeholder="email">
         <input class="firstname full" placeholder="firstname">
         <input class="middlename full" placeholder="middlename">
         <input class="lastname full" placeholder="lastname">
