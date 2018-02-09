@@ -4,7 +4,9 @@
 
 <section id="session">
     <h2>Current User</h2>
-    <input name="userId" class="userId autocomplete" placeholder="user ID"
+    <input id="session-userid" name="userId"
+        class="userId autocomplete local-save"
+        placeholder="user ID"
         data-format="{lastname}, {firstname} | {office_name}"
         data-url="/api/users/search">
     <br>
@@ -15,7 +17,9 @@
 </section>
 
 <section id="doc-history">
-    <input name="trackingId" class="half trackingId autocomplete"
+    <input name="trackingId"
+        id="doc-history-userid"
+        class="half trackingId autocomplete local-save"
         placeholder="tracking ID"
         data-format="{title}"
         data-key="trackingId"

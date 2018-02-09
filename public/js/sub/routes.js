@@ -24,7 +24,6 @@ window.addEventListener("load", function() {
     $sendData.hide();
     $btnAction.hide();
 
-    loadSavedInput();
     api.user.self()
        .then(function(user) {
            currentUser = user;
@@ -176,12 +175,6 @@ window.addEventListener("load", function() {
                 selectOffices(officeIds);
             }
         });
-    }
-
-    // TODO:  <input class='local-save'>
-    function loadSavedInput() {
-        var userId = util.storeGet("userId")
-        $input.val(util.storeGet("trackingId"));
     }
 
     function selectOffices(officeIds) {
