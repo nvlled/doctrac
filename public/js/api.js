@@ -5,9 +5,10 @@ function getInternalError(err) {
     };
 }
 
-function defaultHandler(resp, errors) {
+function defaultHandler(resp) {
     console.log("response: ", resp);
-    console.warn("errors: ", errors);
+    if (resp.errors)
+        console.warn("errors: ", errors);
 }
 
 function makeHandler(url) {

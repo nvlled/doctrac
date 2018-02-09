@@ -62,6 +62,8 @@ var dispatch = {
                 sel.selectedIndex = 0;
         }
         function isSelected(sel, value) {
+            if (!sel)
+                return false;
             var i = sel.selectedIndex;
             var opt = sel.children[i];
             return opt.value+"" == value+"";

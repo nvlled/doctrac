@@ -5,7 +5,10 @@
 - Received documents
 
 
-* edit/update of models
-* single current user for session
-* handle deletion (or prevent)
+* show route information
+* change comboboxes to input with autocomplete
 
+* page queries
+* save input value locally
+* edit/update of models
+* handle deletion (or prevent)
