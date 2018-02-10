@@ -116,6 +116,7 @@ class Document extends Model
             $route->senderId    = $user->id;
             $route->pathId      = $pathId;
             $route->arrivalTime = now();
+            $route->forwardTime = now();
             $route->save();
 
             $nextRoute = new \App\DocumentRoute();
@@ -144,6 +145,7 @@ class Document extends Model
         $route->senderId    = $user->id;
         $route->pathId      = $pathId;
         $route->arrivalTime = now();
+        $route->forwardTime = now();
         $route->save();
 
         foreach ($officeIds as $officeId) {

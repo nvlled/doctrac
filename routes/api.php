@@ -132,6 +132,7 @@ Route::any('/docs/abort-send/{trackingId}', function (Request $req, $trackingId)
         if ($office->id != $route->officeId)
             continue;
         $route->senderId = null;
+        $route->forwardTime = null;
         $route->save();
     }
 });
@@ -208,6 +209,8 @@ Route::any('/docs/forward/{trackingId}', function (Request $req, $trackingId) {
         }
 
         $route->senderId = $user->id;
+        $route->forwardTime = now();
+
         $annotations = $req->annotations;
         if ($destOfficeId == $nextRoute->officeId) {
             $nextRoute->annotations = $annotations;

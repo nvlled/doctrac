@@ -83,33 +83,33 @@ set @_    = NULL;
 insert into document_routes
 (
     id, pathId, trackingId, officeId, receiverId, senderId,
-    prevId, nextId, arrivalTime, final, annotations
+    prevId, nextId, arrivalTime, forwardTime, final, annotations
 ) values
 
-(1, 1, @trackID1, @rec, @off1, @off1, @_, 2, @day1, false, @_),
-(2, 1, @trackID1, @mis, @_, @_,       1, @_,  @_,   true,  @_),
+(1, 1, @trackID1, @rec, @off1, @off1,  @_, 2,   @day1, @day1, false, @_),
+(2, 1, @trackID1, @mis, @_, @_,        1, @_,   @_,    @_,    true,  @_),
 
-(3, 2, @trackID2, @mis, @off2, @off2, @_, 4,  @day1, false, @_),
-(4, 2, @trackID2, @csh, 3,  @_,       3,  5,  @day2, false, 'something'),
-(5, 2, @trackID2, @acc, @_, @_,       4,  6,  @_,    false, @_),
-(6, 2, @trackID2, @coc, @_, @_,       5,  @_, @_,    true,  @_),
+(3, 2, @trackID2, @mis, @off2, @off2,  @_, 4,   @day1, @day1, false, @_),
+(4, 2, @trackID2, @csh, 3,  @_,        3,  5,   @day2, @_,    false, 'something'),
+(5, 2, @trackID2, @acc, @_, @_,        4,  6,   @_,    @_,    false, @_),
+(6, 2, @trackID2, @coc, @_, @_,        5,  @_,  @_,    @_,    true,  @_),
 
-(23, 7, @trackID3, @mis, @off2, @off2, @_,  24,  @day1, false, @_),
-(24, 7, @trackID3, @csh, 3,  4,        23,  25,  @day2, false, 'something'),
-(25, 7, @trackID3, @acc, @_, @_,       24,  26,  @_,    false, @_),
-(26, 7, @trackID3, @coc, @_, @_,       25,  @_, @_,    true,  @_),
+(23, 7, @trackID3, @mis, @off2, @off2, @_, 24,  @day1, @day1, false, @_),
+(24, 7, @trackID3, @csh, 3,  4,        23, 25,  @day2, @day2, false, 'something'),
+(25, 7, @trackID3, @acc, @_, @_,       24, 26,  @_,    @_,    false, @_),
+(26, 7, @trackID3, @coc, @_, @_,       25, @_,  @_,    @_,    true,  @_),
 
-(7,  3, @trackID4, @coc, @off1, @off1, @_, 8,  @day1,  false, @_),
-(8,  3, @trackID4, @csh, 5, 5,         7,  9,  @day2, false, 'sign'),
-(9,  3, @trackID4, @mis, 6, @_,        8,  @_, @day3, true, 'blah'),
+(7,  3, @trackID4, @coc, @off1, @off1, @_, 8,   @day1, @day1, false, @_),
+(8,  3, @trackID4, @csh, 5, 5,         7,  9,   @day2, @day2, false, 'sign'),
+(9,  3, @trackID4, @mis, 6, @_,        8,  @_,  @day3, @_,    true, 'blah'),
 
-(11,  4, @trackID5, @rec, @off2, @off2, @_, 14, @day1,  false, @_),
-(12,  5, @trackID5, @rec, @off2, @off2, @_, 15, @day1,  false, @_),
-(13,  6, @trackID5, @rec, @off2, @off2, @_, 16, @day1,  true,  @_),
+(11, 4, @trackID5, @rec, @off2, @off2, @_, 14,  @day1, @day2, false, @_),
+(12, 5, @trackID5, @rec, @off2, @off2, @_, 15,  @day1, @day2, false, @_),
+(13, 6, @trackID5, @rec, @off2, @off2, @_, 16,  @day1, @day2, true,  @_),
 
-(14,  4, @trackID5, @coc, 3, @_,        11, @_,  @_,    false, @_),
-(15,  5, @trackID5, @csh, 4, @_,        12, @_,  @_,    false, @_),
-(16,  6, @trackID5, @mis, 5, @_,        13, @_,  @day2, true,  @_);
+(14, 4, @trackID5, @coc, 3, @_,        11, @_,  @_,    @_,    false, @_),
+(15, 5, @trackID5, @csh, 4, @_,        12, @_,  @_,    @_,    false, @_),
+(16, 6, @trackID5, @mis, 5, @_,        13, @_,  @day2, @_,    true,  @_);
 
 
 
