@@ -6,11 +6,22 @@ use Illuminate\Support\Facades\Validator;
 
 class DocumentRoute extends Model
 {
-    public $appends = ["status", "office_name"];
-    public $hidden = ["office", "prevRoute", "nextRoute"];
+    public $appends = [
+        "status", "office_name",
+        "sender_name", "receiver_name",
+        "detailed_info",
+    ];
+    public $hidden = ["office", "prevRoute", "nextRoute", "sender", "receiver"];
 
     public function office() {
         return $this->hasOne("App\Office", "id", "officeId");
+    }
+
+    public function sender() {
+        return $this->hasOne("App\User", "id", "senderId");
+    }
+    public function receiver() {
+        return $this->hasOne("App\User", "id", "receiverId");
     }
 
     public function prevRoute() {
@@ -19,6 +30,14 @@ class DocumentRoute extends Model
 
     public function nextRoute() {
         return $this->hasOne("App\DocumentRoute", "id", "nextId");
+    }
+
+    public function getSenderNameAttribute() {
+        return optional($this->sender)->fullname;
+    }
+
+    public function getReceiverNameAttribute() {
+        return optional($this->receiver)->fullname;
     }
 
     public function getOfficeNameAttribute() {
@@ -60,6 +79,43 @@ class DocumentRoute extends Model
         }
 
         return "*";
+    }
+
+    public function getDetailedInfoAttribute() {
+        if ($this->isStart()) {
+            if ($this->arrivalTime == $this->forwardTime)
+                return "Created on {$this->arrivalTime} by {$this->receiver_name}";
+            else {
+                return textIndent("
+                |Created by {$this->receiver_name}
+                |on <strong>{$this->arrivalTime}</strong> and was sent
+                |on <strong>{$this->forwardTime}</strong>
+                ");
+            }
+        }
+        $text = "";
+        if ($this->annotations)
+            $text .= "<em>Note:</em> $this->annotations\n\n";
+        if ($this->arrivalTime) {
+            $text .= textIndent("
+                |Arrived on <strong>{$this->arrivalTime}</strong>
+                |and was received by <strong>{$this->receiver_name}</strong>
+                ");
+            }
+        if ($this->forwardTime) {
+            $text .= "\n\n" . textIndent("
+            |Forwarded on <strong>{$this->forwardTime}</strong>
+            |and was dispatched by <strong>{$this->receiver_name}</strong>
+            ");
+        }
+        if (!$text) {
+            $text = "(no information available)";
+        }
+        return $text;
+    }
+
+    public function isStart() {
+        return $this->prevId == null && $this->nextId != null;
     }
 
     public function followRoutesInPath() {

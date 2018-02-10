@@ -16,4 +16,12 @@ function generateId() {
     return $gen->id;
 }
 
+function textIndent($text) {
+    $lines = [];
+    foreach (explode("\n", $text) as $line) {
+        $lines[] = preg_replace('/^\s*\|/', '', $line);
+    }
+    return trim(implode($lines, "\n"));
+}
+
 ?>

@@ -28,7 +28,7 @@ input[type=submit], button, select {
     background-color: #522;
 }
 
-.full { width: 90%; }
+.full { width: 98%; }
 .half { width: 50%; }
 .center { text-align: center; }
 
@@ -53,14 +53,17 @@ td.action a {
 td.action a::before { content: "["; }
 td.action a::after { content: "]"; }
 
-table tr.sel {
-    background-color: #6f6;
+table tbody tr.sel {
+    background-color: #6b6;
 }
-table tr:hover {
+table tbody tr.no-sel {
+    background-color: inherit !important;
+}
+table tbody tr:hover {
     background-color: gray;
     cursor: pointer;
 }
-table tr.sel:hover {
+table tbody tr.sel:hover {
     background-color: #3f3;
     cursor: pointer;
 }
@@ -71,5 +74,9 @@ button.action {
 
 .hidden {
     display: none !important;
+}
+
+.invisible {
+    visibility: hidden;
 }
 

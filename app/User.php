@@ -11,7 +11,12 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    protected $appends = ["position_name", "office_name", "privilege_name"];
+    protected $appends = [
+        "position_name",
+        "office_name",
+        "privilege_name",
+        "fullname",
+    ];
     protected $hidden = ["position", "office", "privilege", "password"];
 
     public function position() {
@@ -24,9 +29,17 @@ class User extends Authenticatable
         return $this->hasOne("App\Privilege", "id", "privilegeId");
     }
 
+    public function getFullnameAttribute() {
+        $mi = $this->middlename;
+        if ($mi)
+            return title_case("{$this->firstname} {$mi[0]}. {$this->lastname}");
+        return title_case("{$this->firstname} {$this->lastname}");
+    }
+
     public function getPositionNameAttribute() {
         return optional($this->position)->name;
     }
+
     public function getPrivilegeNameAttribute() {
         return optional($this->privilege)->name;
     }

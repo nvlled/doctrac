@@ -13,7 +13,7 @@ window.addEventListener("load", function() {
     var currentUser = null;
 
     var table = UI.createTable($table, {
-        cols: ["sel", "id", "office_name", "status"],
+        cols: ["id", "office_name", "status"],
         colNames: {
             "office_name": "office name",
             "sel": "",
@@ -101,8 +101,8 @@ window.addEventListener("load", function() {
                     origins[0].office_name
                 );
             }
-
             table.loadData(data);
+            initRows();
         });
     }
 
@@ -111,14 +111,48 @@ window.addEventListener("load", function() {
         api.route.serial({trackingId: id})
            .then(function(data) {
                table.loadData(data);
-               if (!currentUser)
-                   return;
-               var officeId = currentUser.officeId;
-               table.eachRow(function($tr) {
-                   if ($tr.data("value").officeId == officeId)
-                       $tr.addClass("sel");
-               });
+               initRows();
            });
+    }
+
+    function initRows() {
+        table.eachRow(function($tr) {
+            if (!currentUser)
+                return;
+            var officeId = currentUser.officeId;
+            if (officeId && $tr.data("value").officeId == officeId)
+                $tr.addClass("sel");
+
+            addDetails($tr);
+        });
+    }
+
+    function addDetails($tr) {
+        var route = $tr.data("value");
+        if (!route)
+            return;
+        var colspan = table.cols.length;
+
+        var $trDetails = util.jq([
+            "<tr class='no-sel'>",
+            "<td class='' colspan="+colspan+"'>",
+            "<pre class='recv'>",
+            route.detailed_info,
+            "</pre>",
+            "</td>",
+            "</tr>",
+        ]);
+
+        $trDetails
+            .hide()
+            .insertAfter($tr);
+
+        $tr.click(function() {
+            $trDetails.toggle();
+        });
+        $trDetails.click(function() {
+            $trDetails.hide();
+        });
     }
 
     function forwardDocument() {
