@@ -16,7 +16,24 @@ window.addEventListener("load", function() {
         cols: ["id", "office_name", "status"],
         colNames: {
             "office_name": "office name",
-            "sel": "",
+        },
+        colMap: {
+            "details": function(data, $td) {
+                var time = data.arrivalTime || "";
+                var sender = data.sender_name || "";
+                var recvr = data.receiver_name || "";
+                if (!time)
+                    return;
+                var contents =  util.jq([
+                    "<pre>",
+                    "time: <span>"+time+"</span>",
+                    "sender: <span>"+sender+"</span>",
+                    "receiver: <span>"+recvr+"</span>",
+                    "</pre>",
+                ]);
+                $td.append(contents);
+                $td.hide();
+            },
         },
     });
 

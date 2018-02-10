@@ -10,6 +10,8 @@ function Table($table, opts) {
     //    cols = cols.concat(["actions"]);
     this.setColumns(cols);
     this.selectableRows = opts.selectableRows || false;
+    this.colMap = opts.colMap || {};
+
     if (this.selectableRows) {
         $table.addClass("sel");
     }
@@ -48,12 +50,20 @@ Table.prototype = Object.assign(Table.prototype, {
     addRow: function(data) {
         var cols = this.cols;
         var tds = cols.map(function(col) {
-            return "<td class='"+col+"'>";
+            return "<td class='"+col+"'></td>";
         });
         var $tr = util.jq(["<tr>"].concat(tds).concat(["</tr>"]));
+        var self = this;
         cols.forEach(function(k) {
-            if (k)
-                $tr.find("."+k).text(data[k]);
+            if (k) {
+                var fn = self.colMap[k];
+                if (typeof fn == "function") {
+                    var $td = $tr.find("."+k);
+                    fn(data, $td);
+                } else {
+                    $tr.find("."+k).text(data[k]);
+                }
+            }
         });
         $tr.data("value", data);
         if (this.selectableRows) {
@@ -122,7 +132,7 @@ var UI = {
             api.user.get($input.val(), function(user) {
                 api.user.emit(user);
                 if (!user || user.errors) {
-                    api.user.clearSelf();
+                    //api.user.clearSelf();
                     $output.text("(no match)");
                     return;
                 }

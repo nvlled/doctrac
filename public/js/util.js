@@ -21,6 +21,12 @@ var util = {
         return $elem;
     },
 
+    jqText: function($node, texts) {
+        Object.keys(texts).forEach(function(sel) {
+            $node.find(sel).text(texts[sel]);
+        });
+    },
+
     randomStr: function() {
         return Math.random().toString(36).slice(2);
     },

@@ -3,9 +3,9 @@
 @section("contents")
 
 <section id="session">
-    <h2>Current User</h2>
+    <h3>Current User</h3>
     <input id="session-userid" name="userId"
-        class="userId autocomplete half"
+        class="userId autocomplete local-save half"
         placeholder="search for user or office name"
         data-format="{lastname}, {firstname} | {office_name}"
         data-url="/api/users/search">
@@ -31,7 +31,7 @@
     <pre class='details'></pre>
     <p>Routes</p>
     <h4 class='origin hidden'>Document origin: <span class='contents'></span></h4>
-    <table>
+    <table class='full'>
         <thead>
         <tr>
             <th>id</th>
