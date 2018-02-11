@@ -133,6 +133,10 @@ Route::any('/docs/abort-send/{trackingId}', function (Request $req, $trackingId)
             continue;
         $route->senderId = null;
         $route->forwardTime = null;
+        if ($route->nextRoute) {
+            $route->nextRoute->annotations = null;
+            $route->nextRoute->save();
+        }
         $route->save();
     }
 });

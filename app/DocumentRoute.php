@@ -86,11 +86,16 @@ class DocumentRoute extends Model
             if ($this->arrivalTime == $this->forwardTime)
                 return "Created on {$this->arrivalTime} by {$this->receiver_name}";
             else {
-                return textIndent("
+                $text = textIndent("
                 |Created by {$this->receiver_name}
-                |on <strong>{$this->arrivalTime}</strong> and was sent
-                |on <strong>{$this->forwardTime}</strong>
+                |on <strong>{$this->arrivalTime}</strong>
                 ");
+                if ($this->forwardTime) {
+                    $text .= "\n" . textIndent("
+                    |and was sent on <strong>{$this->forwardTime}</strong>
+                    ");
+                }
+                return $text;
             }
         }
         $text = "";
