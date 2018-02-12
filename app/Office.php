@@ -42,6 +42,46 @@ class Office extends Model
         return "";
     }
 
+    public function getReceivingRoutes() {
+        $routes = \App\DocumentRoute::where("officeId", $this->id)->get();
+        $filtered = collect();
+        $routes->each(function($route) use ($filtered) {
+            if ($route->status == "waiting")
+                return $filtered->push($route);
+        });
+        return $filtered;
+    }
+
+    public function getDispatchedRoutes() {
+        $routes = \App\DocumentRoute::where("officeId", $this->id)->get();
+        $filtered = collect();
+        $routes->each(function($route) use ($filtered) {
+            if ($route->status == "delivering")
+                return $filtered->push($route);
+        });
+        return $filtered;
+    }
+
+    public function getFinalRoutes() {
+        $routes = \App\DocumentRoute::where("officeId", $this->id)->get();
+        $filtered = collect();
+        $routes->each(function($route) use ($filtered) {
+            if ($route->status == "done")
+                return $filtered->push($route);
+        });
+        return $filtered;
+    }
+
+    public function getActiveRoutes() {
+        $routes = \App\DocumentRoute::where("officeId", $this->id)->get();
+        $filtered = collect();
+        $routes->each(function($route) use ($filtered) {
+            if ($route->status == "processing")
+                return $filtered->push($route);
+        });
+        return $filtered;
+    }
+
     public function isFinal($doc) {
         foreach ($doc->finalRoutes() as $route) {
             if ($this->officeId == $route->officeId)

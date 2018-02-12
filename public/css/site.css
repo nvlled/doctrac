@@ -5,6 +5,9 @@ body {
     color: cyan;
     background-color: #333;
 }
+a {
+    color: white;
+}
 
 section {
     padding: 20px;
@@ -12,6 +15,7 @@ section {
     border-radius: 8px;
     border: 1px solid #ccc;
     margin: 10px;
+    margin-bottom: 50px;
 }
 
 ul.errors {
@@ -89,3 +93,6 @@ button.action {
     visibility: hidden;
 }
 
+li.sel a { color: red; }
+li.sel::before { content: "*"; }
+li.sel::after  { content: "*"; }

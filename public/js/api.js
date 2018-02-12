@@ -45,6 +45,15 @@ var api = {
         forward:       makeHandler("/api/docs/forward/{trackingId}"),
         receive:       makeHandler("/api/docs/receive/{trackingId}"),
         abortSend:     makeHandler("/api/docs/abort-send/{trackingId}"),
+
+        emit: function(data) {
+            events.trigger("doc-change", data);
+        },
+        change: function(handler) {
+            events.on("doc-change", function(_, arg) {
+                handler(arg);
+            });
+        },
     },
 
     route: {
@@ -162,6 +171,11 @@ var api = {
             );
             return api.req.post(url, {}, fn)
         },
+
+        incoming: makeHandler("/api/offices/{officeId}/incoming"),
+        held: makeHandler("/api/offices/{officeId}/held"),
+        dispatched: makeHandler("/api/offices/{officeId}/dispatched"),
+        final: makeHandler("/api/offices/{officeId}/final"),
 
         add: function(office, fn) {
             fn = fn || defaultHandler;

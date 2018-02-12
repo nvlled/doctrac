@@ -7,19 +7,28 @@ use Illuminate\Support\Facades\Validator;
 class DocumentRoute extends Model
 {
     public $appends = [
+        "document_title",
+        "document_details",
+        "document_type",
         "status", "office_name",
         "sender_name", "receiver_name",
         "detailed_info",
+        "activities",
     ];
-    public $hidden = ["office", "prevRoute", "nextRoute", "sender", "receiver"];
+    public $hidden = ["office", "document", "prevRoute", "nextRoute", "sender", "receiver"];
 
     public function office() {
         return $this->hasOne("App\Office", "id", "officeId");
     }
 
+    public function document() {
+        return $this->hasOne("App\Document", "trackingId", "trackingId");
+    }
+
     public function sender() {
         return $this->hasOne("App\User", "id", "senderId");
     }
+
     public function receiver() {
         return $this->hasOne("App\User", "id", "receiverId");
     }
@@ -30,6 +39,18 @@ class DocumentRoute extends Model
 
     public function nextRoute() {
         return $this->hasOne("App\DocumentRoute", "id", "nextId");
+    }
+
+    public function getDocumentTitleAttribute() {
+        return optional($this->document)->title;
+    }
+
+    public function getDocumentTypeAttribute() {
+        return optional($this->document)->type;
+    }
+
+    public function getDocumentDetailsAttribute() {
+        return optional($this->document)->details;
     }
 
     public function getSenderNameAttribute() {
@@ -81,10 +102,42 @@ class DocumentRoute extends Model
         return "*";
     }
 
+    public function getActivitiesAttribute() {
+        $activities = collect();
+        $prevRoute = $this->prevRoute;
+        $nextRoute = $this->nextRoute;
+
+        if ($prevRoute && $prevRoute->sender) {
+            $activities->push(joinLines(
+                "Dispatched from the office ({$this->office_name})
+                 on {$prevRoute->forwardTime} by {$prevRoute->sender_name}"
+            ));
+        }
+        if ($this->arrivalTime) {
+            $activities->push(joinLines(
+                "Received on office ({$this->office_name})
+                 on {$this->arrivalTime} by {$this->receiver->fullname}"
+            ));
+        }
+        if ($nextRoute && $this->sender) {
+            $activities->push(joinLines(
+                "Forwarded on the next office ({$nextRoute->office_name})
+                 on {$this->forwardTime} by {$this->sender->fullname}"
+            ));
+        }
+
+        // TODO:
+        //Seen by A, B, C
+        return $activities;
+    }
+
     public function getDetailedInfoAttribute() {
         if ($this->isStart()) {
             if ($this->arrivalTime == $this->forwardTime)
-                return "Created on {$this->arrivalTime} by {$this->receiver_name}";
+                return textIndent("
+                    |Created on {$this->arrivalTime}
+                    |by {$this->receiver_name}
+                ");
             else {
                 $text = textIndent("
                 |Created by {$this->receiver_name}
@@ -135,3 +188,4 @@ class DocumentRoute extends Model
         return $sortedRoutes;
     }
 }
+

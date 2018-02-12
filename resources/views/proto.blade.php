@@ -3,12 +3,12 @@
 @section("contents")
 
 <section id="session">
-    <h3>Current User</h3>
+    <h3>Login as</h3>
     <input id="session-userid" name="userId"
         size=7
         class="userId autocomplete local-save "
         placeholder="search for user or office name"
-        data-format="{lastname}, {firstname} | {office_name}"
+        data-format="{lastname}, {firstname} | ({officeId}) {office_name}"
         data-url="/api/users/search">
     <br>
     <script>
@@ -59,8 +59,56 @@
     <script src="{{asset('js/sub/routes.js')}}"></script>
 </section>
 
+<section id="agent">
+    <h3 class='center'>(<span class='office-id'>0000</span>)
+        <span class='office-name'>office name</span></h3>
+    <p class='center'><span class='user-name'>user name</span></p>
+    <div>
+        <h4>Incoming</h4>
+        <ul id="incoming">
+            <em>(none)</em>
+        </ul>
+    </div>
+    <div>
+        <h4>Processing</h4>
+        <ul id="held">
+            <em>(none)</em>
+        </ul>
+    </div>
+    <div>
+        <h4>Delivering</h4>
+        <ul id="dispatched">
+            <em>(none)</em>
+        </ul>
+    </div>
+
+    <div>
+        <h4>Received/Final</h4>
+        <ul id="final">
+            <em>(none)</em>
+        </ul>
+    </div>
+
+    <hr>
+    <div id="view-document">
+        <h2><span class='title'>doc title</span> (<small class='trackingId'>tracking ID</small>)</h2>
+        <p class=''>status: <span class='status'>document details</span></p>
+        <pre>details: <span class='details'></span></pre>
+        <pre>annotations: <span class='annotations'></span></pre>
+
+        <div class=''>
+            <button class='action hidden'>send/receive</button>
+        </div>
+        <hr>
+        <p>activity log: </p>
+        <ul class='activities'>
+        </ul>
+    </div>
+
+    <script src="{{asset('js/sub/agent.js')}}"></script>
+</section>
+
 <section id="dispatch">
-    <h1>Dispatch Document</h1>
     <form>
     <p class='user-name'></p>
     <p class='user-office'></p>
@@ -112,6 +160,8 @@
     </p>
     <script src="{{asset('js/sub/dispatch.js')}}"></script>
 </section>
+
+
 
 <section id="context">
     <h2>offices</h2>

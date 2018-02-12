@@ -4,6 +4,7 @@ var users = {
         var $selPos     = $container.find("select.positions");
         var $selPriv    = $container.find("select.privileges");
         var $selOffices = $container.find("select.offices");
+        var $officeId = $("#useraccount-officeId");
 
         fetchPositions();
         fetchPrivileges();
@@ -27,7 +28,7 @@ var users = {
                     privilegeId: 
                         $container.find("select.privileges").val(),
                     officeId: 
-                        $container.find("select.offices").val(),
+                        $officeId.val(),
                 };
                 api.user.add(user, function(resp) {
                     if (resp.errors) {

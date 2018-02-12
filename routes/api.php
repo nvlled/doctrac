@@ -383,7 +383,7 @@ Route::any('/users/get/{id}', function (Request $req, $id) {
 
 // ---------------------------
 Route::post('/privileges/del/{id}', function (Request $req, $id) {
-    $priv = App\User::findOrFail($id);
+    $priv = App\Privilege::findOrFail($id);
     $priv->delete();
     return $priv;
 });
@@ -429,6 +429,38 @@ Route::get('/positions/list', function (Request $req) {
 });
 
 // -----------------------
+
+Route::any('/offices/{officeId}/incoming', function (Request $req) {
+    $officeId = $req->officeId;
+    $office = App\Office::find($officeId);
+    if (!$office)
+        return collect();
+    return $office->getReceivingRoutes();
+});
+
+Route::any('/offices/{officeId}/held', function (Request $req) {
+    $officeId = $req->officeId;
+    $office = App\Office::find($officeId);
+    if (!$office)
+        return collect();
+    return $office->getActiveRoutes();
+});
+
+Route::any('/offices/{officeId}/dispatched', function (Request $req) {
+    $officeId = $req->officeId;
+    $office = App\Office::find($officeId);
+    if (!$office)
+        return collect();
+    return $office->getDispatchedRoutes();
+});
+
+Route::any('/offices/{officeId}/final', function (Request $req) {
+    $officeId = $req->officeId;
+    $office = App\Office::find($officeId);
+    if (!$office)
+        return collect();
+    return $office->getFinalRoutes();
+});
 
 Route::any('/offices/search', function (Request $req) {
     $id = $req->q;
@@ -504,4 +536,3 @@ Route::get('/offices/list', function (Request $req) {
 });
 
 // -----------------------
-

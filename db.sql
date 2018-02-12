@@ -52,7 +52,7 @@ insert into users
 (@t, @t, 1,        "a@x.y", @p, "Astaroth", "Cosette", "Aida", @head, @admin, 1),
 (@t, @t, @off1:=2, "b@x.y", @p, "Rohan", "Othello", "Zuleika", @asst, @officer, 2),
 (@t, @t, @off2:=3, "c@x.y", @p, "Igerna", "Aramis", "Gandalf", @clrk, @officer, 3),
-(@t, @t, 4,        "d@x.y", @p, "Ruslan", "Guenevere", "Mehrab", @clrk, @agent, 3),
+(@t, @t, 4,        "d@x.y", @p, "Ruslan", "Guenevere", "Mehrab", @clrk, @agent, 4),
 (@t, @t, 5,        "e@x.y", @p, "Bedwyr", "Daenerys", "Medraut", @fact, @agent, 2),
 (@t, @t, 6,        "f@x.y", @p, "Enobarbus", "Merlin", "Malvina", @asst, @agent, 6),
 (@t, @t, 7,        "g@x.y", @p, "Ossian", "Bayard", "Lalage", @head, @agent, 5),

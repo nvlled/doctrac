@@ -1,4 +1,3 @@
-
 function Table($table, opts) {
     this.$table = $table;
     this.url = opts.url || "";
@@ -35,7 +34,7 @@ Table.prototype = Object.assign(Table.prototype, {
             var name = self.colNames[col];
             if (name == null)
                 name = col;
-            return "<th>"+name+"</th>";
+            return "<th span=20>"+name+"</th>";
         });
         var $tr = util.jq(["<tr>"].concat(tds).concat(["</tr>"]));
         $thead.append($tr);

@@ -24,4 +24,10 @@ function textIndent($text) {
     return trim(implode($lines, "\n"));
 }
 
+function joinLines($text) {
+    $text = preg_replace('/\n/', ' ', $text);
+    $text = preg_replace('/\s+/', ' ', $text);
+    return $text;
+}
+
 ?>

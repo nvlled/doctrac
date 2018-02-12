@@ -13,7 +13,7 @@ window.addEventListener("load", function() {
     var currentUser = null;
 
     var table = UI.createTable($table, {
-        cols: ["id", "office_name", "status"],
+        cols: ["office_name", "status"],
         colNames: {
             "office_name": "office name",
         },
@@ -57,6 +57,7 @@ window.addEventListener("load", function() {
             default:
                 return;
         }
+        api.doc.emit({});
         req.then(function() {
             loadDocument();
         });
