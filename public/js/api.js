@@ -54,6 +54,7 @@ var api = {
     },
 
     user: {
+        search: makeHandler("/api/users/search"),
         emit: function(data) {
             events.trigger("user-change", data);
         },
@@ -64,8 +65,16 @@ var api = {
         },
 
         self: makeHandler("/api/users/self"),
-        setSelf: makeHandler("/api/users/self/{userId}"),
         clearSelf: makeHandler("/api/users/self/clear"),
+        setSelf: function(data, fn) {
+            var url = "/api/users/self/{userId}";
+            url = util.interpolate(url, data);
+            fn = fn || defaultHandler;
+            return api.req.post(url, data, fn)
+                .then(function(user) {
+                    api.user.emit(user);
+                });
+        },
 
         get: function(id, fn) {
             fn = fn || defaultHandler;

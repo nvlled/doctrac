@@ -5,14 +5,16 @@
 <section id="session">
     <h3>Current User</h3>
     <input id="session-userid" name="userId"
-        class="userId autocomplete local-save half"
+        size=7
+        class="userId autocomplete local-save "
         placeholder="search for user or office name"
         data-format="{lastname}, {firstname} | {office_name}"
         data-url="/api/users/search">
     <br>
-    <span class="userInfo"></span>
     <script>
-    UI.queryUser("#session input.userId", "#session .userInfo")
+    $("#session input#session-userid").change(function() {
+        api.user.setSelf({userId: this.value});
+    });
     </script>
 </section>
 

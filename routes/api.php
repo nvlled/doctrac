@@ -309,7 +309,14 @@ Route::any('/docs/send', function (Request $req) {
 });
 
 // ---------------------------
+
 Route::any('/users/search', function (Request $req) {
+    $id = $req->q;
+    if (is_numeric($id)) {
+        $user = App\User::find($id);
+        if ($user)
+            return collect([$user]);
+    }
     $q = "%{$req->q}%";
     $users = App\User::where("firstname", "like", $q)
         ->orWhere("lastname", "like", $q)
