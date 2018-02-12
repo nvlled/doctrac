@@ -85,7 +85,14 @@
         </tbody>
     </table>
     <div class="add-dest">
-        <select class="offices"></select><button class='add'>add</button>
+        <input id="dispatch-officeId" size=30
+            name="officeId"
+            class="officeId autocomplete"
+            placeholder="search for office name"
+            data-format="{campus} {name}"
+            data-url="/api/offices/search">
+        <button class='add hidden'>add</button>
+        <span class='error add-error'><span>
     </div>
 
     <br>
@@ -174,8 +181,13 @@
         <input type="hidden" class="password full" placeholder="lastname" value="password">
         Position: <select class="positions"></select><br>
         Privilege: <select class="privileges"></select><br>
-        Office: <select class="offices"></select><br>
-        <br>
+        Office: <input id="useraccount-officeId" size=7
+                    name="officeId"
+                    class="officeId autocomplete"
+                    placeholder="office name/ID"
+                    data-format="{campus} {name}"
+                    data-url="/api/offices/search">
+
         <ul class="errors">
         </ul>
         <button class="add half">add user</button>

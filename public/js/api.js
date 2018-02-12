@@ -148,6 +148,7 @@ var api = {
     },
 
     office: {
+        search: makeHandler("/api/offices/search"),
         actionFor: makeHandler("/api/offices/{officeId}/action-for/{trackingId}"),
 
         canSend: function(officeId, trackingId, fn) {

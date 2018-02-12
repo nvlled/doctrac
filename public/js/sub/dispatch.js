@@ -1,7 +1,6 @@
 
 var dispatch = {
     setup: function($container) {
-        var $selOffices = $container.find("select.offices");
         var $table = $container.find("table.route");
         var $message = $container.find(".message");
         var $btnRand = $container.find("button.rand");
@@ -9,7 +8,10 @@ var dispatch = {
         var $input = $container.find(".trackingId");
         var $userName = $container.find(".user-name");
         var $userOffice = $container.find(".user-office");
+        var $addError = $container.find(".add-error");
+        var $officeInput = $container.find("#dispatch-officeId");
 
+        var officeIdFilter = [];
         var currentUser = null;
         api.user.change(setCurrentUser);
         api.user.self()
@@ -17,7 +19,6 @@ var dispatch = {
 
         $btnRand.click(function(e) {
             e.preventDefault();
-            //var user = api.user.self();
             var user = currentUser;
             var officeId = user ? user.officeId : "";
             api.doc.randomId({
@@ -27,7 +28,6 @@ var dispatch = {
             });
         });
 
-        fetchOffices();
         setupAddButton();
         setupSendButton();
 
@@ -36,37 +36,14 @@ var dispatch = {
             if (user) {
                 $userName.text(user.firstname + " " + user.lastname);
                 $userOffice.text(user.office_name);
-                disableOffice(user.officeId);
-                $btnSend.attr("disabled", false);
+
+                $officeInput.data("params", {
+                    except: officeIdFilter.concat([user.id]),
+                });
             } else {
                 $userName.text("");
                 $userOffice.text("");
-                $btnSend.attr("disabled", true);
             }
-        }
-
-        function disableOffice(id) {
-            var officeId = -1;
-            $selOffices.find("option").each(function(_, opt) {
-                opt.disabled = false;
-                var offId = parseInt(opt.value);
-                if (offId == id) {
-                    opt.disabled = true;
-                    officeId = offId;
-                }
-            });
-            var sel = $selOffices[0];
-            if (isSelected(sel, officeId))
-                sel.selectedIndex++;
-            if (sel.selectedIndex < 0)
-                sel.selectedIndex = 0;
-        }
-        function isSelected(sel, value) {
-            var i = sel.selectedIndex;
-            var opt = sel.children[i];
-            if (opt)
-                return opt.value+"" == value+"";
-            return false;
         }
 
         function setupSendButton() {
@@ -107,43 +84,51 @@ var dispatch = {
 
         function setupAddButton() {
             var $btn = $container.find("button.add");
-            $btn.click(function() {
-                var $option = $($selOffices[0].selectedOptions[0]);
-                if ($option.length == 0)
-                    return;
 
-                var office = $option.data("office");
-                $option.detach();
-                var $tr = util.jq([
-                    "<tr>",
-                    " <td class='id'></td>",
-                    " <td class='name'></td>",
-                    " <td class='action'>",
-                    "   <a href='#' class='del'>X</a>",
-                    "</td>",
-                    "</tr>",
-                ]);
-                $tr.data("officeId", office.id);
-                $tr.find(".id").text(office.id);
-                $tr.find(".name").text(office.campus + " " + office.name);
-                $tr.find(".del").click(function(e) {
-                    e.preventDefault();
-                    $tr.remove();
-                    $selOffices.append($option);
-                });
-                $table.append($tr);
-            })
+            $officeInput.change(function() {
+                setTimeout(function() {
+                    $addError.text("");
+
+                    if (!$officeInput.val())
+                        return;
+
+                    var office = $officeInput.data("object");
+
+                    if (!office) {
+                        $addError.text("office not found");
+                        return;
+                    }
+                    $officeInput[0].clear();
+
+                    var $tr = util.jq([
+                        "<tr>",
+                        " <td class='id'></td>",
+                        " <td class='name'></td>",
+                        " <td class='action'>",
+                        "   <a href='#' class='del'>X</a>",
+                        "</td>",
+                        "</tr>",
+                    ]);
+                    officeIdFilter.push(office.id);
+                    updateOfficeInputParams();
+
+                    $tr.data("officeId", office.id);
+                    $tr.find(".id").text(office.id);
+                    $tr.find(".name").text(office.campus + " " + office.name);
+                    $tr.find(".del").click(function(e) {
+                        util.arrayRemove(officeIdFilter, office.id);
+                        updateOfficeInputParams();
+                        e.preventDefault();
+                        $tr.remove();
+                    });
+                    $table.append($tr);
+                })
+            });
         }
-
-        function fetchOffices() {
-            api.office.fetch(function(offices) {
-                offices.forEach(function(off) {
-                    var $option = $("<option>");
-                    $option.val(off.id);
-                    $option.text(off.name + " " + off.campus);
-                    $option.data("office", off);
-                    $selOffices.append($option);
-                });
+        function updateOfficeInputParams() {
+            var userId = currentUser ? currentUser.id : null;
+            $officeInput.data("params", {
+                except: officeIdFilter.concat([userId]),
             });
         }
     }
@@ -152,3 +137,4 @@ var dispatch = {
 window.addEventListener("load", function() {
     dispatch.setup($("section#dispatch"));
 });
+

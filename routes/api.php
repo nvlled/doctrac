@@ -430,6 +430,25 @@ Route::get('/positions/list', function (Request $req) {
 
 // -----------------------
 
+Route::any('/offices/search', function (Request $req) {
+    $id = $req->q;
+    $except = $req->except ?? [];
+    $q = "%{$req->q}%";
+    $offices = App\Office
+        ::whereNotIn("id", $except)
+        ->where(function($query) use ($q) {
+            $query
+                ->where("name", "like", $q)
+                ->orWhere("campus", "like", $q)
+                ->orWhere("id", "like", $q);
+        })
+        ->orderBy("campus")
+        ->orderBy("name")
+        ->limit(10)
+        ->get();
+    return $offices;
+});
+
 Route::post('/offices/{officeId}/action-for/{trackingId}',
     function (Request $req, $officeId, $trackingId) {
     $office = App\Office::find($officeId);
@@ -441,7 +460,6 @@ Route::post('/offices/{officeId}/action-for/{trackingId}',
 
 Route::post('/offices/{officeId}/abort/{trackingId}',
     function (Request $req, $officeId, $trackingId) {
-
 });
 
 Route::post('/offices/{officeId}/can-receive/{trackingId}',

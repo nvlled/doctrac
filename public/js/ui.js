@@ -132,7 +132,6 @@ var UI = {
             api.user.get($input.val(), function(user) {
                 api.user.emit(user);
                 if (!user || user.errors) {
-                    //api.user.clearSelf();
                     $output.text("(no match)");
                     return;
                 }

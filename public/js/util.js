@@ -47,4 +47,20 @@ var util = {
     storeSet: function(k, v) {
         localStorage[k] = JSON.stringify(v);
     },
+
+    arrayAddNew: function(array, x) {
+        var i = array.indexOf(x);
+        if (i < 0) {
+            array.push(x);
+        }
+        return array;
+    },
+
+    arrayRemove: function(array, x) {
+        var i = array.indexOf(x);
+        if (i >= 0) {
+            array.splice(i, 1);
+        }
+        return array;
+    },
 }
