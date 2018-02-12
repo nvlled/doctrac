@@ -4,12 +4,12 @@
 - Currently-held documents
 - Received documents
 
-
+* num of days/minutes
+* subject searching
 * attachments
 * add seen
-* show route information
-* change comboboxes to input with autocomplete
 * show loading indicators
+* use domvmjs thingy
 
 * page queries
 * save input value locally
