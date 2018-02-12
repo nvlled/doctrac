@@ -2,11 +2,13 @@
 body {
     font-size: 20px;
     font-family: Monospace;
+    color: cyan;
+    background-color: #333;
 }
 
 section {
     padding: 20px;
-    background-color: #fbfbfb;
+    background-color: #555;
     border-radius: 8px;
     border: 1px solid #ccc;
     margin: 10px;
@@ -16,6 +18,7 @@ ul.errors {
     list-style-type: square;
     color: #d33;
 }
+.error { color: #d33; }
 
 input, textarea, button, select {
     margin: 5px;
@@ -31,9 +34,11 @@ input[type=submit], button, select {
 .full { width: 98%; }
 .half { width: 50%; }
 .center { text-align: center; }
+.right { text-align: right; }
 
 .site-wrap {
     width: 900px;
+    margin: 0 auto;
 }
 
 table {
@@ -47,7 +52,7 @@ table, th, td {
 
 td.action a {
     font-size: 15px;
-    color: gray;
+    color: #f99;
     text-decoration: none;
 }
 td.action a::before { content: "["; }
@@ -64,8 +69,12 @@ table tbody tr:hover {
     cursor: pointer;
 }
 table tbody tr.sel:hover {
-    background-color: #3f3;
+    background-color: #3d3;
     cursor: pointer;
+}
+
+table tbody td.details {
+    border-left: 10px solid white;
 }
 
 button.action {

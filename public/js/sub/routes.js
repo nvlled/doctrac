@@ -148,11 +148,12 @@ window.addEventListener("load", function() {
         var route = $tr.data("value");
         if (!route)
             return;
-        var colspan = table.cols.length;
+        var colspan = table.cols.length-1;
 
         var $trDetails = util.jq([
             "<tr class='no-sel'>",
-            "<td class='' colspan="+colspan+"'>",
+            "<td></td>",
+            "<td class='details' colspan="+colspan+"'>",
             "<pre class='recv'>",
             route.detailed_info,
             "</pre>",
@@ -289,9 +290,6 @@ window.addEventListener("load", function() {
         }
         api.office.actionFor(params, function(resp) {
             $btnAction.show();
-            console.log("currentUser", currentUser);
-            console.log("doc", doc);
-            console.log("action", resp);
             $btnAction.data("action", resp);
             switch(resp) {
                 case "send":

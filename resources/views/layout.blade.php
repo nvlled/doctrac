@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Document Tracking</title>
+    <title>doctrac</title>
     <link rel="stylesheet" href="{{asset('css/site.css')}}">
     <script src="{{asset('js/jquery.min.js')}}"></script>
     <script src="{{asset('js/events.js')}}"></script>
@@ -12,8 +12,7 @@
     @yield("styles")
 </head>
 <body>
-    <h1>....</h1>
-    <hr>
+    <h1 class='center'>doctrac</h1>
     <div class="site-wrap">
         @yield("contents")
     </div>

@@ -23,6 +23,7 @@
         id="doc-history-userid"
         class="half trackingId autocomplete local-save"
         placeholder="tracking ID"
+        data-hidetext=true
         data-format="{title}"
         data-key="trackingId"
         data-url="/api/docs/search">
