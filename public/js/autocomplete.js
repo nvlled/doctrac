@@ -23,6 +23,7 @@ var autocomplete = {
         $input.focus(function() {
             $input.addClass("half");
             $label.hide();
+            loadDataList();
         });
         $input.change(function() {
             if (Object.keys(recentData).length == 0) {

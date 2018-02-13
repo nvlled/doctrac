@@ -2,11 +2,12 @@
 body {
     font-size: 20px;
     font-family: Monospace;
-    color: cyan;
+    color: #aff;
     background-color: #333;
 }
 a {
     color: white;
+    text-decoration: none;
 }
 
 section {
@@ -93,6 +94,18 @@ button.action {
     visibility: hidden;
 }
 
-li.sel a { color: red; }
-li.sel::before { content: "*"; }
-li.sel::after  { content: "*"; }
+li.sel {
+    list-style-type: square;
+    text-decoration: underline;
+}
+li.sel a {}
+li.sel::before { content: "["; }
+li.sel::after  { content: "]"; }
+
+li.new a {
+    color: #7f7;
+}
+li.new a::after {
+    content: " (new) ";
+    font-size: 13px;
+}

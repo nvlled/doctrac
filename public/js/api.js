@@ -73,6 +73,9 @@ var api = {
             });
         },
 
+        seenRoutes: makeHandler("/api/users/{userId}/seen-routes"),
+        seeRoute: makeHandler("/api/users/{userId}/see-route/{routeId}"),
+
         self: makeHandler("/api/users/self"),
         clearSelf: makeHandler("/api/users/self/clear"),
         setSelf: function(data, fn) {

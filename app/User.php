@@ -50,6 +50,10 @@ class User extends Authenticatable
         return $office->campus . " " . $office->name;
     }
 
+    public function seenRoutes() {
+        return SeenRoute::where("userId", $this->id)->get();
+    }
+
     public function validate() {
         return Validator::make($this->toArray(), [
             'email'  => 'required|unique:users|email',

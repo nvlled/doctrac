@@ -13,7 +13,9 @@ window.addEventListener("load", function() {
     api.user.self().then(setUser);
     api.user.change(setUser);
     api.doc.change(function() {
-        setUser(currentUser);
+        setTimeout(function() {
+            setUser(currentUser);
+        });
     });
 
     function setUser(user) {
@@ -49,7 +51,25 @@ window.addEventListener("load", function() {
         $viewDoc.find(".title").text(info.document_details);
         $viewDoc.find(".status").text(info.status);
         $viewDoc.find(".details").text(info.document_details);
-        $viewDoc.find(".annotations").text(info.annotations);
+
+        var $annotations = $viewDoc.find(".annotations");
+        if (info.annotations) {
+            $annotations.parent().show();
+            $annotations.text(info.annotations);
+        } else {
+            $annotations.parent().hide();
+        }
+
+        var $seenBy = $viewDoc.find(".seen-by");
+        var seenBy = info.seen_by || [];
+        if (seenBy.length > 0) {
+            $seenBy.parent().show();
+            $seenBy.text(
+                seenBy.map(function(sr) { return sr.full_name; }).join(", ")
+            );
+        } else {
+            $seenBy.parent().hide();
+        }
 
         $ul = $viewDoc.find(".activities");
         $ul.html("");
@@ -72,36 +92,57 @@ window.addEventListener("load", function() {
         if (!currentUser)
             return;
         $list.html("");
-        loader({officeId: currentUser.officeId})
-           .then(function(data) {
-               $list.html("");
-               if (!data || data.errors)
-                   return;
-               if (data.length == 0) {
-                   $list.parent().hide();
-                   $list.html("<em>(none)</em>");
-                   return;
-               }
-               $list.parent().show();
-               data.forEach(function(info) {
-                   var $li = $("<li><a href='#view-document'></a></li>");
-                   var $a = $li.find("a");
-                   var id = info.document_type == "serial"
-                        ? info.trackingId
-                        : info.trackingId + "-" + info.pathId;
-                   var text = util.interpolate(
-                       "({trackingId}) {title}",
-                       {trackingId: id, title: info.document_title}
-                   );
-                   $a.text(text);
-                   $a.click(function(e) {
-                       e.preventDefault();
-                       viewDocument(info);
-                       $container.find("li.sel").removeClass("sel");
-                       $li.addClass("sel");
-                   });
-                   $list.append($li);
-               });
+
+        var userId = currentUser ? currentUser.id : null;
+        Promise.all([
+            loader({officeId: currentUser.officeId}),
+            api.user.seenRoutes({userId: userId}),
+        ]).then(function(values) {
+            var data = values[0];
+            var seen = values[1] || {};
+
+            $list.html("");
+            $list.parent().hide();
+            if (!data || data.errors)
+                return;
+            if (data.length == 0) {
+                $list.html("<em>(none)</em>");
+                return;
+            }
+            $list.parent().show();
+            data.forEach(function(info) {
+                var $li = $("<li><a href='#view-document'></a></li>");
+                var $a = $li.find("a");
+                var id = info.document_type == "serial"
+                    ? info.trackingId
+                    : info.trackingId + "-" + info.pathId;
+                var text = util.interpolate(
+                    "({trackingId}) {title}",
+                    {id: info.id, trackingId: id, title: info.document_title}
+                );
+                $a.text(text);
+
+                var routeId = info.id;
+                $a.click(function(e) {
+                    e.preventDefault();
+                    viewDocument(info);
+                    $container.find("li.sel").removeClass("sel");
+                    $li.addClass("sel");
+                    api.user.seeRoute({
+                        userId: userId,
+                        routeId: routeId,
+                    });
+                    $li.removeClass("new");
+                });
+
+                if ((!seen[routeId]
+                    || !util.arrayContains(seen[routeId], info.status))
+                   ) {
+                    $li.addClass("new");
+                }
+
+                $list.append($li);
+            });
            });
     }
 });

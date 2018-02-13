@@ -14,6 +14,8 @@ class DocumentRoute extends Model
         "sender_name", "receiver_name",
         "detailed_info",
         "activities",
+        "time_elapsed",
+        "seen_by",
     ];
     public $hidden = ["office", "document", "prevRoute", "nextRoute", "sender", "receiver"];
 
@@ -126,8 +128,6 @@ class DocumentRoute extends Model
             ));
         }
 
-        // TODO:
-        //Seen by A, B, C
         return $activities;
     }
 
@@ -170,6 +170,33 @@ class DocumentRoute extends Model
             $text = "(no information available)";
         }
         return $text;
+    }
+
+    public function getSeenByAttribute() {
+        $status = $this->status;
+        if ($status == "delivering") {
+            $seenRoutes = SeenRoute
+                ::where("routeId", $this->nextId)
+                ->where("status",  "waiting")
+                ->get();
+        } else if ($status == "waiting") {
+            $seenRoutes = SeenRoute
+                ::where("routeId", $this->id)
+                ->where("status",  "waiting")
+                ->get();
+        } else {
+            return collect();
+        }
+
+        $result = collect();
+        return $seenRoutes;
+        foreach ($seenRoutes as $sr) {
+            $office = optional($sr->user)->office;
+            if ($office && $office->id != $this->officeId) {
+                $result->push($sr);
+            }
+        }
+        return $result;
     }
 
     public function isStart() {

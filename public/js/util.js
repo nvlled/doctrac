@@ -48,6 +48,12 @@ var util = {
         localStorage[k] = JSON.stringify(v);
     },
 
+    arrayContains: function(array, x) {
+        if (!array)
+            return false;
+        return array.indexOf(x) >= 0;
+    },
+
     arrayAddNew: function(array, x) {
         var i = array.indexOf(x);
         if (i < 0) {

@@ -99,6 +99,7 @@
         <div class=''>
             <button class='action hidden'>send/receive</button>
         </div>
+        <pre>seen by: <span class='seen-by'></span></pre>
         <hr>
         <p>activity log: </p>
         <ul class='activities'>

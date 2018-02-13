@@ -34,7 +34,6 @@ window.addEventListener("load", function() {
     function addOfficeRow(office) {
         var $tr = util.jq([
             "<tr>",
-            " <td class='id'></td>",
             " <td class='campus'></td>",
             " <td class='name'></td>",
             " <td class='action'>",

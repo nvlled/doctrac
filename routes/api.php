@@ -310,6 +310,36 @@ Route::any('/docs/send', function (Request $req) {
 
 // ---------------------------
 
+Route::any('/users/{userId}/see-route/{routeId}', function (Request $req, $userId, $routeId) {
+    $user  = App\User::find($userId);
+    $route = App\DocumentRoute::find($routeId);
+    if (!$user || !$route)
+        return null;
+    try {
+        $seen = new App\SeenRoute();
+        $seen->userId = $userId;
+        $seen->routeId = $routeId;
+        $seen->status = $route->status;
+        $seen->save();
+        return "okay";
+    } catch (Exception $e) { }
+    return null;
+});
+
+Route::any('/users/{userId}/seen-routes', function (Request $req, $userId) {
+    $user = App\User::find($userId);
+    if (!$user)
+        return null;
+    $ids = collect();
+    foreach ($user->seenRoutes() as $sr) {
+        if (@$ids[$sr->routeId] == null) {
+            $ids[$sr->routeId] = collect();
+        }
+        $ids[$sr->routeId]->push($sr->status);
+    }
+    return $ids;
+});
+
 Route::any('/users/search', function (Request $req) {
     $id = $req->q;
     if (is_numeric($id)) {
