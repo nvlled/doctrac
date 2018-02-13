@@ -2,7 +2,7 @@
 body {
     font-size: 20px;
     font-family: Monospace;
-    color: #aff;
+    color: #dff;
     background-color: #333;
 }
 a {
@@ -11,6 +11,7 @@ a {
 }
 
 section {
+    min-height: 200px;
     padding: 20px;
     background-color: #555;
     border-radius: 8px;
@@ -108,4 +109,16 @@ li.new a {
 li.new a::after {
     content: " (new) ";
     font-size: 13px;
+}
+
+nav.main ul{
+    padding: 0px;
+    margin: 0px;
+}
+nav.main li {
+    display: inline;
+    margin-right: 20px;
+}
+nav.main li a {
+    text-decoration: underline;
 }

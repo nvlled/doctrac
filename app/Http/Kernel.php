@@ -44,7 +44,7 @@ class Kernel extends HttpKernel
             // \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             //'throttle:60,1',
-            'bindings',
+            //'bindings',
         ],
     ];
 

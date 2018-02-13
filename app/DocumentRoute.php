@@ -81,6 +81,10 @@ class DocumentRoute extends Model
         return null;
     }
 
+    public function getTimeElapsedAttribute() {
+        return "TODO";
+    }
+
     public function getStatusAttribute() {
         if ($this->arrivalTime) {
             $nextRoute = $this->nextRoute;
@@ -115,7 +119,7 @@ class DocumentRoute extends Model
                  on {$prevRoute->forwardTime} by {$prevRoute->sender_name}"
             ));
         }
-        if ($this->arrivalTime) {
+        if ($this->arrivalTime && $this->prevId != null) {
             $activities->push(joinLines(
                 "Received on office ({$this->office_name})
                  on {$this->arrivalTime} by {$this->receiver->fullname}"

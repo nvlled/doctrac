@@ -12,7 +12,23 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
+});
+
+Route::get('/search', function () {
+    return view('search');
+});
+
+Route::get('/dispatch', function () {
+    return view('dispatch');
+});
+
+Route::get('/login', function () {
+    return view('login');
+});
+
+Route::get('/admin', function () {
+    return view('admin');
 });
 
 Route::get('/proto', function () {

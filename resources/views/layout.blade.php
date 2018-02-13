@@ -12,8 +12,19 @@
     @yield("styles")
 </head>
 <body>
-    <h1 class='center'>doctrac</h1>
+    <h1 class='center'>
+        <a href="/">doctrac</a>
+    </h1>
     <div class="site-wrap">
+        <nav class='main right'>
+            <ul>
+                <li><a href='/'>home</a></li>
+                <li><a href='/login'>user</a></li>
+                <li><a href='/search'>search</a></li>
+                <li><a href='/dispatch'>dispatch</a></li>
+                <li><a href='/admin'>admin</a></li>
+            </ul>
+        </nav>
         @yield("contents")
     </div>
     @yield("scripts")

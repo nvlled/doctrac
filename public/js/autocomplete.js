@@ -11,10 +11,14 @@ var autocomplete = {
 
 
         var recentData = {};
-        var $label = $("<label>");
+        var labelSel = $input.data("output") || "";
+        var $label = $(labelSel);
+        if ($label.length == 0) {
+            $label = $("<label>");
+            $label.insertAfter($input);
+        }
 
         $datalist.insertAfter($input);
-        $label.insertAfter($input);
 
         $datalist.attr("id", id);
         $input.attr("list", id);

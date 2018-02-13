@@ -66,7 +66,7 @@ class Office extends Model
         $routes = \App\DocumentRoute::where("officeId", $this->id)->get();
         $filtered = collect();
         $routes->each(function($route) use ($filtered) {
-            if ($route->status == "done")
+            if ($route->final && $route->status == "done")
                 return $filtered->push($route);
         });
         return $filtered;
