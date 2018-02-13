@@ -111,7 +111,7 @@ class DocumentRoute extends Model
 
         if ($prevRoute && $prevRoute->sender) {
             $activities->push(joinLines(
-                "Dispatched from the office ({$this->office_name})
+                "Dispatched from the office ({$prevRoute->office_name})
                  on {$prevRoute->forwardTime} by {$prevRoute->sender_name}"
             ));
         }

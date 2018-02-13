@@ -69,6 +69,7 @@ var dispatch = {
                     if (resp.errors)
                         UI.showErrors($container, resp.errors);
                     else {
+                        officeIds.splice(0);
                         $message.text("document sent: " + doc.trackingId);
                         console.log("okay", resp);
                         $table.find("tbody").html("");
