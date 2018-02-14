@@ -15,13 +15,17 @@
     <p class="user-info"></p>
     <script>
     $("#session input#session-userid").change(function() {
-        api.user.setSelf({userId: this.value});
+        if (this.value.trim())
+            api.user.setSelf({userId: this.value});
     });
     api.user.self()
        .then(function(user) {
-           $("#session input#session-userid")
-               .val(user.id)
-               .change();
+           if (!user)
+               return;
+           $("#session .user-info").text(util.interpolate(
+               "{lastname}, {firstname} | ({officeId}) {office_name}",
+               user
+           ));
        });
     </script>
 </section>
