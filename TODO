@@ -4,7 +4,10 @@
 - Currently-held documents
 - Received documents
 
-* move the action button
+* create a page for viewing the document
+* move the action button on document view page
+* show the document view page on row click in route table
+
 * do not show ID on autocompleted input
 * pages
 * changeable starting office
