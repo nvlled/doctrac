@@ -2,11 +2,9 @@ window.addEventListener("load", function() {
     var $container = $("section#doc-history");
     var $input = $container.find("input.trackingId");
     var $table = $container.find("table");
-    var $btnAction = $container.find("button.action");
     var $docTitle = $container.find(".title > .contents");
     var $docType = $container.find(".type");
     var $docDetails = $container.find(".details");
-    var $sendData = $container.find(".send-data");
     var $selOffices = $container.find("select.offices");
     var $annots = $container.find(".annots");
     var $origin = $container.find(".origin");
@@ -37,32 +35,12 @@ window.addEventListener("load", function() {
         },
     });
 
-    fetchOffices();
-    $sendData.hide();
-    $btnAction.hide();
 
     api.user.self()
        .then(function(user) {
            currentUser = user;
+           loadDocument();
        });
-
-    $btnAction.click(function(e) {
-        e.preventDefault();
-        var action = $btnAction.data("action");
-        var req;
-        switch (action) {
-            case "send"  : req = forwardDocument(); break;
-            case "recv"  : req = receiveDocument(); break;
-            case "abort" : req = abortSendDocument(); break;
-            default:
-                return;
-        }
-        api.doc.emit({});
-        req.then(function() {
-            loadDocument();
-        });
-    });
-
     $input.change(loadDocument);
     api.user.change(function(user) {
         currentUser = user;
@@ -79,21 +57,17 @@ window.addEventListener("load", function() {
         api.doc.get(params, function(doc) {
             UI.clearErrors($container);
             table.clearData();
-            clearDocInfo(doc);
-            $btnAction.hide();
-            $sendData.hide();
 
             if (doc.errors) {
                 UI.showErrors($container, doc.errors);
                 return;
             }
+            clearDocInfo(doc);
             if (!doc) {
                 return;
             }
             currentDocument = doc;
             updateDocInfo(doc);
-            updateAction(doc);
-            updateOfficeSelection(doc);
 
             if (doc.type == "parallel") {
                 loadParallelRoutes(id);
@@ -154,23 +128,27 @@ window.addEventListener("load", function() {
         var $trDetails = util.jq([
             "<tr class='no-sel'>",
             "<td></td>",
-            "<td class='details' colspan="+colspan+"'>",
-            "<pre class='recv'>",
-            route.detailed_info,
-            "</pre>",
+            "<td class='details half' colspan="+colspan+"'>",
+            "<ul class='recv'>",
+            route.activities.map(function(act) {
+                return util.interpolate(
+                    "<li>{text}</li>",
+                    {text: act}
+                );
+            }).join(""),
+            "</ul>",
+            "<a href='"+route.link+"'>more info</a>",
             "</td>",
             "</tr>",
         ]);
 
         $trDetails
             .hide()
+            .addClass("no-sel")
             .insertAfter($tr);
 
         $tr.click(function() {
             $trDetails.toggle();
-        });
-        $trDetails.click(function() {
-            $trDetails.hide();
         });
     }
 
@@ -205,69 +183,12 @@ window.addEventListener("load", function() {
         return api.doc.abortSend(params);
     }
 
-    function updateOfficeSelection(doc) {
-        var param = {
-            trackingId: doc.trackingId,
-        }
-        var p1 = api.doc.currentRoutes(param);
-        var p2 = api.doc.nextRoutes(param);
-        Promise.all([p1, p2]).then(function(values) {
-            var routes = values[0];
-            var nextRoutes = values[1];
-            if (routes && routes.map) {
-                var officeIds = routes.map(function(r) {
-                    return r.officeId;
-                });
-                disableOffices(officeIds);
-            }
-            if (nextRoutes && nextRoutes.map) {
-                var officeIds = nextRoutes.map(function(r) {
-                    return r.officeId;
-                });
-                selectOffices(officeIds);
-            }
-        });
-    }
-
-    function selectOffices(officeIds) {
-        var index = -1;
-        var value = -1;
-        $selOffices.find("option").each(function(i, opt) {
-            var offId = parseInt(opt.value);
-            if (officeIds.indexOf(offId) >= 0) {
-                opt.selected = true;
-                index = i;
-                value = offId;
-            }
-        });
-        if (value >= 0)
-            $selOffices.val(value);
-    }
-    function disableOffices(officeIds) {
-        $selOffices.find("option").each(function(_, opt) {
-            opt.disabled = false;
-            var offId = parseInt(opt.value);
-            if (officeIds.indexOf(offId) >= 0)
-                opt.disabled = true;
-        });
-    }
-
-    function fetchOffices() {
-        api.office.fetch(function(offices) {
-            $selOffices.html("");
-            offices.forEach(function(off) {
-                var $option = $("<option>");
-                $option.val(off.id);
-                $option.text(off.name + " " + off.campus);
-                $selOffices.append($option);
-            });
-        });
-    }
-
     function clearDocInfo(doc) {
+        var details = $input.val() ? "(no matching document found)" : "";
+
         updateDocInfo({
             title: "---",
-            details: "(no mathching document found)",
+            details: details,
             type: "*",
         });
     }
@@ -277,31 +198,4 @@ window.addEventListener("load", function() {
         $docDetails.text(doc.details);
     }
 
-    function updateAction(doc) {
-        if (!currentDocument)
-            return;
-
-        if (!currentUser) {
-            $btnAction.hide();
-            return;
-        }
-        var params = {
-            officeId: currentUser.officeId,
-            trackingId: doc.trackingId,
-        }
-        api.office.actionFor(params, function(resp) {
-            $btnAction.show();
-            $btnAction.data("action", resp);
-            switch(resp) {
-                case "send":
-                    $btnAction.text("send");
-                    $sendData.show();
-                    break;
-                case "recv": $btnAction.text("receive");break;
-                case "abort": $btnAction.text("abort send");break;
-                default:
-                    $btnAction.hide();
-            }
-        });
-    }
 });
