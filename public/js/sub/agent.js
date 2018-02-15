@@ -10,6 +10,9 @@ window.addEventListener("load", function() {
     var currentUser = null;
     var currentDoc = null;
 
+    clearList();
+    $viewDoc.hide();
+
     api.user.self().then(setUser);
     api.user.change(setUser);
     api.doc.change(function() {
@@ -83,6 +86,14 @@ window.addEventListener("load", function() {
         }
     }
 
+    function clearList() {
+        $incomingList.html("");
+        $heldList.html("");
+        $heldList.html("");
+        $dispatchedList.html("");
+        $finalList.html("");
+    }
+
     function loadIncoming() { return loadList($incomingList, api.office.incoming) }
     function loadHeld() { return loadList($heldList, api.office.held) }
     function loadDispatched() { return loadList($dispatchedList, api.office.dispatched) }
@@ -110,6 +121,7 @@ window.addEventListener("load", function() {
                 return;
             }
             $list.parent().show();
+            var url = "/document/{id}";
             data.forEach(function(info) {
                 var $li = $("<li><a href='#view-document'></a></li>");
                 var $a = $li.find("a");
@@ -123,17 +135,7 @@ window.addEventListener("load", function() {
                 $a.text(text);
 
                 var routeId = info.id;
-                $a.click(function(e) {
-                    e.preventDefault();
-                    viewDocument(info);
-                    $container.find("li.sel").removeClass("sel");
-                    $li.addClass("sel");
-                    api.user.seeRoute({
-                        userId: userId,
-                        routeId: routeId,
-                    });
-                    $li.removeClass("new");
-                });
+                $a.attr("href", util.interpolate(url, {id: routeId}));
 
                 if ((!seen[routeId]
                     || !util.arrayContains(seen[routeId], info.status))

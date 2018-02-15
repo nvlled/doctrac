@@ -316,11 +316,7 @@ Route::any('/users/{userId}/see-route/{routeId}', function (Request $req, $userI
     if (!$user || !$route)
         return null;
     try {
-        $seen = new App\SeenRoute();
-        $seen->userId = $userId;
-        $seen->routeId = $routeId;
-        $seen->status = $route->status;
-        $seen->save();
+        $route->seenBy($user);
         return "okay";
     } catch (Exception $e) { }
     return null;

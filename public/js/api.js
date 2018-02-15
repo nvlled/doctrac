@@ -7,8 +7,8 @@ function getInternalError(err) {
 
 function defaultHandler(resp) {
     console.log("response: ", resp);
-    if (resp.errors)
-        console.warn("errors: ", errors);
+    if (resp && resp.errors)
+        console.warn("errors: ", resp.errors);
 }
 
 function makeHandler(url) {
