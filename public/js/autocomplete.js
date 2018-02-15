@@ -30,11 +30,7 @@ var autocomplete = {
             loadDataList();
         });
         $input.change(function() {
-            if (Object.keys(recentData).length == 0) {
-                loadDataList().then(update);
-            } else {
-                update();
-            }
+            loadDataList().then(update);
         });
         $input.blur(function() {
             $label.show();
