@@ -84,4 +84,7 @@ var util = {
     refresh: function() {
         window.location.reload();
     },
+    redirect: function(url) {
+        window.location = url;
+    },
 }

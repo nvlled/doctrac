@@ -57,12 +57,12 @@ window.addEventListener("load", function() {
         api.doc.get(params, function(doc) {
             UI.clearErrors($container);
             table.clearData();
-            clearDocInfo(doc);
 
             if (doc.errors) {
                 UI.showErrors($container, doc.errors);
                 return;
             }
+            clearDocInfo(doc);
             if (!doc) {
                 return;
             }
@@ -128,7 +128,7 @@ window.addEventListener("load", function() {
         var $trDetails = util.jq([
             "<tr class='no-sel'>",
             "<td></td>",
-            "<td class='details' colspan="+colspan+"'>",
+            "<td class='details half' colspan="+colspan+"'>",
             "<ul class='recv'>",
             route.activities.map(function(act) {
                 return util.interpolate(
@@ -184,9 +184,11 @@ window.addEventListener("load", function() {
     }
 
     function clearDocInfo(doc) {
+        var details = $input.val() ? "(no matching document found)" : "";
+
         updateDocInfo({
             title: "---",
-            details: "(no mathching document found)",
+            details: details,
             type: "*",
         });
     }

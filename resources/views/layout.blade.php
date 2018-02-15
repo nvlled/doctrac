@@ -18,7 +18,7 @@
     <div class="site-wrap">
         <nav class='main right'>
             <ul>
-                <li><a href='/'>{{Auth::user()->full_name ?? "login"}}</a></li>
+                <li><a href='/'>{{Auth::user()->full_name ?? "home"}}</a></li>
                 <li><a href='/login'>login</a></li>
                 <li><a href='/search'>search</a></li>
                 <li><a href='/dispatch'>dispatch</a></li>

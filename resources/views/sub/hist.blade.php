@@ -4,8 +4,9 @@
     tracking ID
     <input name="trackingId"
         id="doc-history-userid"
-        class="half trackingId autocomplete local-save"
+        class="half trackingId autocomplete"
         placeholder="search for tracking ID or title"
+        value="{{$trackingId ?? ''}}"
         data-hidetext=true
         data-format="{title}"
         data-key="trackingId"
