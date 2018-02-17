@@ -4,8 +4,9 @@
     tracking ID
     <input name="trackingId"
         id="doc-history-userid"
-        class="half trackingId autocomplete local-save"
+        class="half trackingId autocomplete"
         placeholder="search for tracking ID or title"
+        value="{{$trackingId ?? ''}}"
         data-hidetext=true
         data-format="{title}"
         data-key="trackingId"
@@ -30,15 +31,5 @@
         <tbody>
         </tbody>
     </table>
-    <br>
-    <div class="center">
-        <div class="send-data">
-            <textarea name="annotation" rows="5" class="full annots"
-            placeholder="comments, notes or annotation" ></textarea>
-            <br>
-            Destination: <select class="offices"></select>
-        </div>
-        <button class='action half'>SEND / RECEIVE / ABORT SEND / </button>
-    </div>
     <script src="{{asset('js/sub/routes.js')}}"></script>
 </section>

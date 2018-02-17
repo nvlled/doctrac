@@ -69,4 +69,22 @@ var util = {
         }
         return array;
     },
+
+    loadJson: function(sel, promise) {
+        var json = $(sel).val();
+        try {
+            var obj = JSON.parse(json);
+            if (obj) {
+                return Promise.resolve(obj);
+            }
+        } catch(e) { }
+        return promise;
+    },
+
+    refresh: function() {
+        window.location.reload();
+    },
+    redirect: function(url) {
+        window.location = url;
+    },
 }

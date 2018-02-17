@@ -16,6 +16,7 @@ class DocumentRoute extends Model
         "activities",
         "time_elapsed",
         "seen_by",
+        "link",
     ];
     public $hidden = ["office", "document", "prevRoute", "nextRoute", "sender", "receiver"];
 
@@ -61,6 +62,10 @@ class DocumentRoute extends Model
 
     public function getReceiverNameAttribute() {
         return optional($this->receiver)->fullname;
+    }
+
+    public function getLinkAttribute() {
+        return route("view-document", ["id"=>$this->id]);
     }
 
     public function getOfficeNameAttribute() {
@@ -205,6 +210,18 @@ class DocumentRoute extends Model
 
     public function isStart() {
         return $this->prevId == null && $this->nextId != null;
+    }
+
+    public function seenBy($user) {
+        if (!$user)
+            return;
+        try {
+            $seen = new \App\SeenRoute();
+            $seen->userId = $user->id;
+            $seen->routeId = $this->id;
+            $seen->status = $this->status;
+            $seen->save();
+        } catch (Exception $_) { /* ignore */ }
     }
 
     public function followRoutesInPath() {
