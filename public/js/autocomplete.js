@@ -9,14 +9,7 @@ var autocomplete = {
         if (!$input.data("key"))
             $input.data("key", "id");
 
-
         var recentData = {};
-        var labelSel = $input.data("output") || "";
-        var $label = $(labelSel);
-        if ($label.length == 0) {
-            $label = $("<label>");
-            $label.insertAfter($input);
-        }
 
         $datalist.insertAfter($input);
 
@@ -24,23 +17,22 @@ var autocomplete = {
         $input.attr("list", id);
         $input.attr("autocomplete", "on");
 
+        $input.on("set-value", function(_, data) {
+            if (data) {
+                $input.val(makeValue(data));
+            }
+        });
         $input.focus(function() {
-            $input.addClass("half");
-            $label.hide();
+            $input.select();
             loadDataList();
         });
         $input.change(function() {
             loadDataList().then(update);
         });
-        $input.blur(function() {
-            $label.show();
-            $input.removeClass("half");
-        });
         $input.each(function() {
             this.clear = function() {
                 $input.val("");
                 $input.data("object", null);
-                $label.text("");
             }
         });
 
@@ -49,21 +41,32 @@ var autocomplete = {
         });
 
         function update() {
-            $input.removeClass("half");
-            $label.show();
             var value = $input.val();
             var data = recentData[value];
-            var hideText = $input.data("hidetext");
 
             if (recentData && data) {
+                $input.data("value", data.value);
                 $input.data("object", data.row);
-                if (!hideText)
-                    $label.text(data.text);
+                $input.trigger("complete", data.value);
             } else {
-                $label.text("");
+                $input.data("value", null);
                 $input.data("object", null);
+                $input.trigger("complete", null);
             }
         }
+
+        function makeValue(data) {
+            var key = $input.data("key");
+            var format = $input.data("format");
+            var value = data[key];
+            var text = "";
+            if (format) {
+                text = util.interpolate(format, data);
+                return "("+value+") "+text;
+            }
+            return value;
+        }
+
         function loadDataList() {
             var url = $input.data("url");
             var params = $input.data("params") || {};
@@ -79,23 +82,21 @@ var autocomplete = {
                     delete recentData;
                     recentData = {};
 
-                    var key = $input.data("key");
                     data.forEach(function(x) {
-                        var format = $input.data("format");
+                        var key = $input.data("key");
                         var value = x[key];
-                        var text = "";
-                        if (format) {
-                            text = util.interpolate(format, x);
-                        } else {
-                            text = Object.values(x).toString();
-                        }
-                        var optionData = {
-                            text: text,
-                            value: value,
+                        value = makeValue(x);
+
+                        var $option = util.jq("<option>", {
+                            text: value,
                             row: x,
-                        }
-                        var $option = util.jq("<option>", optionData);
-                        recentData[value] = optionData;
+                        });
+
+                        recentData[value] = {
+                            value: x[key],
+                            text: value,
+                            row: x,
+                        };
                         $datalist.append($option);
                     });
                 });

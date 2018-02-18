@@ -86,7 +86,7 @@ var dispatch = {
         function setupAddButton() {
             var $btn = $container.find("button.add");
 
-            $officeInput.change(function() {
+            $officeInput.on("complete", function() {
                 setTimeout(function() {
                     $addError.text("");
 

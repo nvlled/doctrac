@@ -41,7 +41,7 @@ window.addEventListener("load", function() {
            currentUser = user;
            loadDocument();
        });
-    $input.change(loadDocument);
+    $input.on("complete", loadDocument);
     api.user.change(function(user) {
         currentUser = user;
         loadDocument();
@@ -51,7 +51,7 @@ window.addEventListener("load", function() {
 
     var currentDocument;
     function loadDocument() {
-        var id = $input.val();
+        var id = $input.data("value");
 
         var params = {trackingId: id};
         api.doc.get(params, function(doc) {
@@ -158,7 +158,7 @@ window.addEventListener("load", function() {
             userId: user ? user.id : null,
             officeId: parseInt($selOffices.val()),
             annotations: $annots.val(),
-            trackingId: $input.val(),
+            trackingId: $input.data("value"),
         }
         return api.doc.forward(params);
     }
@@ -168,7 +168,7 @@ window.addEventListener("load", function() {
         var params = {
             userId: user ? user.id : null,
             officeId: parseInt($selOffices.val()),
-            trackingId: $input.val(),
+            trackingId: $input.data("value"),
         }
         return api.doc.receive(params);
     }
@@ -178,13 +178,13 @@ window.addEventListener("load", function() {
         var params = {
             userId: user ? user.id : null,
             officeId: parseInt($selOffices.val()),
-            trackingId: $input.val(),
+            trackingId: $input.data("value"),
         }
         return api.doc.abortSend(params);
     }
 
     function clearDocInfo(doc) {
-        var details = $input.val() ? "(no matching document found)" : "";
+        var details = $input.data("value") ? "(no matching document found)" : "";
 
         updateDocInfo({
             title: "---",
