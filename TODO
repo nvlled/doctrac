@@ -1,23 +1,30 @@
 
-* User view
-- Incoming documents
-- Currently-held documents
-- Received documents
+Spec updates
+Select Office
+| CAMPUS ∇ | | Office ∇ | | Person ∇ |
 
-* create a page for viewing the document
-* move the action button on document view page
-* show the document view page on row click in route table
+--------------------------------------------
+
+* no individual user accounts, one account per office
+* documents always originate from records office
+* documents must always go through the records office
+  when passing from one campus to another
+* ask if project can be made opensores/made public
+  so I could solicit contrabutions (i.e. on the frontend design)
+* Tracking ID format: <campus>-<year>-0000
+* confirm final route or improve the shit UI
+* Notify the office when user has seen the delivery
+* email/sms notifications
+
+--------------------------------------------
+
 * do not show ID on autocompleted input
 * pages
-* changeable starting office
 * num of days/minutes
 * subject searching
 * attachments
-* add seen
 * show loading indicators
 * use domvmjs thingy
-
 * page queries
-* save input value locally
-* edit/update of models
 * handle deletion (or prevent)
+
