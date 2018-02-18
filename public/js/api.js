@@ -62,6 +62,12 @@ var api = {
         origins: makeHandler("/api/routes/origins/{trackingId}"),
     },
 
+    campus: {
+        add: makeHandler("/api/campuses/add"),
+        fetch: makeHandler("/api/campuses/list"),
+        search: makeHandler("/api/campuses/search"),
+    },
+
     user: {
         search: makeHandler("/api/users/search"),
         emit: function(data) {

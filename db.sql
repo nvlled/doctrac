@@ -1,10 +1,15 @@
 
+delete from campuses;
 delete from offices;
 delete from positions;
 delete from privileges;
 delete from users;
 delete from documents;
 delete from document_routes;
+
+insert into campuses(id, name, created_at, updated_at) values
+(1, "urdaneta", NOW(), NOW()),
+(2, "lingayen", NOW(), NOW());
 
 insert into offices(id, campus, name, created_at, updated_at) values
 (@rec:=1,    'urdaneta', 'records', NOW(), NOW()),

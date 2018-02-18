@@ -562,3 +562,28 @@ Route::get('/offices/list', function (Request $req) {
 });
 
 // -----------------------
+
+Route::any('/campuses/add', function (Request $req) {
+    $campus = new \App\Campus();
+    $campus->name = $req->name;
+    $campus->save();
+    return $campus;
+});
+
+Route::any('/campuses/list', function (Request $req) {
+    return \App\Campus::all();
+});
+
+Route::any('/campuses/search', function (Request $req) {
+    $id = $req->q;
+    $except = $req->except ?? [];
+    $q = "%{$req->q}%";
+    $campuses = App\Campus
+        ::whereNotIn("id", $except)
+        ->orderBy("name")
+        ->limit(10)
+        ->get();
+    return $campuses;
+});
+
+// -----------------------
