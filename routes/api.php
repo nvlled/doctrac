@@ -310,6 +310,15 @@ Route::any('/docs/send', function (Request $req) {
 
 // ---------------------------
 
+Route::any('/users/login', function (Request $req) {
+    $username = $req->username;
+    $password = $req->password;
+    if (Auth::attempt(["username"=>$username, "password"=>$password])) {
+        return Auth::user();
+    }
+    return null;
+});
+
 Route::any('/users/{userId}/see-route/{routeId}', function (Request $req, $userId, $routeId) {
     $user  = App\User::find($userId);
     $route = App\DocumentRoute::find($routeId);

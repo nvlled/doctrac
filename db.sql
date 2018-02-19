@@ -52,23 +52,20 @@ insert into users
     created_at, 
     updated_at,
     id, 
-    email,
+    username,
     password,
-    firstname, 
-    middlename, 
-    lastname, 
-    positionId,
     privilegeId,
     officeId
 ) values
-(@t, @t, 1,        "a@x.y", @p, "Astaroth", "Cosette", "Aida", @head, @admin, 1),
-(@t, @t, @off1:=2, "b@x.y", @p, "Rohan", "Othello", "Zuleika", @asst, @officer, 2),
-(@t, @t, @off2:=3, "c@x.y", @p, "Igerna", "Aramis", "Gandalf", @clrk, @officer, 3),
-(@t, @t, 4,        "d@x.y", @p, "Ruslan", "Guenevere", "Mehrab", @clrk, @agent, 4),
-(@t, @t, 5,        "e@x.y", @p, "Bedwyr", "Daenerys", "Medraut", @fact, @agent, 2),
-(@t, @t, 6,        "f@x.y", @p, "Enobarbus", "Merlin", "Malvina", @asst, @agent, 6),
-(@t, @t, 7,        "g@x.y", @p, "Ossian", "Bayard", "Lalage", @head, @agent, 5),
-(@t, @t, 8,        "h@x.y", @p, "Morgen", "Cyrano", "Turin", @fact, @agent, 1);
+(@t, @t, 1, "ala-rec@psu.edu.ph", @p, @officer, 1),
+(@t, @t, 2, "asi-rec@psu.edu.ph", @p, @officer, 2),
+(@t, @t, 3, "bay-rec@psu.edu.ph", @p, @officer, 3),
+(@t, @t, 4, "bin-rec@psu.edu.ph", @p, @officer, 4),
+(@t, @t, 5, "inf-rec@psu.edu.ph", @p, @officer, 5),
+(@t, @t, 6, "lin-rec@psu.edu.ph", @p, @officer, 6),
+(@t, @t, 7, "car-rec@psu.edu.ph", @p, @officer, 7),
+(@t, @t, 8, "sta-rec@psu.edu.ph", @p, @officer, 8),
+(@t, @t, 9, "urd-rec@psu.edu.ph", @p, @officer, 9);
 
 insert into documents
 (
