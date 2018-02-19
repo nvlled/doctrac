@@ -1,9 +1,5 @@
 
-Spec updates
-Select Office
-| CAMPUS ∇ | | Office ∇ | | Person ∇ |
-
---------------------------------------------
+TODO:
 
 * no individual user accounts, one account per office
 * documents always originate from records office
@@ -12,19 +8,20 @@ Select Office
 * ask if project can be made opensores/made public
   so I could solicit contrabutions (i.e. on the frontend design)
 * Tracking ID format: <campus>-<year>-0000
+    ** search if reseting counters to zero is possible and safe
 * confirm final route or improve the shit UI
 * Notify the office when user has seen the delivery
+* popup when asking for final route
 * email/sms notifications
+
+* set more than one attachments and notes/annotations
+    ** Add model: Note(id, trackingId, officeId, contents)
 
 --------------------------------------------
 
-* do not show ID on autocompleted input
-* pages
 * num of days/minutes
 * subject searching
 * attachments
 * show loading indicators
-* use domvmjs thingy
 * page queries
 * handle deletion (or prevent)
-
