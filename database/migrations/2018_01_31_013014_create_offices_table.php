@@ -15,8 +15,8 @@ class CreateOfficesTable extends Migration
     {
         Schema::create('offices', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('campusId');
             $table->string('name', 1024);
-            $table->string('campus', 1024);
             $table->timestamps();
         });
     }

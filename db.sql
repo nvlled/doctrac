@@ -7,23 +7,30 @@ delete from users;
 delete from documents;
 delete from document_routes;
 
-insert into campuses(id, name, created_at, updated_at) values
-(1, "urdaneta", NOW(), NOW()),
-(2, "lingayen", NOW(), NOW());
+insert into campuses(id, code, name, created_at, updated_at) values
+(1,  "ala", "Alaminos", NOW(), NOW()),
+(2,  "asi", "Asingan", NOW(), NOW()),
+(3,  "bay", "Bayambang", NOW(), NOW()),
+(4,  "bin", "Binmaley", NOW(), NOW()),
+(5,  "inf", "Infanta", NOW(), NOW()),
+(6,  "lin", "Lingayen", NOW(), NOW()),
+(7,  "car", "San Carlos", NOW(), NOW()),
+(8,  "sta", "Sta Maria", NOW(), NOW()),
+(9, "urd", "urdaneta", NOW(), NOW());
 
-insert into offices(id, campus, name, created_at, updated_at) values
-(@rec:=1,    'urdaneta', 'records', NOW(), NOW()),
-(@mis:=2,  'urdaneta', 'MIS', NOW(), NOW()),
-(@acc:=3,  'urdaneta', 'accounting', NOW(), NOW()),
-(@coc:=4,  'urdaneta', 'COC', NOW(), NOW()),
-(@csh:=5,  'urdaneta', 'cashier', NOW(), NOW()),
-(6,  'lingayen', 'MIS', NOW(), NOW()),
-(7,  'lingayen', 'accounting', NOW(), NOW()),
-(8,  'lingayen', 'COC', NOW(), NOW()),
-(9,  'asingan', 'registrar', NOW(), NOW()),
-(10, 'asingan', 'MIS', NOW(), NOW()),
-(11, 'asingan', 'accounting', NOW(), NOW()),
-(12, 'asingan', 'COC', NOW(), NOW());
+insert into offices(id, campusId, name, created_at, updated_at) values
+(@urec:=1, 9, 'Records', NOW(), NOW()),
+(@umis:=2, 9, 'MIS', NOW(), NOW()),
+(@uacc:=3, 9, 'Accounting', NOW(), NOW()),
+(@ucoc:=4, 9, 'COC', NOW(), NOW()),
+(@ucsh:=5, 9, 'Cashier', NOW(), NOW()),
+(6,        6, 'MIS', NOW(), NOW()),
+(7,        6, 'Accounting', NOW(), NOW()),
+(8,        6, 'COC', NOW(), NOW()),
+(9,        2, 'Registrar', NOW(), NOW()),
+(10,       2, 'MIS', NOW(), NOW()),
+(11,       2, 'Accounting', NOW(), NOW()),
+(12,       2, 'COC', NOW(), NOW());
 
 insert into positions(id, name, created_at, updated_at) values
 (@head := 1,  'Head', NOW(), NOW()),
@@ -92,30 +99,30 @@ insert into document_routes
 ) values
 
 --                      recvr  sender  P   N    arrv   forw
-(1, 1, @trackID1, @rec, @off1, @off1,  @_, 2,   @day1, @day1, false, @_),
-(2, 1, @trackID1, @mis, @_,    @_,     1, @_,   @_,    @_,    true,  @_),
+(1, 1, @trackID1, @urec, @off1, @off1,  @_, 2,   @day1, @day1, false, @_),
+(2, 1, @trackID1, @umis, @_,    @_,     1, @_,   @_,    @_,    true,  @_),
 
-(3, 2, @trackID2, @mis, @off2, @off2,  @_, 4,   @day1, @day1, false, @_),
-(4, 2, @trackID2, @csh, 3,     @_,     3,  5,   @day2, @_,    false, 'something'),
-(5, 2, @trackID2, @acc, @_,    @_,     4,  6,   @_,    @_,    false, @_),
-(6, 2, @trackID2, @coc, @_,    @_,     5,  @_,  @_,    @_,    true,  @_),
+(3, 2, @trackID2, @umis, @off2, @off2,  @_, 4,   @day1, @day1, false, @_),
+(4, 2, @trackID2, @ucsh, 3,     @_,     3,  5,   @day2, @_,    false, 'something'),
+(5, 2, @trackID2, @uacc, @_,    @_,     4,  6,   @_,    @_,    false, @_),
+(6, 2, @trackID2, @ucoc, @_,    @_,     5,  @_,  @_,    @_,    true,  @_),
 
-(23, 7, @trackID3, @mis, @off2, @off2, @_, 24,  @day1, @day1, false, @_),
-(24, 7, @trackID3, @csh, 3,     4,     23, 25,  @day2, @day2, false, 'something'),
-(25, 7, @trackID3, @acc, @_,    @_,    24, 26,  @_,    @_,    false, @_),
-(26, 7, @trackID3, @coc, @_,    @_,    25, @_,  @_,    @_,    true,  @_),
+(23, 7, @trackID3, @umis, @off2, @off2, @_, 24,  @day1, @day1, false, @_),
+(24, 7, @trackID3, @ucsh, 3,     4,     23, 25,  @day2, @day2, false, 'something'),
+(25, 7, @trackID3, @uacc, @_,    @_,    24, 26,  @_,    @_,    false, @_),
+(26, 7, @trackID3, @ucoc, @_,    @_,    25, @_,  @_,    @_,    true,  @_),
 
-(7,  3, @trackID4, @coc, @off1, @off1, @_, 8,   @day1, @day1, false, @_),
-(8,  3, @trackID4, @csh, 5,     5,     7,  9,   @day2, @day2, false, 'sign'),
-(9,  3, @trackID4, @mis, 6,     @_,    8,  @_,  @day3, @_,    true, 'blah'),
+(7,  3, @trackID4, @ucoc, @off1, @off1, @_, 8,   @day1, @day1, false, @_),
+(8,  3, @trackID4, @ucsh, 5,     5,     7,  9,   @day2, @day2, false, 'sign'),
+(9,  3, @trackID4, @umis, 6,     @_,    8,  @_,  @day3, @_,    true, 'blah'),
 
-(11, 4, @trackID5, @rec, @off2, @off2, @_, 14,  @day1, @day2, false, @_),
-(12, 5, @trackID5, @rec, @off2, @off2, @_, 15,  @day1, @day2, false, @_),
-(13, 6, @trackID5, @rec, @off2, @off2, @_, 16,  @day1, @day2, false,  @_),
+(11, 4, @trackID5, @urec, @off2, @off2, @_, 14,  @day1, @day2, false, @_),
+(12, 5, @trackID5, @urec, @off2, @off2, @_, 15,  @day1, @day2, false, @_),
+(13, 6, @trackID5, @urec, @off2, @off2, @_, 16,  @day1, @day2, false,  @_),
 
-(14, 4, @trackID5, @coc, 3,     @_,    11, @_,  @_,    @_,    true, @_),
-(15, 5, @trackID5, @csh, 4,     @_,    12, @_,  @_,    @_,    true, @_),
-(16, 6, @trackID5, @mis, 5,     @_,    13, @_,  @_,    @_,    true,  @_);
+(14, 4, @trackID5, @ucoc, 3,     @_,    11, @_,  @_,    @_,    true, @_),
+(15, 5, @trackID5, @ucsh, 4,     @_,    12, @_,  @_,    @_,    true, @_),
+(16, 6, @trackID5, @umis, 5,     @_,    13, @_,  @_,    @_,    true,  @_);
 
 
 

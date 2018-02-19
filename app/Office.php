@@ -7,7 +7,22 @@ use Illuminate\Support\Facades\Validator;
 
 class Office extends Model
 {
-    public function holdsDoc($doc) {
+    protected $appends = ["campus_name", "campus_code"];
+
+
+    function campus() {
+        return $this->hasOne("App\Campus", "id", "campusId");
+    }
+
+    function getCampusCodeAttribute() {
+        return optional($this->campus)->code;
+    }
+
+    function getCampusNameAttribute() {
+        return optional($this->campus)->name;
+    }
+
+    function holdsDoc($doc) {
         foreach ($doc->currentOffices() as $office) {
             if ($this->id == $office->id)
                 return true;
@@ -90,7 +105,6 @@ class Office extends Model
         return false;
     }
 
-    // TODO:
     public function canAbortSend($doc) {
         foreach ($doc->currentRoutes() as $route) {
             $nextRoute = $route->nextRoute;
@@ -117,8 +131,9 @@ class Office extends Model
 
     public function validate() {
         return Validator::make($this->toArray(), [
-            'name'   => 'required',
-            'campus' => 'required',
+            'name'     => 'required',
+            'campusId' => 'required',
         ]);
     }
 }
+

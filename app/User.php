@@ -47,7 +47,7 @@ class User extends Authenticatable
         $office = $this->office;
         if (!$office)
             return "";
-        return $office->campus . " " . $office->name;
+        return $office->campus_name . " " . $office->name;
     }
 
     public function seenRoutes() {
