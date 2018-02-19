@@ -8,7 +8,6 @@
         placeholder="search for tracking ID or title"
         value="{{$trackingId ?? ''}}"
         data-hidetext=true
-        data-format="{title}"
         data-key="trackingId"
         data-url="/api/docs/search">
 

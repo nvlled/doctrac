@@ -59,3 +59,7 @@ Route::get('/admin', function () {
 Route::get('/proto', function () {
     return view('proto');
 });
+
+Route::get('/proto2', function () {
+    return view('proto2');
+});

@@ -87,4 +87,30 @@ var util = {
     redirect: function(url) {
         window.location = url;
     },
+
+    toArray: function(iterator) {
+        var result = [];
+        while(true) {
+            var state = iterator.next();
+            if (!state || state.done) {
+                break;
+            }
+            result.push(state.value);
+        }
+        return result;
+    },
+
+    getFormData: function(form) {
+        if (form instanceof $) // is a jquery object
+            form = form[0];
+
+        var formData = new FormData(form);
+        var result = {};
+        util.toArray(formData.entries()).forEach(function(entry) {
+            var k = entry[0];
+            var v = entry[1];
+            result[k] = v;
+        });
+        return result;
+    },
 }
