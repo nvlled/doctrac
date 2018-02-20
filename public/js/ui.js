@@ -141,6 +141,29 @@ var UI = {
         });
     },
     
+    showMessages: function($div, msgs) {
+        var $msgs = $div.find("ul.msgs");
+        if ($msgs.length == 0) {
+            $msgs = $("<ul class='msgs'>");
+            $div.append($msgs);
+        }
+        if (!msgs)
+            return;
+
+        if (typeof msgs == "string")
+            msgs = [msgs];
+
+        msgs.forEach(function(msg) {
+            var $li = $("<li>");
+            $li.text(msg);
+            $msgs.append($li);
+        });
+    },
+
+    clearMessages: function($div) {
+        $div.find("ul.msgs").html("");
+    },
+
     showErrors: function($div, errors) {
         var $errors = $div.find("ul.errors");
         if ($errors.length == 0) {

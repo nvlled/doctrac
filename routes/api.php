@@ -556,7 +556,7 @@ Route::post('/offices/del/{id}', function (Request $req, $id) {
 Route::post('/offices/add', function (Request $req) {
     $office = new App\Office();
     $office->name = $req->name;
-    $office->campus = $req->campus;
+    $office->campusId = $req->campusId;
 
     $v = $office->validate();
     if ($v->fails())

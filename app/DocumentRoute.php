@@ -72,7 +72,7 @@ class DocumentRoute extends Model
         $office  = $this->office;
         if (!$office)
             return "";
-        return $office->name . " " . $office->campus;
+        return $office->name . " " . $office->campus_name;
     }
 
     public function findNextRoute($officeId) {

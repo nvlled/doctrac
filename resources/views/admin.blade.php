@@ -6,9 +6,12 @@
 <section id="offices">
     <h2>offices</h2>
     <div class="add-office">
+        <ul class='errors'></ul>
+        <ul class='msgs'></ul>
         <input class="campus-name autocomplete" 
                data-url='/api/campuses/search'
-               data-key='name'
+               data-key='id'
+               data-format='{name}'
                placeholder="campus">
         <input class="office-name" placeholder="office">
         <button class="add">add</button>

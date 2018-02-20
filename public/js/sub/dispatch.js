@@ -115,7 +115,7 @@ var dispatch = {
 
                     $tr.data("officeId", office.id);
                     $tr.find(".id").text(office.id);
-                    $tr.find(".name").text(office.campus + " " + office.name);
+                    $tr.find(".name").text(office.campus_name + " " + office.name);
                     $tr.find(".del").click(function(e) {
                         util.arrayRemove(officeIdFilter, office.id);
                         updateOfficeInputParams();

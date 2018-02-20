@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Validator;
 class Office extends Model
 {
     protected $appends = ["campus_name", "campus_code"];
-
+    protected $hidden = ["campus"];
 
     function campus() {
         return $this->hasOne("App\Campus", "id", "campusId");

@@ -20,6 +20,10 @@ section {
     margin-bottom: 50px;
 }
 
+ul.msgs {
+    list-style-type: square;
+    color: #3d3;
+}
 ul.errors {
     list-style-type: square;
     color: #d33;
@@ -30,6 +34,7 @@ input, textarea, button, select {
     margin: 5px;
     border-radius: 5px;
     padding: 10px;
+    color: #044 !important;
 }
 
 input[type=submit], button, select {

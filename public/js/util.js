@@ -34,7 +34,10 @@ var util = {
     interpolate: function(str, data) {
         return str.replace(/{(\w+)}/g, function(...args) {
             var k = args[1];
-            return data[k] || args[0];
+            var v = data[k];
+            if (v == null)
+                return args[0];
+            return v;
         });
     },
 

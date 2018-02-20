@@ -187,19 +187,7 @@ var api = {
         dispatched: makeHandler("/api/offices/{officeId}/dispatched"),
         final: makeHandler("/api/offices/{officeId}/final"),
 
-        add: function(office, fn) {
-            fn = fn || defaultHandler;
-            var url = "/api/offices/add";
-            if (!office.name)
-                return fn({errors: ["name is required"]});
-            if (!office.campus)
-                return fn({errors: ["campus is required"]});
-
-            return api.req.post(url, {
-                name: office.name,
-                campus: office.campus,
-            }, fn);
-        },
+        add: makeHandler("/api/offices/add"),
 
         fetch: function(fn) {
             var url = "/api/offices/list";
