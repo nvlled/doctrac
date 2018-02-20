@@ -17,6 +17,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// TODO: functions here should be no more than 10 lines,
+//       code should be reusable for web routes
+
 // ---------------------------
 
 
@@ -267,12 +270,16 @@ Route::any('/docs/send', function (Request $req) {
         return ["errors"=>["user id"=>"user id is invalid"]];
     }
 
+    if (!$user->office) {
+        return ["errors"=>["office"=>"user does not have an office"]];
+    }
+
     $doc = new App\Document();
     $doc->userId = $user->id;
     $doc->title = $req->title;
     $doc->type = $req->type;
     $doc->details = $req->details;
-    $doc->trackingId = $req->trackingId;
+    $doc->trackingId = $user->office->generateTrackingID();
 
     $v = $doc->validate();
     if ($v->fails()) {
@@ -593,6 +600,12 @@ Route::any('/campuses/search', function (Request $req) {
         ->limit(10)
         ->get();
     return $campuses;
+});
+
+// -----------------------
+
+Route::any('/admin/reset-tracking-id', function (Request $req) {
+    \App\TrackingCounter::reset();
 });
 
 // -----------------------

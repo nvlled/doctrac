@@ -135,5 +135,13 @@ class Office extends Model
             'campusId' => 'required',
         ]);
     }
+
+    // Note: I'm not sure if the 4 digit tracking number
+    // should be shared across campuses
+    public function generateTrackingID() {
+        $now = now();
+        $num = TrackingCounter::nextId();
+        return "{$this->campus_code}-{$now->year}-$num";
+    }
 }
 

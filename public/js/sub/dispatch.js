@@ -3,9 +3,7 @@ var dispatch = {
     setup: function($container) {
         var $table = $container.find("table.route");
         var $message = $container.find(".message");
-        var $btnRand = $container.find("button.rand");
         var $btnSend = $container.find("button.send");
-        var $input = $container.find(".trackingId");
         var $userName = $container.find(".user-name");
         var $userOffice = $container.find(".user-office");
         var $addError = $container.find(".add-error");
@@ -16,17 +14,6 @@ var dispatch = {
         api.user.change(setCurrentUser);
         api.user.self()
             .then(setCurrentUser);
-
-        $btnRand.click(function(e) {
-            e.preventDefault();
-            var user = currentUser;
-            var officeId = user ? user.officeId : "";
-            api.doc.randomId({
-                officeId: officeId,
-            }, function(id) {
-                $input.val(id);
-            });
-        });
 
         setupAddButton();
         setupSendButton();
@@ -58,7 +45,6 @@ var dispatch = {
                 var doc = {
                     userId: currentUser ? currentUser.id : null,
                     title: $container.find(".title").val(),
-                    trackingId: $container.find(".trackingId").val(),
                     details: $container.find(".details").val(),
                     officeIds: officeIds,
                     type: getDispatchType(),
@@ -70,8 +56,7 @@ var dispatch = {
                         UI.showErrors($container, resp.errors);
                     else {
                         officeIds.splice(0);
-                        $message.text("document sent: " + doc.trackingId);
-                        console.log("okay", resp);
+                        $message.text("document sent: " + resp.trackingId);
                         $table.find("tbody").html("");
                         $container.find("form")[0].reset();
                     }

@@ -4,8 +4,6 @@
     <p class='user-name'></p>
     <p class='user-office'></p>
     <hr>
-    <button class="rand">random ID</button>
-    <input name="trackingId" class="half trackingId" placeholder="tracking ID">
     <input name="title" class="full title" placeholder="document name or title">
     <textarea name="details" rows="7" class="full details"
         placeholder="document details"></textarea>
@@ -29,7 +27,7 @@
             name="officeId"
             class="officeId autocomplete"
             placeholder="search for office name"
-            data-format="{campus} {name}"
+            data-format="{campus_name} {name}"
             data-url="/api/offices/search">
         <button class='add hidden'>add</button>
         <span class='error add-error'><span>

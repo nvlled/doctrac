@@ -49,7 +49,7 @@ window.addEventListener("load", function() {
         $tr.find(".del").click(function(e) {
             e.preventDefault();
             var proceed = confirm("delete office: " 
-                + office.name + "--" + office.campus_name); 
+                + office.name + "--" + office.campus_name);
             if (!proceed)
                 return;
             deleteRow(office, $tr);
