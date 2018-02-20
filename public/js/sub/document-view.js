@@ -174,7 +174,9 @@ window.addEventListener("load", function() {
         }
         var p1 = api.doc.currentRoutes(param);
         var p2 = api.doc.nextRoutes(param);
-        var p3 = api.office.fetch()
+        var p3 = api.office.nextOffices({
+            officeId: currentUser.officeId
+        });
         Promise.all([p1, p2, p3]).then(function(values) {
             var routes = values[0];
             var nextRoutes = values[1];

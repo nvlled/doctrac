@@ -16,6 +16,7 @@ class CreateOfficesTable extends Migration
         Schema::create('offices', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('campusId');
+            $table->boolean('gateway')->default(false);
             $table->string('name', 1024);
             $table->timestamps();
         });

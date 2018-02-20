@@ -28,8 +28,8 @@
             class="officeId autocomplete"
             placeholder="search for office name"
             data-format="{campus_name} {name}"
-            data-url="/api/offices/search">
-        <button class='add hidden'>add</button>
+            data-url="/api/offices/{officeId}/next-offices">
+        <button class='add hidden pure-button pure-button-primary'>add</button>
         <span class='error add-error'><span>
     </div>
 

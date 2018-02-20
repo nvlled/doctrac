@@ -512,13 +512,10 @@ Route::any('/offices/search', function (Request $req) {
     $q = "%{$req->q}%";
     $offices = App\Office
         ::whereNotIn("id", $except)
-        ->where(function($query) use ($q) {
-            $query
-                ->where("name", "like", $q)
-                ->orWhere("campus", "like", $q)
-                ->orWhere("id", "like", $q);
+        ->where("name", "like", $q)
+        ->orWhereHas("Campus", function($query) use ($q) {
+            $query->where("name", "like", $q);
         })
-        ->orderBy("campus")
         ->orderBy("name")
         ->limit(10)
         ->get();
@@ -532,6 +529,13 @@ Route::post('/offices/{officeId}/action-for/{trackingId}',
     if ($office)
         return $office->actionFor($doc);
     return "";
+});
+
+Route::any('/offices/{officeId}/next-offices', function($officeId) {
+    $office = \App\Office::find($officeId);
+    if ($office)
+        return $office->nextOffices();
+    return collect();
 });
 
 Route::post('/offices/{officeId}/abort/{trackingId}',

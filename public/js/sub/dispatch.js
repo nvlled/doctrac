@@ -25,6 +25,7 @@ var dispatch = {
                 $userOffice.text(user.office_name);
 
                 $officeInput.data("params", {
+                    officeId: user.officeId,
                     except: officeIdFilter.concat([user.id]),
                 });
             } else {

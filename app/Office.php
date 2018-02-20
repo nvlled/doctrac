@@ -143,5 +143,29 @@ class Office extends Model
         $num = TrackingCounter::nextId();
         return "{$this->campus_code}-{$now->year}-$num";
     }
+
+    public function nextOffices() {
+        $campusId = $this->campusId;
+        if ($this->gateway) {
+            // get all local offices and
+            // all gateway (i.e. records) offices
+            // except the current one
+            return self::query()
+                ->where("id", "<>", $this->id)
+                ->where(function($query) use ($campusId) {
+                    $query->where("campusId", $campusId)
+                          ->orWhere("gateway", true);
+                })
+                ->get();
+        } else {
+            // get all local offices
+            // except the current one
+            return self::query()
+                ->where("id", "<>", $this->id)
+                ->where("campusId", $campusId)
+                ->get();
+        }
+    }
 }
+
 

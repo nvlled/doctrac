@@ -194,6 +194,8 @@ var api = {
             return api.req.get(url, {}, fn || defaultHandler)
         },
 
+        nextOffices: makeHandler("/api/offices/{officeId}/next-offices"),
+
         delete: function(id, fn) {
             fn = fn || defaultHandler;
             var url = "/api/offices/del/"+id;

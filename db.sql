@@ -20,36 +20,36 @@ insert into campuses(id, code, name, created_at, updated_at) values
 (8,  "sta", "Sta Maria", @t, @t),
 (9, "urd",  "Urdaneta", @t, @t);
 
-insert into offices(id, campusId, name, created_at, updated_at) values
-(1,        1, 'Records', @t, @t),
-(2,        1, 'MIS', @t, @t),
-(3,        1, 'Registrar', @t, @t),
-(4,        2, 'Records', @t, @t),
-(5,        2, 'MIS', @t, @t),
-(6,        2, 'Registrar', @t, @t),
-(7,        3, 'Records', @t, @t),
-(8,        3, 'MIS', @t, @t),
-(9,        3, 'Registrar', @t, @t),
-(10,       4, 'Records', @t, @t),
-(11,       4, 'MIS', @t, @t),
-(12,       4, 'Registrar', @t, @t),
-(13,       5, 'Records', @t, @t),
-(14,       5, 'MIS', @t, @t),
-(15,       5, 'Registrar', @t, @t),
-(16,       6, 'Records', @t, @t),
-(17,       6, 'MIS', @t, @t),
-(18,       6, 'Registrar', @t, @t),
-(19,       7, 'Records', @t, @t),
-(20,       7, 'MIS', @t, @t),
-(21,       7, 'Registrar', @t, @t),
-(22,       8, 'Records', @t, @t),
-(23,       8, 'MIS', @t, @t),
-(24,       8, 'Registrar', @t, @t),
-(@urec:=25,9, 'Records', @t, @t),
-(@umis:=26,9, 'MIS', @t, @t),
-(@uacc:=27,9, 'Accounting', @t, @t),
-(@ucoc:=28,9, 'COC', @t, @t),
-(@ucsh:=29,9, 'Cashier', @t, @t);
+insert into offices(id, campusId, gateway, name, created_at, updated_at) values
+(1,        1, 1, 'Records', @t, @t),
+(2,        1, 0, 'MIS', @t, @t),
+(3,        1, 0, 'Registrar', @t, @t),
+(4,        2, 1, 'Records', @t, @t),
+(5,        2, 0, 'MIS', @t, @t),
+(6,        2, 0, 'Registrar', @t, @t),
+(7,        3, 1, 'Records', @t, @t),
+(8,        3, 0, 'MIS', @t, @t),
+(9,        3, 0, 'Registrar', @t, @t),
+(10,       4, 1, 'Records', @t, @t),
+(11,       4, 0, 'MIS', @t, @t),
+(12,       4, 0, 'Registrar', @t, @t),
+(13,       5, 1, 'Records', @t, @t),
+(14,       5, 0, 'MIS', @t, @t),
+(15,       5, 0, 'Registrar', @t, @t),
+(16,       6, 1, 'Records', @t, @t),
+(17,       6, 0, 'MIS', @t, @t),
+(18,       6, 0, 'Registrar', @t, @t),
+(19,       7, 1, 'Records', @t, @t),
+(20,       7, 0, 'MIS', @t, @t),
+(21,       7, 0, 'Registrar', @t, @t),
+(22,       8, 1, 'Records', @t, @t),
+(23,       8, 0, 'MIS', @t, @t),
+(24,       8, 0, 'Registrar', @t, @t),
+(@urec:=25,9, 1, 'Records', @t, @t),
+(@umis:=26,9, 0, 'MIS', @t, @t),
+(@uacc:=27,9, 0, 'Accounting', @t, @t),
+(@ucoc:=28,9, 0, 'COC', @t, @t),
+(@ucsh:=29,9, 0, 'Cashier', @t, @t);
 
 insert into positions(id, name, created_at, updated_at) values
 (@head := 1,  'Head', @t, @t),
@@ -62,28 +62,6 @@ insert into privileges(id, name, created_at, updated_at) values
 (@officer := 2,  'record officer', @t, @t),
 (@agent   := 3,  'agent', @t, @t);
 
-
--- password == bcrypt('x')
-set @p = "$2y$10$eW9b3pHETP.xhdww1nUare66H39WqlQW6rLS8gGvH7OK3IN6ji66.";
-insert into users
-(
-    created_at, 
-    updated_at,
-    id, 
-    username,
-    password,
-    privilegeId,
-    officeId
-) values
-(@t, @t, 1, "ala-rec@psu.edu.ph", @p, @officer, 1),
-(@t, @t, 2, "asi-rec@psu.edu.ph", @p, @officer, 4),
-(@t, @t, 3, "bay-rec@psu.edu.ph", @p, @officer, 7),
-(@t, @t, 4, "bin-rec@psu.edu.ph", @p, @officer, 10),
-(@t, @t, 5, "inf-rec@psu.edu.ph", @p, @officer, 13),
-(@t, @t, 6, "lin-rec@psu.edu.ph", @p, @officer, 16),
-(@t, @t, 7, "car-rec@psu.edu.ph", @p, @officer, 19),
-(@t, @t, 8, "sta-rec@psu.edu.ph", @p, @officer, 22),
-(@t, @t, 9, "urd-rec@psu.edu.ph", @p, @officer, 25);
 
 insert into documents
 (

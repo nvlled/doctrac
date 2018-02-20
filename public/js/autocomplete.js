@@ -71,6 +71,7 @@ var autocomplete = {
             var url = $input.data("url");
             var params = $input.data("params") || {};
             params["q"] = $input.val();
+            url = util.interpolate(url, params);
             return $.get(url, params)
                 .then(function(data) {
                     if (!data || !data.forEach)

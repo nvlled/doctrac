@@ -4,11 +4,11 @@
 @section("contents")
 <section id="session">
     <h3>Login</h3>
-    user  <input id="session-userid" name="userId"
+    office  <input id="session-userid" name="userId"
         size=30
         class="userId autocomplete"
         placeholder="search for user or office name"
-        data-format="{lastname}, {firstname} @ {office_name}"
+        data-format="{office_name}"
         data-output="#session .user-info"
         data-url="/api/users/search">
     <span class="msg"></span>
