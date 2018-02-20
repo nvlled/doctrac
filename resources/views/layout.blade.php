@@ -21,7 +21,9 @@
                 <li><a href='/'>{{Auth::user()->full_name ?? "home"}}</a></li>
                 <li><a href='/login'>login</a></li>
                 <li><a href='/search'>search</a></li>
+                @if (Auth::user() && optional(Auth::user()->office)->gateway)
                 <li><a href='/dispatch'>dispatch</a></li>
+                @endif
                 <li><a href='/admin'>admin</a></li>
             </ul>
         </nav>

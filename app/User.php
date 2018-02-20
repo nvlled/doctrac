@@ -54,6 +54,10 @@ class User extends Authenticatable
         return SeenRoute::where("userId", $this->id)->get();
     }
 
+    public function isKeeper() {
+        return optional($this->office)->gateway;
+    }
+
     public function validate() {
         return Validator::make($this->toArray(), [
             'username'  => 'required|unique:users|username',

@@ -45,6 +45,9 @@ Route::get('/document/{id}/', function ($id) {
 })->name("view-document");
 
 Route::get('/dispatch', function () {
+    $user = Auth::user();
+    if (!$user || !optional($user->office)->gateway)
+        return redirect("/");
     return view('dispatch');
 });
 

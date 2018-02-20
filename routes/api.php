@@ -148,7 +148,7 @@ Route::any('/docs/receive/{trackingId}', function (Request $req, $trackingId) {
     $doc = App\Document::where("trackingId", $trackingId)->first();
     if (!$doc)
         return ["errors"=>["doc"=>"invalid tracking id"]];
-    $user = App\User::find($req->userId);
+    $user = Auth::user();
     if (!$user)
         return ["errors"=>["user"=>"invalid user"]];
 
@@ -159,7 +159,7 @@ Route::any('/docs/receive/{trackingId}', function (Request $req, $trackingId) {
         return ["errors"=>["doc"=>"cannot receive document"]];
     }
 
-    // TODO: handle parallel routes 
+    // TODO: handle parallel routes
     $errors = [];
     foreach ($doc->nextRoutes() as $route) {
         $office = $user->office;
@@ -178,7 +178,7 @@ Route::any('/docs/forward/{trackingId}', function (Request $req, $trackingId) {
     $doc = App\Document::where("trackingId", $trackingId)->first();
     if (!$doc)
         return ["errors"=>["doc"=>"invalid tracking id"]];
-    $user = App\User::find($req->userId);
+    $user = Auth::user();
     if (!$user)
         return ["errors"=>["user"=>"invalid user"]];
 
@@ -186,7 +186,7 @@ Route::any('/docs/forward/{trackingId}', function (Request $req, $trackingId) {
         return ["errors"=>["user"=>"user has no valid office"]];
 
     if (!$user->office->canSendDoc($doc)) {
-        return ["errors"=>["doc"=>""]];
+        return ["errors"=>["doc"=>"user cannot send document"]];
     }
 
     $errors = [];
@@ -204,14 +204,22 @@ Route::any('/docs/forward/{trackingId}', function (Request $req, $trackingId) {
 
         $destOfficeId = $req->officeId;
         $nextRoute = $route->nextRoute;
-        if (!$destOfficeId && !$nextRoute) {
+        if (!$destOfficeId || !$nextRoute) {
             $errors[] =
                 "no next destination specified";
             continue;
         }
-        if (!$destOfficeId == $route->officeId) {
+        if ($destOfficeId == $route->officeId) {
             $errors[] =
                 "cannot forward documents to the same place";
+            continue;
+        }
+        $nextOffice = \App\Office::find($destOfficeId);
+        if (!$office->isLinkedTo($nextOffice)) {
+            $nextOfficeName = $nextOffice->complete_name ?? "unknown office";
+            $errors[] =
+                "invalid route, cannot forward {$office->complete_name}"
+                ." to {$nextOfficeName}";
             continue;
         }
 
@@ -265,13 +273,17 @@ Route::any('/docs/forward/{trackingId}', function (Request $req, $trackingId) {
 
 // TODO: rename to create
 Route::any('/docs/send', function (Request $req) {
-    $user = App\User::find($req->userId);
+    $user = Auth::user();
     if (!$user) {
         return ["errors"=>["user id"=>"user id is invalid"]];
     }
 
     if (!$user->office) {
         return ["errors"=>["office"=>"user does not have an office"]];
+    }
+
+    if (!$user->isKeeper()) {
+        return ["errors"=>["office"=>"user does belong to records office"]];
     }
 
     $doc = new App\Document();

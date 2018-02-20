@@ -129,6 +129,10 @@ class Office extends Model
         return false;
     }
 
+    public function getCompleteNameAttribute() {
+        return "{$this->campus_name} {$this->name}";
+    }
+
     public function validate() {
         return Validator::make($this->toArray(), [
             'name'     => 'required',
@@ -142,6 +146,13 @@ class Office extends Model
         $now = now();
         $num = TrackingCounter::nextId();
         return "{$this->campus_code}-{$now->year}-$num";
+    }
+
+    public function isLinkedTo($office) {
+        if (!$office)
+            return false;
+        return ($this->gateway && $office->gateway)
+            || ($this->campusId == $office->campusId);
     }
 
     public function nextOffices() {

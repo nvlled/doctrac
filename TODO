@@ -1,17 +1,15 @@
 
 TODO:
 
+* confirm final route or improve the shit UI
+* popup when asking for final route
+
 * initialize routes with command
 * parallel route bugs on user list
 * fix bug on document search
-* documents always originate from records office
-* documents must always go through the records office
-  when passing from one campus to another
 * ask if project can be made opensores/made public
   so I could solicit contrabutions (i.e. on the frontend design)
-* confirm final route or improve the shit UI
 * Notify the office when user has seen the delivery
-* popup when asking for final route
 * email/sms notifications
 
 * set more than one attachments and notes/annotations

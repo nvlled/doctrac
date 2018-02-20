@@ -148,14 +148,26 @@ class Document extends Model
         $route->forwardTime = now();
         $route->save();
 
+        $office = \App\Office::find($officeId);
+
         foreach ($officeIds as $officeId) {
             if ($officeId == $route->officeId) {
                 throw new \Exception("routes cannot point to self");
             }
 
+            $nextOffice = \App\Office::find($officeId);
+            if (!$nextOffice) {
+                throw new \Exception("office not found: $officeId");
+            }
+            if (!$office->isLinkedTo($nextOffice)) {
+                throw new \Exception(
+                    "invalid route, cannot forward {$office->complete_name}"
+                    ." to {$nextOffice->complete_name}"
+                );
+            }
+
             $nextRoute = new \App\DocumentRoute();
             $nextRoute->trackingId = $this->trackingId;
-            // TODO: check if office id is valid
             $nextRoute->officeId = $officeId;
             $nextRoute->pathId = $pathId;
             $nextRoute->save(); // save first to get an ID
@@ -167,10 +179,10 @@ class Document extends Model
             $nextRoute->save();
 
             $route = $nextRoute;
+            $office = $nextOffice;
         }
         $route->final = true;
         $route->save();
-
     }
 }
 
