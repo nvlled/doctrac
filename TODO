@@ -1,14 +1,14 @@
 
 TODO:
 
-* no individual user accounts, one account per office
+* initialize routes with command
+* parallel route bugs on user list
+* fix bug on document search
 * documents always originate from records office
 * documents must always go through the records office
   when passing from one campus to another
 * ask if project can be made opensores/made public
   so I could solicit contrabutions (i.e. on the frontend design)
-* Tracking ID format: <campus>-<year>-0000
-    ** search if reseting counters to zero is possible and safe
 * confirm final route or improve the shit UI
 * Notify the office when user has seen the delivery
 * popup when asking for final route
