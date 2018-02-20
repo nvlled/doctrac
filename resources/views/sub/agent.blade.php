@@ -29,7 +29,6 @@
         </ul>
     </div>
 
-    <hr>
     <div id="view-document">
         <h2><span class='title'>doc title</span> (<small class='trackingId'>tracking ID</small>)</h2>
         <p class=''>status: <span class='status'>document details</span></p>

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>doctrac</title>
+    <link rel="stylesheet" href="{{asset('css/pure-min.css')}}">
     <link rel="stylesheet" href="{{asset('css/site.css')}}">
     <script src="{{asset('js/jquery.min.js')}}"></script>
     <script src="{{asset('js/events.js')}}"></script>

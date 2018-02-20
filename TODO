@@ -1,8 +1,14 @@
 
 TODO:
 
-* confirm final route or improve the shit UI
+
+
+* file attachments
+* improve UI
 * popup when asking for final route
+
+
+
 
 * initialize routes with command
 * parallel route bugs on user list
@@ -19,7 +25,6 @@ TODO:
 
 * num of days/minutes
 * subject searching
-* attachments
 * show loading indicators
 * page queries
 * handle deletion (or prevent)

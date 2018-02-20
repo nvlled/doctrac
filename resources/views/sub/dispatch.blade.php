@@ -39,7 +39,7 @@
         <label><input name="dispatch-type" value="serial" type="radio" checked>serial </label>
         <label><input name="dispatch-type" value="parallel" type="radio">parallel </label>
         <br>
-        <button class="half send action">Send</button>
+        <button class="half send action pure-button pure-button-primary">Send</button>
         <p class='message' style='color: #050'><p>
     </div>
     <p style="font-size: 15px; color: gray">
