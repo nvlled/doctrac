@@ -104,14 +104,10 @@ class Document extends Model
 
     public function createParallelRoutes($officeIds, $officeId, $user) {
         foreach ($officeIds as $officeId) {
-            if ($officeId == $route->officeId) {
-                throw new Exception("routes cannot point to self");
-            }
-
             $pathId = generateId();
             $route = new \App\DocumentRoute();
-            $route->trackingId  = $doc->trackingId;
-            $route->officeId    = $officeId;
+            $route->trackingId  = $this->trackingId;
+            $route->officeId    = $user->officeId;
             $route->receiverId  = $user->id;
             $route->senderId    = $user->id;
             $route->pathId      = $pathId;
@@ -119,8 +115,12 @@ class Document extends Model
             $route->forwardTime = now();
             $route->save();
 
+            if ($user->officeId == $officeId) {
+                throw new \Exception("routes cannot point to self");
+            }
+
             $nextRoute = new \App\DocumentRoute();
-            $nextRoute->trackingId = $doc->trackingId;
+            $nextRoute->trackingId = $this->trackingId;
             // TODO: check if office id is valid
             // TODO: route and nextRoute must not be the same
             $nextRoute->officeId = $officeId;
@@ -150,7 +150,7 @@ class Document extends Model
 
         foreach ($officeIds as $officeId) {
             if ($officeId == $route->officeId) {
-                throw new Exception("routes cannot point to self");
+                throw new \Exception("routes cannot point to self");
             }
 
             $nextRoute = new \App\DocumentRoute();

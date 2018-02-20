@@ -184,7 +184,7 @@ window.addEventListener("load", function() {
             offices.forEach(function(off) {
                 var $option = $("<option>");
                 $option.val(off.id);
-                $option.text(off.name + " " + off.campus);
+                $option.text(off.name + " " + off.campus_name);
                 $selOffices.append($option);
             });
 

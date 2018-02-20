@@ -360,17 +360,19 @@ Route::any('/users/search', function (Request $req) {
             return collect([$user]);
     }
     $q = "%{$req->q}%";
-    $users = App\User::where("firstname", "like", $q)
+    $limit = 20;
+
+    return App\User::query()
+        ->where("firstname", "like", $q)
         ->orWhere("lastname", "like", $q)
-        ->limit(10)
+        ->orWhereHas("office", function($query) use ($q) {
+            $query->where("name", "like", $q)
+                ->orWhereHas("campus", function($query) use ($q) {
+                    $query->where("name", "like", $q);
+                });
+        })
+        ->limit($limit)
         ->get();
-    if ($q == '%%')
-        return $users;
-    return $users->filter(function($u) use ($req) {
-        if (!$u->office)
-            return false;
-        return str_contains($u->office->name, $req->q);
-    });
 });
 
 Route::any('/users/self', function (Request $req) {
