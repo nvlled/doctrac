@@ -36,6 +36,10 @@ var api = {
         },
     },
 
+    dev: {
+        cleanDB: makeHandler("/api/dev/clean-db"),
+    },
+
     doc: {
         send: makeHandler("/api/docs/send"),
         get: makeHandler("/api/docs/get/{trackingId}"),

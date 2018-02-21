@@ -30,4 +30,8 @@ function joinLines($text) {
     return $text;
 }
 
+function isLocal() {
+    return env("APP_ENV") == "local";
+}
+
 ?>

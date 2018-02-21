@@ -622,7 +622,12 @@ Route::any('/campuses/search', function (Request $req) {
 
 // -----------------------
 
-Route::any('/admin/reset-tracking-id', function (Request $req) {
+Route::any('/dev/clean-db', function (Request $req) {
+    return \App\Maint::cleanDB();
+});
+
+Route::any('/dev/reset-tracking-id', function (Request $req) {
+    // TODO: authorize admin
     \App\TrackingCounter::reset();
 });
 
