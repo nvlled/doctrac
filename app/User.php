@@ -59,13 +59,15 @@ class User extends Authenticatable
     }
 
     public function validate() {
-        return Validator::make($this->toArray(), [
-            'username'  => 'required|unique:users|username',
+        $data = $this->toArray();
+        $data["password"] = $this->password;
+        return Validator::make($data, [
+            'username'  => 'required|unique:users,username',
+            'password'  => 'required',
             'firstname'  => 'required',
-            'middlename'   => 'required',
             'lastname'   => 'required',
-            'positionId' => 'required|exists:positions,id',
-            'privilegeId' => 'required|exists:privileges,id',
+            //'positionId' => 'required|exists:positions,id',
+            //'privilegeId' => 'required|exists:privileges,id',
             'officeId' => 'required|exists:offices,id',
         ]);
     }

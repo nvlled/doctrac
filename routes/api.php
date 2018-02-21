@@ -411,7 +411,7 @@ Route::post('/users/del/{id}', function (Request $req, $id) {
 
 Route::post('/users/add', function (Request $req) {
     $user = new App\User();
-    $user->email = $req->email;
+    $user->username = $req->username;
     $user->firstname = $req->firstname;
     $user->middlename = $req->middlename;
     $user->lastname = $req->lastname;
@@ -581,6 +581,7 @@ Route::post('/offices/del/{id}', function (Request $req, $id) {
 Route::post('/offices/add', function (Request $req) {
     $office = new App\Office();
     $office->name = $req->name;
+    $office->gateway = $req->gateway ?? 0;
     $office->campusId = $req->campusId;
 
     $v = $office->validate();
@@ -599,7 +600,11 @@ Route::get('/offices/list', function (Request $req) {
 
 Route::any('/campuses/add', function (Request $req) {
     $campus = new \App\Campus();
+    $campus->code = $req->code;
     $campus->name = $req->name;
+    $v = $campus->validate();
+    if ($v->fails())
+        return ["errors"=>$v->errors()];
     $campus->save();
     return $campus;
 });
