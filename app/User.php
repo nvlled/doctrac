@@ -16,6 +16,7 @@ class User extends Authenticatable
         "office_name",
         "privilege_name",
         "fullname",
+        "gateway",
     ];
     protected $hidden = ["position", "office", "privilege", "password"];
 
@@ -36,6 +37,10 @@ class User extends Authenticatable
         return title_case("{$this->firstname} {$this->lastname}");
     }
 
+    public function getGatewayAttribute() {
+        return optional($this->office)->gateway;
+    }
+
     public function getPositionNameAttribute() {
         return optional($this->position)->name;
     }
@@ -44,10 +49,7 @@ class User extends Authenticatable
         return optional($this->privilege)->name;
     }
     public function getOfficeNameAttribute() {
-        $office = $this->office;
-        if (!$office)
-            return "";
-        return $office->campus_name . " " . $office->name;
+        return optional($this->office)->complete_name;
     }
 
     public function seenRoutes() {

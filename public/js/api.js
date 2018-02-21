@@ -6,9 +6,11 @@ function getInternalError(err) {
 }
 
 function defaultHandler(resp) {
-    console.log("response: ", resp);
-    if (resp && resp.errors)
-        console.warn("errors: ", resp.errors);
+    if (resp && resp.errors) {
+        console.warn("errors: ", JSON.stringify(resp.errors));
+    } else {
+        console.log("api response", resp);
+    }
 }
 
 function makeHandler(url) {
@@ -68,6 +70,7 @@ var api = {
 
     campus: {
         add: makeHandler("/api/campuses/add"),
+        get: makeHandler("/api/campuses/{code}/get"),
         fetch: makeHandler("/api/campuses/list"),
         search: makeHandler("/api/campuses/search"),
     },
@@ -89,21 +92,11 @@ var api = {
 
         self: makeHandler("/api/users/self"),
         clearSelf: makeHandler("/api/users/self/clear"),
-        setSelf: function(data, fn) {
-            var url = "/api/users/self/{userId}";
-            url = util.interpolate(url, data);
-            fn = fn || defaultHandler;
-            return api.req.post(url, data, fn)
-                .then(function(user) {
-                    api.user.emit(user);
-                });
-        },
 
-        get: function(id, fn) {
-            fn = fn || defaultHandler;
-            var url = "/api/users/get/"+id;
-            return api.req.post(url, {}, fn);
-        },
+        setSelf: makeHandler("/api/users/self/{userId}"),
+
+        get: makeHandler("/api/users/get/{id}"),
+
         add: function(user, fn) {
             fn = fn || defaultHandler;
             var url = "/api/users/add";
@@ -192,6 +185,7 @@ var api = {
         final: makeHandler("/api/offices/{officeId}/final"),
 
         add: makeHandler("/api/offices/add"),
+        get: makeHandler("/api/offices/get"),
 
         fetch: function(fn) {
             var url = "/api/offices/list";
@@ -207,4 +201,3 @@ var api = {
         },
     }
 };
-

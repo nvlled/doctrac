@@ -32,3 +32,4 @@ class CreateOfficesTable extends Migration
         Schema::dropIfExists('offices');
     }
 }
+

@@ -128,7 +128,7 @@ var UI = {
            });
         $input.change(function() {
             $output.text("");
-            api.user.get($input.val(), function(user) {
+            api.user.get({id: $input.val()}, function(user) {
                 api.user.emit(user);
                 if (!user || user.errors) {
                     $output.text("(no match)");

@@ -130,7 +130,7 @@ class Office extends Model
     }
 
     public function getCompleteNameAttribute() {
-        return "{$this->campus_name} {$this->name}";
+        return "{$this->name} {$this->campus_name}";
     }
 
     public function validate() {
@@ -178,5 +178,3 @@ class Office extends Model
         }
     }
 }
-
-

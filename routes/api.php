@@ -433,7 +433,8 @@ Route::get('/users/list', function (Request $req) {
 });
 
 Route::any('/users/get/{id}', function (Request $req, $id) {
-    return App\User::find($id);
+    return \App\User::find($id)
+        ?? \App\User::where("username", $id)->first();
 });
 
 
@@ -578,11 +579,25 @@ Route::post('/offices/del/{id}', function (Request $req, $id) {
     return $pos;
 });
 
+Route::post('/offices/get', function (Request $req) {
+    return \App\Office::query()
+        ->where("name",     $req->name)
+        ->where("campusId", $req->campusId)
+        ->first();
+
+});
+
 Route::post('/offices/add', function (Request $req) {
     $office = new App\Office();
     $office->name = $req->name;
     $office->gateway = $req->gateway ?? 0;
     $office->campusId = $req->campusId;
+
+    if ($req->campus_code && !$office->campusId) {
+        $campus = \App\Campus::where("code", $req->campus_code)->first();
+        if ($campus)
+            $office->campusId = $campus->id;
+    }
 
     $v = $office->validate();
     if ($v->fails())
@@ -597,6 +612,14 @@ Route::get('/offices/list', function (Request $req) {
 });
 
 // -----------------------
+
+Route::any('/campuses/{code}/get', function (Request $req, $code) {
+    $campus = \App\Campus::find($code);
+    if ($campus)
+        return $campus;
+    $campus = \App\Campus::where("code", $code)->first();
+    return $campus;
+});
 
 Route::any('/campuses/add', function (Request $req) {
     $campus = new \App\Campus();
