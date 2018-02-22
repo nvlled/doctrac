@@ -62,7 +62,7 @@ var dispatch = {
                         var fileInput = $container.find("input[name=attachment]")[0];
                         var file = fileInput.files[0];
                         uploadFile(trackingId, file).then(function() {
-                            officeIds.splice(0);
+                            officeIds.splice(0); // why did I splice here again? seems pointless
                             $message.text("document sent: " + trackingId);
                             $table.find("tbody").html("");
                             $container.find("form")[0].reset();
@@ -130,6 +130,7 @@ var dispatch = {
                     officeIdFilter.push(office.id);
                     updateOfficeInputParams();
 
+                    $tr.data("object", office);
                     $tr.data("officeId", office.id);
                     $tr.find(".id").text(office.id);
                     $tr.find(".name").text(office.campus_name + " " + office.name);
@@ -138,11 +139,31 @@ var dispatch = {
                         updateOfficeInputParams();
                         e.preventDefault();
                         $tr.remove();
+                        checkDestinations();
                     });
                     $table.append($tr);
+
+                    checkDestinations();
                 })
             });
         }
+
+        function checkDestinations() {
+            var offices = [];
+            $table.find("tbody tr").each(function(i) {
+                var office = $(this).data("object");
+                if (office)
+                    offices.push(office);
+            });
+
+            var office = offices[offices.length-1];
+            if (office && office.gateway) {
+                $officeInput.attr("disabled", true);
+                return;
+            }
+            $officeInput.attr("disabled", false);
+        }
+
         function updateOfficeInputParams() {
             var userId = currentUser ? currentUser.id : null;
             $officeInput.data("params", {

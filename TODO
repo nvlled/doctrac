@@ -2,17 +2,17 @@
 TODO:
 
 
-
 * file attachments
 * improve UI
 * popup when asking for final route
 
 
 
-
-* initialize routes with command
+* add more tests
 * parallel route bugs on user list
 * fix bug on document search
+*
+
 * ask if project can be made opensores/made public
   so I could solicit contrabutions (i.e. on the frontend design)
 * Notify the office when user has seen the delivery

@@ -162,6 +162,10 @@ window.addEventListener("load", function() {
             trackingId: currentDoc.trackingId,
         }
         api.office.actionFor(params, function(resp) {
+            resp = (resp || "").trim();
+            // TODO:
+            // for some reason, resp has an newline prepended to it
+
             $btnAction.show();
             $btnAction.data("action", resp);
             switch(resp) {
