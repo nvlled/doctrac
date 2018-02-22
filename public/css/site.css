@@ -1,21 +1,16 @@
 
 body {
     font-size: 20px;
-    font-family: Monospace;
-    color: #dff;
-    background-color: #333;
+    font-family: sans-serif;
 }
 a {
-    color: white;
     text-decoration: none;
+    color: #337;
 }
 
 section {
     min-height: 200px;
     padding: 20px;
-    background-color: #555;
-    border-radius: 8px;
-    border: 1px solid #ccc;
     margin: 10px;
     margin-bottom: 50px;
 }
@@ -34,12 +29,9 @@ input, textarea, button, select {
     margin: 5px;
     border-radius: 5px;
     padding: 10px;
-    color: #088 !important;
 }
 
 input[type=submit], button, select {
-    color: white;
-    background-color: #522;
 }
 
 .full { width: 98%; }
@@ -48,7 +40,7 @@ input[type=submit], button, select {
 .right { text-align: right; }
 
 .site-wrap {
-    width: 900px;
+    width: 700px;
     margin: 0 auto;
 }
 
@@ -109,7 +101,6 @@ li.sel::before { content: "["; }
 li.sel::after  { content: "]"; }
 
 li.new a {
-    color: #7f7;
 }
 li.new a::after {
     content: " (new) ";
@@ -126,4 +117,13 @@ nav.main li {
 }
 nav.main li a {
     text-decoration: underline;
+}
+
+header.site {
+    margin-bottom: 15px;
+    padding: 5px;
+    background-color: #ca0;
+}
+header.site a {
+    color: white;
 }

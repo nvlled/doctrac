@@ -13,9 +13,11 @@
     @yield("styles")
 </head>
 <body>
+    <header class='site'>
     <h1 class='center'>
-        <a href="/">doctrac</a>
+        <a href="/">Qbphzrag Genpxre</a>
     </h1>
+    </header>
     <div class="site-wrap">
         <nav class='main right'>
             <ul>
