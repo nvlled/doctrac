@@ -364,6 +364,8 @@ Route::any('/docs/send', function (Request $req) {
         }
     });
 
+    $req->session()->flash("action-notice", "document sent");
+
     return $doc;
 });
 
@@ -372,6 +374,13 @@ Route::any('/docs/send', function (Request $req) {
 Route::any('/users/login', function (Request $req) {
     $username = $req->username;
     $password = $req->password;
+    if (Auth::attempt(["username"=>$username, "password"=>$password])) {
+        return Auth::user();
+    }
+    return null;
+});
+
+Route::any('/users/logout', function (Request $req) {
     if (Auth::attempt(["username"=>$username, "password"=>$password])) {
         return Auth::user();
     }

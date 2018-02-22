@@ -126,4 +126,29 @@ header.site {
 }
 header.site a {
     color: white;
+    text-decoration: none !important;
+}
+
+div.flash-success {
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid gray;
+    border-color: rgba(80, 250, 80, 0.5);
+}
+
+header.site nav.main li {
+    margin-right: 5px;
+}
+header.site nav a {
+    font-size: 30px;
+}
+header.site nav a:hover {
+    color: red;
+}
+
+
+hr {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(150, 0, 0, 0.35), rgba(0, 0, 0, 0));
 }

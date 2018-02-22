@@ -113,6 +113,8 @@ var api = {
 
     user: {
         login: makeHandler("/api/users/login"),
+        logout: makeHandler("/api/users/logout"),
+
         search: makeHandler("/api/users/search"),
         emit: function(data) {
             events.trigger("user-change", data);

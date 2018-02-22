@@ -69,6 +69,10 @@ Route::get('/admin', function () {
     return view('admin');
 });
 
+Route::get('/settings', function () {
+    return view('settings');
+});
+
 Route::get('/proto', function () {
     return view('proto');
 });
