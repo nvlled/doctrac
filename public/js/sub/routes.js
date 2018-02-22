@@ -70,7 +70,6 @@ window.addEventListener("load", function() {
             currentDocument = doc;
             updateDocInfo(doc);
             $docTitle.parent().show()
-            $docAttachment.parent().show()
 
             if (doc.type == "parallel") {
                 loadParallelRoutes(id);
@@ -204,7 +203,12 @@ window.addEventListener("load", function() {
         $docDetails.text(doc.details);
 
         UI.setText($docDetails, doc.details);
-        UI.setText($docAttachment, doc.attachmentFilename);
-        $docAttachment.attr("href", doc.attachment);
+        if (doc.attachment_filename) {
+            $docAttachment.parent().show();
+            $docAttachment.text(doc.attachment_filename);
+            $docAttachment.attr("href", doc.attachment_url);
+        } else {
+            $docAttachment.parent().hide();
+        }
     }
 });

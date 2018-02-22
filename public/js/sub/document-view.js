@@ -6,6 +6,7 @@ window.addEventListener("load", function() {
     var $btnAction = $container.find("button.action");
     var $annots = $container.find(".annots");
     var $selOffices = $container.find("select.offices");
+    var $docAttachment = $container.find(".attachment a");
 
     var currentUser = null;
     var currentDoc = null;
@@ -55,10 +56,18 @@ window.addEventListener("load", function() {
             id += "-"+info.pathId;
 
         $viewDoc.find(".trackingId").text(id);
-        $viewDoc.find(".title").text(info.document_details);
+        $viewDoc.find(".title").text(info.document_title || "");
+        $viewDoc.find(".details").text(info.document_details);
         $viewDoc.find(".status").text(info.status);
         $viewDoc.find(".office").text(info.office_name);
-        $viewDoc.find(".details").text(info.document_details);
+
+        if (info.attachment_filename) {
+            $docAttachment.parent().show();
+            $docAttachment.text(info.attachment_filename);
+            $docAttachment.attr("href", info.attachment_url);
+        } else {
+            $docAttachment.parent().hide();
+        }
 
         var $annotations = $viewDoc.find(".annotations");
         if (info.annotations) {

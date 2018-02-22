@@ -10,6 +10,9 @@ class DocumentRoute extends Model
         "document_title",
         "document_details",
         "document_type",
+        "attachment_filename",
+        "attachment_size",
+        "attachment_url",
         "status", "office_name",
         "sender_name", "receiver_name",
         "detailed_info",
@@ -18,6 +21,7 @@ class DocumentRoute extends Model
         "seen_by",
         "link",
     ];
+
     public $hidden = ["office", "document", "prevRoute", "nextRoute", "sender", "receiver"];
 
     public function office() {
@@ -234,6 +238,18 @@ class DocumentRoute extends Model
         }
 
         return $sortedRoutes;
+    }
+
+    public function getAttachmentFilenameAttribute() {
+        return optional($this->document)->attachment_filename;
+    }
+
+    public function getAttachmentSizeAttribute() {
+        return optional($this->document)->attachment_size;
+    }
+
+    public function getAttachmentUrlAttribute() {
+        return optional($this->document)->attachment_url;
     }
 }
 

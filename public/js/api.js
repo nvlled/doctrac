@@ -81,14 +81,13 @@ var api = {
             var fd = new FormData();
             var trackingId = data.trackingId;
             fd.append('trackingId', data.trackingId);
-            fd.append('filename',   data.title);
+            fd.append('filename',   data.filename);
             fd.append('filedata',   data.filedata );
 
             var url = util.interpolate(
                 '/api/docs/{trackingId}/set-attachment',
                 {trackingId: trackingId},
             );
-            debugger;
             return $.ajax({
                 url: url,
                 data: fd,

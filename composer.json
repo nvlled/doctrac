@@ -19,6 +19,7 @@
     },
     "autoload": {
         "files": [
+            "app/Config.php",
             "app/Helpers.php",
             "app/Maint.php"
         ],

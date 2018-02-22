@@ -15,7 +15,7 @@
         (<small class='type'>*</small>)
     </h3>
     <p class='info details'></p>
-    <p class='info attachment'>attachment: <a href="#">filename.docx</a></p>
+    <p class='info attachment'>attachment: <a href="#" target="_blank">filename.docx</a></p>
     <h4>Routes</h4>
     <h4 class='origin hidden'>Document origin: <span class='contents'></span></h4>
     <table class='full'>

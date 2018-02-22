@@ -7,6 +7,15 @@ use Illuminate\Support\Facades\Validator;
 
 class Document extends Model
 {
+    public $appends = [
+        "attachment_filename",
+        "attachment_size",
+        "attachment_url",
+    ];
+    public $hidden = [
+        "attachment",
+    ];
+
     public function create($user, $data) {
     }
 
@@ -184,5 +193,28 @@ class Document extends Model
         $route->final = true;
         $route->save();
     }
+
+    public function attachment() {
+        return $this->hasOne("App\File", "id", "attachmentId");
+    }
+
+    public function getAttachmentFilenameAttribute() {
+        return optional($this->attachment)->name;
+    }
+
+    public function getAttachmentSizeAttribute() {
+        return optional($this->attachment)->size;
+    }
+
+    public function getAttachmentUrlAttribute() {
+        $attachment = $this->attachment;
+        if ( ! $attachment)
+            return "";
+        return route("download-file", [
+            "id"      => $attachment->id,
+            "filename"=> $attachment->name,
+        ]);
+    }
 }
+
 

@@ -34,4 +34,8 @@ function isLocal() {
     return env("APP_ENV") == "local";
 }
 
+function disk() {
+    return Storage::disk();
+}
+
 ?>

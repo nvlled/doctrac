@@ -13,6 +13,7 @@
         <p class=''>status: <span class='status'>status</span></p>
         <pre>details: <span class='details'></span></pre>
         <pre>annotations: <span class='annotations'></span></pre>
+        <p class='info attachment'>attachment: <a href="#" target="_blank">filename.docx</a></p>
 
         <div class=''>
             <button class='action hidden'>send/receive</button>

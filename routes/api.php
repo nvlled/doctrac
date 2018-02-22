@@ -13,9 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-const ATTACHMENT_DIR = "uploads";
-
-
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -288,11 +285,21 @@ Route::any('/docs/{trackingId}/set-attachment',
         return ["errors"=>["file"=>"upload failed"]];
     }
 
+
     $path = $file->store("uploads");
-    $doc->attachmentFilename = $path;
+    $filename = $req->filename
+        ??  str_slug($doc->title)."-".$file->extension();
+
+    $file = new \App\File();
+    $file->name = $filename;
+    $file->path = $path;
+    $file->size = disk()->size($path);
+    $file->save();
+
+    $doc->attachmentId = $file->id;
     $doc->save();
 
-    return $path;
+    return $file->id;
 });
 
 // TODO: rename to create
@@ -327,7 +334,7 @@ Route::any('/docs/send', function (Request $req) {
         $attachment = $req->file("attachment");
         if ( ! $attachment->isValid())
             return ["errors"=>["attachment"=>"failed to upload file"]];
-        $filename = $attachment->store(ATTACHMENT_DIR);
+        $filename = $attachment->store(\App\Config::$upload_dir);
         $doc->attachmentFilename = $filename;
     }
 
@@ -469,7 +476,6 @@ Route::any('/users/get/{id}', function (Request $req, $id) {
     return \App\User::find($id)
         ?? \App\User::where("username", $id)->first();
 });
-
 
 // ---------------------------
 Route::post('/privileges/del/{id}', function (Request $req, $id) {
@@ -694,22 +700,34 @@ Route::any('/dev/reset-tracking-id', function (Request $req) {
 
 // -----------------------
 
-Route::any('/files/download/{filename}',
-    function (Request $req, $filename) {
-        return Storage::disk()->get("uploads/$filename");
+Route::any('/files/info/{id}', function (Request $req, $id) {
+    return \App\File::find($id);
 });
 
+Route::any('/files/download/{id}/{filename?}',
+    function (Request $req, $id, $filename="") {
+        $file = \App\File::find($id);
+        if (!$file)
+            return abort();
+        $path = disk()->path($file->path);
+        return response()->file($path);
+})->name("download-file");
+
 Route::any('/files/upload', function (Request $req) {
-    $file = $req->file("filedata");
+    $fileData = $req->file("filedata");
     if ( ! $req->hasFile("filedata")) {
         return ["errors"=>["file"=>"no file is provided: {$req->filedata}"]];
     }
 
-    if ( ! $file->isValid()) {
+    if ( ! $fileData->isValid()) {
         return ["errors"=>["file"=>"upload failed"]];
     }
+    $path = $fileData->store("uploads");
+    $file = new \App\File();
+    $file->name = $req->filename;
+    $file->path = $path;
+    $file->size = disk()->size($path);
+    $file->save();
 
-    $path = $file->store("uploads");
-    return $path;
+    return $file->id;
 });
-// -----------------------
