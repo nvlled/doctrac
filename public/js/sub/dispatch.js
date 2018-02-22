@@ -36,6 +36,7 @@ var dispatch = {
 
         function setupSendButton() {
             $btnSend.click(function() {
+                $btnSend.attr("disabled", true);
                 $message.text("");
                 UI.clearErrors($container);
                 var officeIds = [];
@@ -52,17 +53,43 @@ var dispatch = {
                 }
                 $btnSend.text("sending...");
                 api.doc.send(doc, function(resp) {
-                    $btnSend.text("Send");
-                    if (resp.errors)
+                    if (resp.errors) {
+                        $btnSend.text("Send");
+                        $btnSend.attr("disabled", false);
                         UI.showErrors($container, resp.errors);
-                    else {
-                        officeIds.splice(0);
-                        $message.text("document sent: " + resp.trackingId);
-                        $table.find("tbody").html("");
-                        $container.find("form")[0].reset();
+                    } else {
+                        var trackingId = resp.trackingId;
+                        var fileInput = $container.find("input[name=attachment]")[0];
+                        var file = fileInput.files[0];
+                        uploadFile(trackingId, file).then(function() {
+                            officeIds.splice(0);
+                            $message.text("document sent: " + trackingId);
+                            $table.find("tbody").html("");
+                            $container.find("form")[0].reset();
+                            $btnSend.text("Send");
+                            $btnSend.attr("disabled", false);
+                        });
                     }
                 });
             });
+        }
+
+        function uploadFile(trackingId, file) {
+            if (file) {
+                $btnSend.text("uploading file...");
+                return api.doc.setAttachment({
+                    trackingId: trackingId,
+                    filename: file.name,
+                    filedata: file,
+                }).then(function(resp) {
+                    if (resp && resp.errors)
+                        return UI.showErrors($container, resp.errors);
+                });
+            } else {
+                $btnSend.text("Send");
+                $btnSend.attr("disabled", false);
+                return Promise.resolve();
+            }
         }
 
         function getDispatchType() {

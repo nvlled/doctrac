@@ -42,6 +42,22 @@ var api = {
         cleanDB: makeHandler("/api/dev/clean-db"),
     },
 
+    file: {
+        upload: function(data) {
+            var fd = new FormData();
+            fd.append('filename', data.title);
+            fd.append('filedata', data.filedata );
+
+            return $.ajax({
+                url: '/api/files/upload',
+                data: fd,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+            }).then(defaultHandler);
+        },
+    },
+
     doc: {
         send: makeHandler("/api/docs/send"),
         get: makeHandler("/api/docs/get/{trackingId}"),
@@ -59,6 +75,27 @@ var api = {
             events.on("doc-change", function(_, arg) {
                 handler(arg);
             });
+        },
+
+        setAttachment: function(data) {
+            var fd = new FormData();
+            var trackingId = data.trackingId;
+            fd.append('trackingId', data.trackingId);
+            fd.append('filename',   data.title);
+            fd.append('filedata',   data.filedata );
+
+            var url = util.interpolate(
+                '/api/docs/{trackingId}/set-attachment',
+                {trackingId: trackingId},
+            );
+            debugger;
+            return $.ajax({
+                url: url,
+                data: fd,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+            }).then(defaultHandler);
         },
     },
 

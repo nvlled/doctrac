@@ -194,4 +194,13 @@ var UI = {
             $errors.html("");
         }
     },
+
+    setText: function($node, text) {
+        $node.text(text);
+        if (text) {
+            $node.show();
+        } else {
+            $node.hide();
+        }
+    },
 }

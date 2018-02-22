@@ -13,6 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 
+const ATTACHMENT_DIR = "uploads";
+
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -21,7 +24,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 //       code should be reusable for web routes
 
 // ---------------------------
-
 
 Route::any('/routes/origins/{trackingId}', function (Request $req, $trackingId) {
     $doc = App\Document::where("trackingId", $trackingId)->first();
@@ -271,6 +273,28 @@ Route::any('/docs/forward/{trackingId}', function (Request $req, $trackingId) {
 
 });
 
+Route::any('/docs/{trackingId}/set-attachment',
+    function (Request $req, $trackingId) {
+    $doc = App\Document::where("trackingId", $trackingId)->first();
+    if (!$doc)
+        return ["errors"=>["doc"=>"invalid tracking id"]];
+
+    $file = $req->file("filedata");
+    if ( ! $req->hasFile("filedata")) {
+        return ["errors"=>["file"=>"no file is provided: {$req->filedata}"]];
+    }
+
+    if ( ! $file->isValid()) {
+        return ["errors"=>["file"=>"upload failed"]];
+    }
+
+    $path = $file->store("uploads");
+    $doc->attachmentFilename = $path;
+    $doc->save();
+
+    return $path;
+});
+
 // TODO: rename to create
 Route::any('/docs/send', function (Request $req) {
     $user = Auth::user();
@@ -296,6 +320,15 @@ Route::any('/docs/send', function (Request $req) {
     $v = $doc->validate();
     if ($v->fails()) {
         return ["errors"=>$v->errors()];
+    }
+
+    // TODO: should only upload file later after validations has been made
+    if ($req->hasFile("attachment")) {
+        $attachment = $req->file("attachment");
+        if ( ! $attachment->isValid())
+            return ["errors"=>["attachment"=>"failed to upload file"]];
+        $filename = $attachment->store(ATTACHMENT_DIR);
+        $doc->attachmentFilename = $filename;
     }
 
     // at least one destination must be given
@@ -659,4 +692,24 @@ Route::any('/dev/reset-tracking-id', function (Request $req) {
     \App\TrackingCounter::reset();
 });
 
+// -----------------------
+
+Route::any('/files/download/{filename}',
+    function (Request $req, $filename) {
+        return Storage::disk()->get("uploads/$filename");
+});
+
+Route::any('/files/upload', function (Request $req) {
+    $file = $req->file("filedata");
+    if ( ! $req->hasFile("filedata")) {
+        return ["errors"=>["file"=>"no file is provided: {$req->filedata}"]];
+    }
+
+    if ( ! $file->isValid()) {
+        return ["errors"=>["file"=>"upload failed"]];
+    }
+
+    $path = $file->store("uploads");
+    return $path;
+});
 // -----------------------

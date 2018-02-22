@@ -5,6 +5,7 @@ window.addEventListener("load", function() {
     var $docTitle = $container.find(".title > .contents");
     var $docType = $container.find(".type");
     var $docDetails = $container.find(".details");
+    var $docAttachment = $container.find(".attachment a");
     var $selOffices = $container.find("select.offices");
     var $annots = $container.find(".annots");
     var $origin = $container.find(".origin");
@@ -68,6 +69,8 @@ window.addEventListener("load", function() {
             }
             currentDocument = doc;
             updateDocInfo(doc);
+            $docTitle.parent().show()
+            $docAttachment.parent().show()
 
             if (doc.type == "parallel") {
                 loadParallelRoutes(id);
@@ -186,16 +189,22 @@ window.addEventListener("load", function() {
     function clearDocInfo(doc) {
         var details = $input.data("value") ? "(no matching document found)" : "";
 
+        $docTitle.parent().hide()
+        $docAttachment.parent().hide()
         updateDocInfo({
-            title: "---",
+            title: "",
             details: details,
-            type: "*",
+            type: "",
         });
     }
+
     function updateDocInfo(doc) {
         $docTitle.text(doc.title);
         $docType.text(doc.type);
         $docDetails.text(doc.details);
-    }
 
+        UI.setText($docDetails, doc.details);
+        UI.setText($docAttachment, doc.attachmentFilename);
+        $docAttachment.attr("href", doc.attachment);
+    }
 });

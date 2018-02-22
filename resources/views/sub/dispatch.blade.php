@@ -1,14 +1,16 @@
 
 <section id="dispatch">
     <form>
-    <p class='user-name'></p>
+    <p class='user-name hidden'></p>
     <p class='user-office'></p>
-    <hr>
     <input name="title" class="full title" placeholder="document name or title">
     <textarea name="details" rows="7" class="full details"
         placeholder="document details"></textarea>
     </form>
-    <p class="hidden">Attachment: <input name="attachment" type="file"></p>
+    <p class="">
+        Attachment:
+        <input name="attachment" type="file">
+    </p>
 
     <h3>Office destinations</h3>
     <table class="route">
