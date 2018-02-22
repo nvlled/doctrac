@@ -68,6 +68,10 @@ var dispatch = {
                             $container.find("form")[0].reset();
                             $btnSend.text("Send");
                             $btnSend.attr("disabled", false);
+
+                            util.redirectRoute("view-routes",{
+                                trackingId: trackingId,
+                            });
                         });
                     }
                 });

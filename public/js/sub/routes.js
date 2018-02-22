@@ -40,17 +40,18 @@ window.addEventListener("load", function() {
     api.user.self()
        .then(function(user) {
            currentUser = user;
-           loadDocument();
+           var json = $container.find("#document").val();
+           var doc = JSON.parse(json);
+           if (doc)
+               showDocument(doc);
        });
+
     $input.on("complete", loadDocument);
     api.user.change(function(user) {
         currentUser = user;
         loadDocument();
     });
 
-    loadDocument();
-
-    var currentDocument;
     function loadDocument() {
         var id = $input.data("value");
 
@@ -63,20 +64,23 @@ window.addEventListener("load", function() {
                 UI.showErrors($container, doc.errors);
                 return;
             }
-            clearDocInfo(doc);
-            if (!doc) {
-                return;
-            }
-            currentDocument = doc;
-            updateDocInfo(doc);
-            $docTitle.parent().show()
-
-            if (doc.type == "parallel") {
-                loadParallelRoutes(id);
-            } else {
-                loadSerialRoutes(id);
-            }
+            showDocument(doc);
         });
+    }
+
+    function showDocument(doc) {
+        clearDocInfo(doc);
+        if (!doc) {
+            return;
+        }
+        updateDocInfo(doc);
+        $docTitle.parent().show()
+
+        if (doc.type == "parallel") {
+            loadParallelRoutes(doc.trackingId);
+        } else {
+            loadSerialRoutes(doc.trackingId);
+        }
     }
 
     function loadParallelRoutes(id) {

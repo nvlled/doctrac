@@ -22,11 +22,17 @@ Route::get('/tests', function () {
 Route::get('/search', function() {
     return view('search');
 });
-Route::get('/search/{trackingId?}', function ($trackingId) {
+
+Route::get('/search/{trackingId?}', function ($trackingId="") {
+    $doc = \App\Document::where("trackingId", $trackingId)->first();
+    $json = null;
+    if ($doc)
+        $json = $doc->toJson();
     return view('search', [
+        "doc"=>$json,
         "trackingId"=>$trackingId,
     ]);
-});
+})->name("view-routes");
 
 Route::get('/document/{id}/', function ($id) {
     $route = App\DocumentRoute::find($id);

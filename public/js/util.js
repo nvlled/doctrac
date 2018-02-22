@@ -87,8 +87,20 @@ var util = {
     refresh: function() {
         window.location.reload();
     },
+
     redirect: function(url) {
         window.location = url;
+    },
+
+    redirectRoute: function(routeName, params) {
+        params["routeName"] = routeName;
+        api.util.urlFor(params).then(function(resp) {
+            if (resp.url) {
+                util.redirect(resp.url);
+            } else if (resp.errors) {
+                console.warn("failed to redirect", resp.errors);
+            }
+        });
     },
 
     toArray: function(iterator) {

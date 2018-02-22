@@ -1,6 +1,8 @@
 
 <section id="doc-history">
     tracking ID
+    <input id="document" value="{{$doc ?? ""}}" type="hidden">
+    <input id="user" value="{{$user ?? ""}}" type="hidden">
     <input name="trackingId"
         id="doc-history-userid"
         class="half trackingId autocomplete"

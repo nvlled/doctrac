@@ -731,3 +731,20 @@ Route::any('/files/upload', function (Request $req) {
 
     return $file->id;
 });
+
+
+// -----------------------
+
+Route::any('/util/url-for/{routeName}', function (Request $req, $routeName) {
+    try {
+        $params = $req->toArray();
+        $params["routeName"] = null;
+        return [
+            "url" => route($routeName, $params)
+        ];
+    } catch (\Exception $e) {
+        return [
+            "errors"=>["url"=>$e->getMessage()]
+        ];
+    }
+});

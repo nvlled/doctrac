@@ -235,5 +235,9 @@ var api = {
             var url = "/api/offices/del/"+id;
             return api.req.post(url, {}, fn)
         },
-    }
+    },
+
+    util: {
+        urlFor: makeHandler("/api/util/url-for/{routeName}"),
+    },
 };

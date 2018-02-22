@@ -2,7 +2,7 @@
 <section id="dispatch">
     <form>
     <p class='user-name hidden'></p>
-    <p class='user-office'></p>
+    <h3 class='user-office hidden'></h3>
     <input name="title" class="full title" placeholder="document name or title">
     <textarea name="details" rows="7" class="full details"
         placeholder="document details"></textarea>
