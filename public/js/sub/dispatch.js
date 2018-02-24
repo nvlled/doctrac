@@ -139,12 +139,24 @@ var dispatch = {
                         updateOfficeInputParams();
                         e.preventDefault();
                         $tr.remove();
+                        setOfficeIdParam();
                         checkDestinations();
                     });
                     $table.append($tr);
-
+                    setOfficeIdParam(office.id);
                     checkDestinations();
                 })
+            });
+        }
+
+        function setOfficeIdParam(id) {
+            if (id == null) {
+                var office = $table.find("tbody tr").last().data("object");
+                id = office ? office.id : currentUser.officeId;
+            }
+            $officeInput.data("params", {
+                officeId: id,
+                except: officeIdFilter,
             });
         }
 
@@ -157,7 +169,7 @@ var dispatch = {
             });
 
             var office = offices[offices.length-1];
-            if (office && office.gateway) {
+            if (office && office.gateway && currentUser.id != office.id) {
                 $officeInput.attr("disabled", true);
                 return;
             }
