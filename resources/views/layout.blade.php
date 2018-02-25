@@ -39,6 +39,14 @@
                  @endif
             </ul>
         </nav>
+        <div class='flash-success hidden'>
+            @foreach (flashMessages() as $msg)
+                <span class="icon">♫</span>
+                <span class="msg">{{$msg}}</span><br>
+            @endforeach
+        </div>
+        <div class='flash-error'>
+        </div>
         @yield("contents")
     </div>
     @yield("scripts")

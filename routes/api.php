@@ -371,6 +371,7 @@ Route
             }
         });
 
+        $req->session()->flash("action-notice", "document sent");
         return $doc;
     });
 });

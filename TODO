@@ -1,17 +1,19 @@
 
-TODO:
 
+TODO for the night:
+* use office-selection component on document view
+* create a route page, sepate from search page
+* edit route table appearance
+
+TODO:
 
 * file attachments
 * improve UI
 * popup when asking for final route
 
-
-
 * add more tests
 * parallel route bugs on user list
 * fix bug on document search
-*
 
 * ask if project can be made opensores/made public
   so I could solicit contrabutions (i.e. on the frontend design)
