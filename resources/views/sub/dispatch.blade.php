@@ -12,28 +12,7 @@
         <input name="attachment" type="file">
     </p>
 
-    <h3>Office destinations</h3>
-    <table class="route">
-        <thead>
-        <tr>
-            <th>id</th>
-            <th>name</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-    <div class="add-dest">
-        <input id="dispatch-officeId" size=30
-            name="officeId"
-            class="officeId autocomplete"
-            placeholder="search for office name"
-            data-format="{campus_name} {name}"
-            data-url="/api/offices/{officeId}/next-offices">
-        <button class='add hidden pure-button pure-button-primary'>add</button>
-        <span class='error add-error'><span>
-    </div>
+    @include("sub/office-selection")
 
     <br>
         <ul class="errors"></ul>
@@ -49,7 +28,6 @@
     serial: documents are passed from one office to another<br>
     parallel: documents are passed to all the offices at the same time
     </p>
+    <script src='{{asset("js/sub/office-selection.js")}}'></script>
     <script src="{{asset('js/sub/dispatch.js')}}"></script>
 </section>
-
-
