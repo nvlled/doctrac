@@ -37,6 +37,8 @@ window.addEventListener("load", function() {
     });
 
 
+    $docTitle.parent().hide()
+    $docAttachment.parent().hide()
     api.user.self()
        .then(function(user) {
            currentUser = user;

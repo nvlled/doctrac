@@ -80,6 +80,11 @@ Route::middleware(['auth'])->group(function() {
 
 Route::get('/login', function () {
     return view('login');
-});
+})->name("login");
+
+Route::get('/logout', function () {
+    Auth::logout();
+    return redirect()->route("login");
+})->name("logout");
 
 

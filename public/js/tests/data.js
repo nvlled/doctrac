@@ -69,7 +69,9 @@ var testData = (function () {
 
 var testDataSetup = {
     all: async function() {
-        await api.dev.cleanDB();
+        // TODO: this.dropCampuses();
+        // TODO: this.dropOffices();
+        // TODO: this.dropUsers();
         await this.campuses();
         await this.offices();
         await this.users();

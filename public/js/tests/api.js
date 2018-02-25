@@ -37,9 +37,13 @@ function runTests(...tests) {
 }
 
 async function run() {
-    await testDataSetup.all({
-        showWarning: true,
-    });
+    try {
+        await testDataSetup.all({
+            showWarning: true,
+        });
+    } catch (e) {
+        console.log(e);
+    }
     await testDataInit.all({
         showWarning: true,
     });
