@@ -3,7 +3,7 @@
     <table class="route">
         <thead>
         <tr>
-            <th>id</th>
+            <th class='hidden'>id</th>
             <th>name</th>
             <th></th>
         </tr>

@@ -75,7 +75,7 @@ UI.OfficeSelection.prototype = {
 
         var $tr = util.jq([
             "<tr>",
-            " <td class='id'></td>",
+            //" <td class='id'></td>",
             " <td class='name'></td>",
             " <td class='action'>",
             "   <a href='#' class='del'>X</a>",
@@ -85,7 +85,7 @@ UI.OfficeSelection.prototype = {
 
         $tr.data("object", office);
         $tr.data("officeId", office.id);
-        $tr.find(".id").text(office.id);
+        //$tr.find(".id").text(office.id);
         $tr.find(".name").text(office.campus_name + " " + office.name);
         $tr.find(".del").click(function(e) {
             e.preventDefault();
