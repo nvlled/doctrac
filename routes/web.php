@@ -11,6 +11,8 @@
 |
 */
 
+use Illuminate\Http\Request;
+
 Route::middleware(['auth'])->group(function() {
     Route::get('/dispatch', function () {
         $user = Auth::user();
@@ -20,7 +22,7 @@ Route::middleware(['auth'])->group(function() {
     });
     Route::get('/', function () {
         return view('home');
-    })->middleware("auth");
+    });
 
     Route::get('/tests', function () {
         return view('tests/api');
@@ -28,7 +30,18 @@ Route::middleware(['auth'])->group(function() {
 
     Route::get('/search', function() {
         return view('search');
-    })->middleware("auth");
+    });
+    Route::post('/search', function(Request $req) {
+        $id = $req->trackingId;
+        $doc = \App\Document::where("trackingId", $id)->first();
+        if ($doc) {
+            return redirect()->route("view-routes", $id);
+        }
+        return view('search', [
+            "trackingId" => $id,
+            "message"=>"invalid tracking id",
+        ]);
+    });
 
     Route::get('/admin', function () {
         return view('admin');
@@ -46,36 +59,35 @@ Route::middleware(['auth'])->group(function() {
         return view('settings');
     });
 
-    Route::get('/search/{trackingId?}', function ($trackingId="") {
-        $doc = \App\Document::where("trackingId", $trackingId)->first();
-        $json = null;
-        if ($doc)
-            $json = $doc->toJson();
-        return view('search', [
-            "doc"=>$json,
-            "trackingId"=>$trackingId,
-        ]);
-    })->name("view-routes")->middleware("auth");
+    Route::prefix("document")->group(function() {
 
-    Route::get('/document/{id}/', function ($id) {
-        $route = App\DocumentRoute::find($id);
-        $error = "";
-        $docJson = "";
-        $trackingId = "";
-        if ($route) {
-            $docJson = $route->toJson();
-            $trackingId = $route->trackingId;
-            try { $route->seenBy(Auth::user()); } catch (Exception $e) { }
-        } else {
-            $error = "document not found: $id";
-        }
-        return view('document', [
-            "trackingId"=>$trackingId,
-            "doc" => $docJson,
-            "user" => optional(Auth::user())->toJson(),
-            "error" => $error,
-        ]);
-    })->name("view-document")->middleware("auth");
+        Route::get('/{trackingId}/routes', function($trackingId) {
+            $doc = App\Document::where("trackingId", $trackingId)->firstOrFail();
+            return view('routes', [
+                "doc" => $doc,
+            ]);
+        })->name("view-routes");
+
+        Route::get('/{id}/', function ($id) {
+            $route = App\DocumentRoute::find($id);
+            $error = "";
+            $docJson = "";
+            $trackingId = "";
+            if ($route) {
+                $docJson = $route->toJson();
+                $trackingId = $route->trackingId;
+                try { $route->seenBy(Auth::user()); } catch (Exception $e) { }
+            } else {
+                $error = "document not found: $id";
+            }
+            return view('document', [
+                "trackingId"=>$trackingId,
+                "doc" => $docJson,
+                "user" => optional(Auth::user())->toJson(),
+                "error" => $error,
+            ]);
+        })->name("view-document");
+    });
 });
 
 Route::get('/login', function () {
