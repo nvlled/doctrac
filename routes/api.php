@@ -728,13 +728,32 @@ Route
 
 // -----------------------
 
-Route::any('/dev/clean-db', function (Request $req) {
-    return \App\Maint::cleanDB();
-});
+Route
+::prefix("dev")
+->middleware([\App\Http\Middleware\LocalEnv::class])
+->group(function() {
+    Route::any('/create-dev-user', function (Request $req) {
+        $user = new \App\User();
+        $user->username = "ronald";
+        $user->password = "";
+        $user->firstname = "ronald";
+        $user->lastname = "casili";
+        $user->positionId = 0;
+        $user->privilegeId = 0;
+        $user->officeId = 0;
+        $user->save();
+        Auth::login($user);
+        return $user;
+    });
 
-Route::any('/dev/reset-tracking-id', function (Request $req) {
-    // TODO: authorize admin
-    \App\TrackingCounter::reset();
+    Route::any('/clean-db', function (Request $req) {
+        return \App\Maint::cleanDB();
+    });
+
+    Route::any('/reset-tracking-id', function (Request $req) {
+        // TODO: authorize admin
+        \App\TrackingCounter::reset();
+    });
 });
 
 // -----------------------

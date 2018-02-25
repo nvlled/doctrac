@@ -18,5 +18,3 @@ class Maint {
         return "okay";
     }
 }
-
-?>

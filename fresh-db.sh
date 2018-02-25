@@ -10,5 +10,5 @@ if [[ $env = 'production' ]]; then
 fi
 
 php artisan migrate:fresh
-mysql doctrac < db.sql
-php artisan maintenance:create-office-users
+#mysql doctrac < db.sql
+#php artisan maintenance:create-office-users

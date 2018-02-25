@@ -1,6 +1,5 @@
 
 body {
-    font-size: 20px;
     font-family: sans-serif;
 }
 a {
@@ -62,7 +61,7 @@ td.action a::before { content: "["; }
 td.action a::after { content: "]"; }
 
 table tbody tr.sel {
-    background-color: #6b6;
+    border-left: 10px solid #6b6;
 }
 table tbody tr.no-sel {
     background-color: inherit !important;

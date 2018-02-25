@@ -42,6 +42,3 @@ function flashMessages() {
     // TODO: 
     return request()->session()->flash("action-notice") ?? [];
 }
-
-?>
-

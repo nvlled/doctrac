@@ -40,6 +40,7 @@ var api = {
 
     dev: {
         cleanDB: makeHandler("/api/dev/clean-db"),
+        createUser: makeHandler("/api/dev/create-dev-user"),
     },
 
     file: {

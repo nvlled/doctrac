@@ -13,6 +13,10 @@
 
 use Illuminate\Http\Request;
 
+Route::get('/tests', function () {
+    return view('tests/api');
+});
+
 Route::middleware(['auth'])->group(function() {
     Route::get('/dispatch', function () {
         $user = Auth::user();
@@ -22,10 +26,6 @@ Route::middleware(['auth'])->group(function() {
     });
     Route::get('/', function () {
         return view('home');
-    });
-
-    Route::get('/tests', function () {
-        return view('tests/api');
     });
 
     Route::get('/search', function() {
@@ -98,5 +98,6 @@ Route::get('/logout', function () {
     Auth::logout();
     return redirect()->route("login");
 })->name("logout");
+
 
 

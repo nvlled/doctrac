@@ -37,6 +37,13 @@ function runTests(...tests) {
 }
 
 async function run() {
+    var user = await api.user.self();
+    if (!user) {
+        try {
+            user = await api.dev.createUser();
+        } catch (e) { }
+    }
+
     try {
         await testDataSetup.all({
             showWarning: true,
