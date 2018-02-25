@@ -156,7 +156,8 @@ window.addEventListener("load", function() {
             .insertAfter($tr);
 
         $tr.click(function() {
-            $trDetails.toggle();
+            util.redirect(route.link);
+            //$trDetails.toggle();
         });
     }
 

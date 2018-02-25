@@ -3,10 +3,14 @@
     <input id="document" value="{{$doc ?? ""}}" type="hidden">
     <input id="user" value="{{$user ?? ""}}" type="hidden">
 
-    <h3 class="title">
+    <h2 class="title">
         <span class='contents'></span>
         (<small class='type'>*</small>)
-    </h3>
+    </h2>
+    <p><a href="{{route('view-document', optional($doc)->id)}}">
+        more details
+        </a>
+    </p>
     <p class='info details'></p>
     <p class='info attachment'>attachment: <a href="#" target="_blank">filename.docx</a></p>
     <h4>Routes</h4>

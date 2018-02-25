@@ -8,12 +8,19 @@
         <input id="trackingId" value="{{$trackingId ?? ""}}" type="hidden">
         <input id="document" value="{{$doc ?? ""}}" type="hidden">
         <input id="user" value="{{$user ?? ""}}" type="hidden">
-        <h2><span class='title'>doc title</span> (<small class='trackingId'>tracking ID</small>)</h2>
-        <p class=''>office: <span class='office'>office</span></p>
+        <h2>
+            <span class='title'>doc title</span>
+            <small>@ <span class='office'>office</span></small>
+        </h2>
+        <p class=''>trackingId: <span class='trackingId'></span></p>
+        <p><a href="{{route('view-routes', $trackingId)}}">view routes</a></p>
         <p class=''>status: <span class='status'>status</span></p>
         <pre>details: <span class='details'></span></pre>
         <pre>annotations: <span class='annotations'></span></pre>
-        <p class='info attachment'>attachment: <a href="#" target="_blank">filename.docx</a></p>
+        <p class='info attachment'>
+            attachment:
+            <a href="#" target="_blank">filename.docx</a>
+        </p>
 
         <div class=''>
             <button class='action hidden'>send/receive</button>
@@ -36,3 +43,6 @@
     <script src="{{asset('js/sub/document-view.js')}}"></script>
 </section>
 @endsection
+
+
+
