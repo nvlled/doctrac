@@ -103,10 +103,12 @@ var api = {
         serial: makeHandler("/api/routes/serial/{trackingId}"),
         parallel: makeHandler("/api/routes/parallel/{trackingId}"),
         origins: makeHandler("/api/routes/origins/{trackingId}"),
+        next: makeHandler("/api/routes/next/{routeId}"),
         nextOffices: makeHandler("/api/routes/next-offices/{trackingId}"),
     },
 
     campus: {
+        offices: makeHandler("/api/campuses/{campusId}/offices"),
         add: makeHandler("/api/campuses/add"),
         get: makeHandler("/api/campuses/{code}/get"),
         fetch: makeHandler("/api/campuses/list"),
@@ -205,6 +207,8 @@ var api = {
     office: {
         search: makeHandler("/api/offices/search"),
         actionFor: makeHandler("/api/offices/{officeId}/action-for/{trackingId}"),
+        actionForRoute:
+            makeHandler("/api/offices/{officeId}/action-for-route/{routeId}"),
 
         canSend: function(officeId, trackingId, fn) {
             fn = fn || defaultHandler;

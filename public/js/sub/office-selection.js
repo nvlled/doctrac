@@ -1,14 +1,61 @@
 UI = UI || {};
 
-UI.OfficeSelection = function(sel) {
+UI.OfficeSelection = function(sel, args) {
     this.$node = $(sel);
-    this.$input = this.$node.find("input");
+    this.$officeSel = this.$node.find("select.offices");
+    this.$campusSel = this.$node.find("select.campuses");
+
+    this.$btnAdd = this.$node.find("button.add");
+    this.$input = this.$node.find("input.officeId");
     this.$table = this.$node.find("table");
-    this.officeId = null;
-    this.$input.on("complete", this.loadData.bind(this));
+    var args = args || {};
+    this.officeId = args.officeId;
+    this.campusId = args.campusId;
+
+    if (args.hideTable) {
+        this.$table.hide();
+        this.$btnAdd.hide();
+    }
+    if ( ! args.gateway) {
+        this.$campusSel.attr("disabled", true);
+    }
+
+    var self = this;
+    this.$campusSel.change(function(e) {
+        self.fetchOffices();
+    });
+
+    this.$btnAdd.click(this.loadData.bind(this));
+    combobox.load(this.$campusSel)
+        .then(function() {
+            UI.setSelectedValue(this.$campusSel, this.campusId);
+            this.$campusSel.change();
+        }.bind(this));
 }
 
 UI.OfficeSelection.prototype = {
+
+    getOfficeId: function() {
+        var off = this.getOffice();
+        if (off)
+            return off.id;
+        return null;
+    },
+
+    getOffice: function() {
+        return combobox.getOffice(this.$officeSel);
+    },
+
+    setOffice: function(office) {
+        if (!office)
+            return;
+        UI.setSelectedValue(this.$campusSel, office.campusId);
+        this.fetchOffices()
+            .then(function() {
+                UI.setSelectedValue(this.$officeSel, office.id);
+            }.bind(this));
+    },
+
     clear: function() {
         this.clearValue();
         this.clearSelections();
@@ -46,7 +93,7 @@ UI.OfficeSelection.prototype = {
     },
 
     getOffice: function() {
-        return this.$input.data("object");
+        return combobox.getObject(this.$officeSel);
     },
 
     showError: function(msg) {
@@ -57,6 +104,21 @@ UI.OfficeSelection.prototype = {
         this.$node.find(".add-error").text("");
     },
 
+    fetchOffices: function() {
+        var self = this;
+        var campusId = this.$campusSel.val();
+        return api.campus.offices({campusId: campusId})
+            .then(function(offices) {
+                if (campusId != self.campusId) {
+                    offices = offices.filter(function(off) {
+                        return off.gateway;
+                    });
+                }
+                combobox.loadData(self.$officeSel, offices);
+                self.updateOfficeSelection();
+            });
+    },
+
     loadOffices: function(offices) {
         if (!offices)
             return;
@@ -64,6 +126,7 @@ UI.OfficeSelection.prototype = {
             var $tr = util.jq([
                 "<tr>",
                 //" <td class='id'></td>",
+                " <td class='campus'></td>",
                 " <td class='name'></td>",
                 " <td class='action'>",
                 "   <a href='#' class='del'>X</a>",
@@ -74,26 +137,42 @@ UI.OfficeSelection.prototype = {
             $tr.data("object", office);
             $tr.data("officeId", office.id);
             //$tr.find(".id").text(office.id);
-            $tr.find(".name").text(office.campus_name + " " + office.name);
+            $tr.find(".campus").text(office.campus_name);
+            $tr.find(".name").text(office.name);
             $tr.find(".del").click(function(e) {
                 e.preventDefault();
                 $tr.remove();
-                this.updateOfficeId();
                 this.checkDestinations();
+                this.fetchOffices();
             }.bind(this));
 
             this.$table.append($tr);
-            this.updateOfficeId(office.id);
             this.checkDestinations();
+            this.updateOfficeSelection();
+
         }.bind(this));
+    },
+
+    updateOfficeSelection: function() {
+        var offices = this.getSelectedOffices();
+        var office = offices[offices.length-1];
+        var officeId = office ? office.id : this.officeId;
+
+        var $officeSel = this.$officeSel;
+        $officeSel.find("option")
+            .each(function() {
+                var $option = $(this);
+                if ($option.val() == officeId) {
+                    UI.selectOther($officeSel, officeId);
+                    $option.attr("disabled", true);
+                } else {
+                    $option.attr("disabled", false);
+                }
+            });
     },
 
     loadData: function() {
         this.clearError();
-
-        var value = this.value();
-        if (!value)
-            return;
 
         var office = this.getOffice();
 
@@ -106,37 +185,30 @@ UI.OfficeSelection.prototype = {
         this.$input.blur();
     },
 
-    updateOfficeId: function(id) {
-        if (id == null) {
-            var office = this.$table.find("tbody tr").last().data("object");
-            id = office ? office.id : this.officeId;
-        }
-        this.setOfficeId(id);
-    },
-
     checkDestinations: function() {
         var offices = this.getSelectedOffices();
         var office = offices[offices.length-1];
-        if (office && office.gateway && this.officeId != office.id) {
+
+        if (office && office.gateway && this.campusId != office.campusId) {
             this.$input.attr("disabled", true);
+            this.$btnAdd.attr("disabled", true);
+            this.$officeSel.attr("disabled", true);
+            this.$campusSel.attr("disabled", true);
+            this.setCampusId(this.campusId);
         } else {
             this.$input.attr("disabled", false);
+            this.$btnAdd.attr("disabled", false);
+            this.$officeSel.attr("disabled", false);
+            if (office && !office.gateway)
+                this.$campusSel.attr("disabled", true);
+            else
+                this.$campusSel.attr("disabled", false);
         }
+
     },
 
-    setOfficeId: function(id) {
-        var data = this.getData();
-        data.officeId = id;
-        console.assert(id == this.getData().officeId, "data not set");
+    setCampusId: function(id) {
+        UI.setSelectedValue(this.$campusSel, id);
     },
 
-    getData: function() {
-        var data = this.$input.data("params");
-        if (!data) {
-            data = {};
-            this.$input.data("params", data);
-        }
-        return data;
-    },
 }
-

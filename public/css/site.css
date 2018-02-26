@@ -33,6 +33,11 @@ input, textarea, button, select {
 input[type=submit], button, select {
 }
 
+select[disabled] {
+    background-color: white;
+    border: 0px;
+}
+
 .full { width: 98%; }
 .half { width: 50%; }
 .center { text-align: center; }

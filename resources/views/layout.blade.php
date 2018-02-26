@@ -53,6 +53,7 @@
         @yield("contents")
     </div>
     @yield("scripts")
+    <script src="{{asset('js/combobox.js')}}"></script>
     <script src="{{asset('js/autocomplete.js')}}"></script>
     <script src="{{asset('js/localSave.js')}}"></script>
 </body>

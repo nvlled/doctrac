@@ -98,7 +98,6 @@ Table.prototype = Object.assign(Table.prototype, {
                 "<td colspan='"+n+"' class='center'><i>(none)</i></td>",
                 "</tr>",
             ]);
-            console.log("X");
             this.$table.find("tbody").append($tr);
         } else {
             data.forEach(function(row) {
@@ -110,6 +109,29 @@ Table.prototype = Object.assign(Table.prototype, {
 });
 
 var UI = {
+    selectOther: function($select, val) {
+        var select = $select[0];
+        if (select) {
+            var count = 10;
+            while (count-- > 10 && $select.val() == val) {
+                var i = select.selectedIndex++;
+                if (i == select.children.length-1) {
+                    select.selectedIndex++;
+                }
+            }
+        }
+    },
+
+    setSelectedValue: function($select, val) {
+        var i = null;
+        $select.find("option").each(function(i_) {
+            if (this.value == val)
+                i = i_;
+        });
+        if (i != null) {
+            $select[0].selectedIndex = i;
+        }
+    },
 
     createTable: function($table, opts) {
         return new Table($table, opts);

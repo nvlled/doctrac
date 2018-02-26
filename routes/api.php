@@ -66,6 +66,11 @@ Route
         return $routes;
     });
 
+    Route::any('/next/{routeId}', function (Request $req, $routeId) {
+        $route = \App\DocumentRoute::find($routeId);
+        return optional($route)->nextRoute;
+    });
+
     Route::any('/next-offices/{trackingId}', function (Request $req, $trackingId) {
         $doc = App\Document::where("trackingId", $trackingId)->first();
         if (!$doc)
@@ -636,6 +641,15 @@ Route
             return "";
         });
 
+    Route::post('/{officeId}/action-for-route/{routeId}',
+        function (Request $req, $officeId, $routeId) {
+            $office = App\Office::find($officeId);
+            $route = App\DocumentRoute::find($routeId);
+            if ($office)
+                return $office->actionForRoute($route);
+            return "";
+        });
+
     Route::any('/{officeId}/next-offices', function($officeId) {
         $office = \App\Office::find($officeId);
         if ($office)
@@ -731,6 +745,10 @@ Route
 
     Route::any('/list', function (Request $req) {
         return \App\Campus::all();
+    });
+
+    Route::any('/{campusId}/offices', function (Request $req, $campusId) {
+        return \App\Office::where("campusId", $campusId)->get();
     });
 
     Route::any('/search', function (Request $req) {
