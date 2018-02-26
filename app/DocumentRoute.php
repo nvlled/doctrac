@@ -117,6 +117,10 @@ class DocumentRoute extends Model
         return "*";
     }
 
+    public function isDone() {
+        return $this->status == "done";
+    }
+
     public function getActivitiesAttribute() {
         $activities = collect();
         $prevRoute = $this->prevRoute;

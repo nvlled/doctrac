@@ -11,6 +11,10 @@ window.addEventListener("load", function() {
     var currentUser = null;
     var currentDoc = null;
 
+    var officeSel = new UI.OfficeSelection(
+        $container.find("div.office-selection")
+    );
+
     api.user.self().then(setUser);
     api.user.change(setUser);
     setupButtonAction();
@@ -21,6 +25,9 @@ window.addEventListener("load", function() {
             $container.find(".office-id").text("_");
             $container.find(".user-name").text("____");
             $container.find(".office-name").text("____");
+        } else {
+            officeSel.officeId = user.officeId;
+            officeSel.setOfficeId(user.officeId);
         }
         $container.find(".user-name").text(user.fullname);
         $container.find(".office-id").text(user.officeId);
@@ -35,6 +42,11 @@ window.addEventListener("load", function() {
             "input#document", 
             api.doc.get({trackingId: trackingId})
         ).then(function(doc) {
+            api.route.nextOffices({trackingId: trackingId})
+               .then(function(offices) {
+                   officeSel.loadOffices(offices);
+               });
+
             setupOfficeSelection(doc);
             viewDocument(doc);
             updateButtonAction();

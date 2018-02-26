@@ -7,10 +7,6 @@
         <span class='contents'></span>
         (<small class='type'>*</small>)
     </h2>
-    <p><a href="{{route('view-document', optional($doc)->id)}}">
-        more details
-        </a>
-    </p>
     <p class='info details'></p>
     <p class='info attachment'>attachment: <a href="#" target="_blank">filename.docx</a></p>
     <h4>Routes</h4>

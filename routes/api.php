@@ -64,6 +64,24 @@ Route
         }
         return $routes;
     });
+
+    Route::any('/next-offices/{trackingId}', function (Request $req, $trackingId) {
+        $doc = App\Document::where("trackingId", $trackingId)->first();
+        if (!$doc)
+            return collect();
+
+        $routes = collect();
+        foreach ($doc->startingRoutes() as $startRoute) {
+            $path = $startRoute->followRoutesInPath();
+            foreach ($path as $route) {
+                if ( ! $route->isDone())
+                    $routes->push($route);
+            }
+        }
+        return $routes->map(function($r) {
+            return $r->office;
+        });
+    });
 });
 
 

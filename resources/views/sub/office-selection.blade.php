@@ -1,5 +1,4 @@
 <div class='office-selection'>
-    <h3>Office destinations</h3>
     <table class="route">
         <thead>
         <tr>

@@ -12,6 +12,7 @@
         <input name="attachment" type="file">
     </p>
 
+    <h3>Office destinations</h3>
     @include("sub/office-selection")
 
     <br>

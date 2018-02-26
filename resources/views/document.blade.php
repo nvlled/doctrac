@@ -12,8 +12,7 @@
             <span class='title'>doc title</span>
             <small>@ <span class='office'>office</span></small>
         </h2>
-        <p class=''>trackingId: <span class='trackingId'></span></p>
-        <p><a href="{{route('view-routes', $trackingId)}}">view routes</a></p>
+        <p>trackingId: <a class="trackingId" href="{{route('view-routes', $trackingId)}}">{{$trackingId}}</a></p>
         <p class=''>status: <span class='status'>status</span></p>
         <pre>details: <span class='details'></span></pre>
         <pre>annotations: <span class='annotations'></span></pre>
@@ -30,19 +29,24 @@
         <p>activity log: </p>
         <ul class='activities'>
         </ul>
-        <div class="center">
+        <div class="">
             <div class="send-data">
                 <textarea name="annotation" rows="5" class="full annots"
                 placeholder="comments, notes or annotation" ></textarea>
                 <br>
-                Destination: <select class="offices"></select>
+                <h3>Office destinations</h3>
+                @if (optional(Auth::user())->gateway)
+                @include("sub/office-selection")
+                @else
+                <strong>Destination</strong>: <select class="offices"></select>
+                @endif
             </div>
-            <button class='action half'>SEND / RECEIVE / ABORT SEND / </button>
+            <div class="center">
+                <button class='action half'>SEND / RECEIVE / ABORT SEND / </button>
+            </div>
         </div>
     </div>
+    <script src='{{asset("js/sub/office-selection.js")}}'></script>
     <script src="{{asset('js/sub/document-view.js')}}"></script>
 </section>
 @endsection
-
-
-

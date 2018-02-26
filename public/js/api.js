@@ -103,6 +103,7 @@ var api = {
         serial: makeHandler("/api/routes/serial/{trackingId}"),
         parallel: makeHandler("/api/routes/parallel/{trackingId}"),
         origins: makeHandler("/api/routes/origins/{trackingId}"),
+        nextOffices: makeHandler("/api/routes/next-offices/{trackingId}"),
     },
 
     campus: {

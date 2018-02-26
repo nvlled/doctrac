@@ -57,8 +57,38 @@ UI.OfficeSelection.prototype = {
         this.$node.find(".add-error").text("");
     },
 
+    loadOffices: function(offices) {
+        if (!offices)
+            return;
+        offices.forEach(function(office) {
+            var $tr = util.jq([
+                "<tr>",
+                //" <td class='id'></td>",
+                " <td class='name'></td>",
+                " <td class='action'>",
+                "   <a href='#' class='del'>X</a>",
+                "</td>",
+                "</tr>",
+            ]);
+
+            $tr.data("object", office);
+            $tr.data("officeId", office.id);
+            //$tr.find(".id").text(office.id);
+            $tr.find(".name").text(office.campus_name + " " + office.name);
+            $tr.find(".del").click(function(e) {
+                e.preventDefault();
+                $tr.remove();
+                this.updateOfficeId();
+                this.checkDestinations();
+            }.bind(this));
+
+            this.$table.append($tr);
+            this.updateOfficeId(office.id);
+            this.checkDestinations();
+        }.bind(this));
+    },
+
     loadData: function() {
-        this.$input.blur();
         this.clearError();
 
         var value = this.value();
@@ -72,31 +102,8 @@ UI.OfficeSelection.prototype = {
             return;
         }
         this.clearValue();
-
-        var $tr = util.jq([
-            "<tr>",
-            //" <td class='id'></td>",
-            " <td class='name'></td>",
-            " <td class='action'>",
-            "   <a href='#' class='del'>X</a>",
-            "</td>",
-            "</tr>",
-        ]);
-
-        $tr.data("object", office);
-        $tr.data("officeId", office.id);
-        //$tr.find(".id").text(office.id);
-        $tr.find(".name").text(office.campus_name + " " + office.name);
-        $tr.find(".del").click(function(e) {
-            e.preventDefault();
-            $tr.remove();
-            this.updateOfficeId();
-            this.checkDestinations();
-        }.bind(this));
-
-        this.$table.append($tr);
-        this.updateOfficeId(office.id);
-        this.checkDestinations();
+        this.loadOffices([office]);
+        this.$input.blur();
     },
 
     updateOfficeId: function(id) {
