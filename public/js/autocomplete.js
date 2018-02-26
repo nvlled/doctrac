@@ -26,6 +26,7 @@ var autocomplete = {
             $input.select();
             loadDataList();
         });
+        // TODO: handle slow network
         $input.change(function() {
             loadDataList().then(update);
         });
