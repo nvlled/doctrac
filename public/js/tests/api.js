@@ -37,7 +37,11 @@ function runTests(...tests) {
 }
 
 async function run() {
-    var user = await api.user.self();
+    var user;
+    try {
+        user = await api.user.self();
+    } catch(e) { }
+
     if (!user) {
         try {
             user = await api.dev.createUser();
@@ -62,6 +66,3 @@ async function run() {
 }
 
 run();
-
-
-

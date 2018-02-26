@@ -13,6 +13,9 @@
     @yield("styles")
 </head>
 <body>
+    <div class="prefetch hidden">
+        @yield("prefetch")
+    </div>
     <header class='site'>
         <h1 class='center'>
             <a href="/">Qbphzrag Genpxre</a>

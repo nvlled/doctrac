@@ -1,6 +1,14 @@
 
 @extends("layout")
 
+<!--
+TODO
+@section("prefetch")
+    @@include("sub/prefetch", "/api/users/self")
+    @@include("sub/prefetch", "/api/users/self")
+@endsection
+-->
+
 @section("contents")
 <section id="document">
     <p class='error'>{{$error ?? ""}}</p>

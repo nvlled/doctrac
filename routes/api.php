@@ -51,6 +51,7 @@ Route
         return $routes;
     });
 
+    // TODO: it would be more efficient to take the pathId as well
     Route::any('/serial/{trackingId}', function (Request $req, $trackingId) {
         $doc = App\Document::where("trackingId", $trackingId)->first();
         if (!$doc)
@@ -409,6 +410,11 @@ Route::any('/users/logout', function (Request $req) {
     return "logout";
 });
 
+
+Route::any('/users/self', function (Request $req) {
+    return Auth::user();
+});
+
 Route
 ::prefix("users")
 ->middleware(["auth"])
@@ -461,10 +467,6 @@ Route
             })
             ->limit($limit)
             ->get();
-    });
-
-    Route::any('/self', function (Request $req) {
-        return Auth::user();
     });
 
     Route::any('/self/clear', function (Request $req) {
@@ -751,8 +753,15 @@ Route
 ->middleware([\App\Http\Middleware\LocalEnv::class])
 ->group(function() {
     Route::any('/create-dev-user', function (Request $req) {
+        $username = "ronald";
+        $user = \App\User::where("username", $username)->first();
+        if ($user) {
+            Auth::login($user);
+            return $user;
+        }
+
         $user = new \App\User();
-        $user->username = "ronald";
+        $user->username = $username;
         $user->password = "";
         $user->firstname = "ronald";
         $user->lastname = "casili";
