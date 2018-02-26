@@ -10,6 +10,7 @@ class DocumentRoute extends Model
         "document_title",
         "document_details",
         "document_type",
+        "campus_id",
         "attachment_filename",
         "attachment_size",
         "attachment_url",
@@ -70,6 +71,10 @@ class DocumentRoute extends Model
 
     public function getLinkAttribute() {
         return route("view-document", ["id"=>$this->id]);
+    }
+
+    public function getCampusIdAttribute() {
+        return optional($this->office)->campusId;
     }
 
     public function getOfficeNameAttribute() {

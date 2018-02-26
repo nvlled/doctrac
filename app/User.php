@@ -12,6 +12,7 @@ class User extends Authenticatable
     use Notifiable;
 
     protected $appends = [
+        "campus_id",
         "position_name",
         "office_name",
         "privilege_name",
@@ -35,6 +36,10 @@ class User extends Authenticatable
         if ($mi)
             return title_case("{$this->firstname} {$mi[0]}. {$this->lastname}");
         return title_case("{$this->firstname} {$this->lastname}");
+    }
+
+    public function getCampusIdAttribute() {
+        return optional($this->office)->campusId;
     }
 
     public function getGatewayAttribute() {
