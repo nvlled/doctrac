@@ -17,6 +17,5 @@
         </div>
     </fieldset>
 </form>
-<script>
 </section>
 @endsection

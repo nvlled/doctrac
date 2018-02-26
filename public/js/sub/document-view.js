@@ -5,16 +5,14 @@ window.addEventListener("load", function() {
     var $sendData = $container.find(".send-data");
     var $btnAction = $container.find("button.action");
     var $annots = $container.find(".annots");
-    var $selOffices = $container.find("select.offices");
     var $docAttachment = $container.find(".attachment a");
 
     var currentUser = null;
     var currentDoc = null;
 
-    var officeSel = new UI.OfficeSelection(
-        $container.find("div.office-selection")
-    );
+    var officeSel = null;
 
+    $sendData.removeClass("hidden").hide();
     api.user.self().then(setUser);
     api.user.change(setUser);
     setupButtonAction();
@@ -26,8 +24,15 @@ window.addEventListener("load", function() {
             $container.find(".user-name").text("____");
             $container.find(".office-name").text("____");
         } else {
-            officeSel.officeId = user.officeId;
-            officeSel.setOfficeId(user.officeId);
+            officeSel = new UI.OfficeSelection(
+                $container.find("div.office-selection"),
+                {
+                    officeId: currentUser.officeId,
+                    campusId: currentUser.campus_id,
+                    gateway:  currentUser.gateway,
+                    hideTable: true,
+                }
+            );
         }
         $container.find(".user-name").text(user.fullname);
         $container.find(".office-id").text(user.officeId);
@@ -37,17 +42,21 @@ window.addEventListener("load", function() {
 
     function loadDocument() {
         var trackingId = $("input#trackingId").val();
+        var routeId = $("input#routeId").val();
 
+        var params = {trackingId: trackingId};
         util.loadJson(
             "input#document", 
-            api.doc.get({trackingId: trackingId})
+            api.doc.get(params)
         ).then(function(doc) {
-            api.route.nextOffices({trackingId: trackingId})
-               .then(function(offices) {
-                   officeSel.loadOffices(offices);
+            api.route.next({routeId: routeId})
+               .then(function(route) {
+                   officeSel.setOffice({
+                       officeId: route.officeId,
+                       campusId: route.campus_id,
+                   });
                });
 
-            setupOfficeSelection(doc);
             viewDocument(doc);
             updateButtonAction();
         });
@@ -117,12 +126,12 @@ window.addEventListener("load", function() {
         var trackingId = currentDoc.trackingId;
         var params = {
             userId: user ? user.id : null,
-            officeId: parseInt($selOffices.val()),
+            officeId: parseInt(officeSel.getOfficeId()),
             annotations: $annots.val(),
             trackingId: currentDoc.trackingId,
         }
         return api.doc.forward(params)
-                  .then(function() { util.redirect("/search/"+trackingId)});
+                  .then(function() { location.reload(); });
     }
 
     function receiveDocument() {
@@ -130,11 +139,11 @@ window.addEventListener("load", function() {
         var trackingId = currentDoc.trackingId;
         var params = {
             userId: user ? user.id : null,
-            officeId: parseInt($selOffices.val()),
+            officeId: parseInt(officeSel.getOfficeId()),
             trackingId: currentDoc.trackingId,
         }
         return api.doc.receive(params)
-                  .then(function() { util.redirect("/search/"+trackingId)});
+                  .then(function() { location.reload(); });
     }
 
     function abortSendDocument() {
@@ -142,11 +151,11 @@ window.addEventListener("load", function() {
         var trackingId = currentDoc.trackingId;
         var params = {
             userId: user ? user.id : null,
-            officeId: parseInt($selOffices.val()),
+            officeId: parseInt(officeSel.getOfficeId()),
             trackingId: currentDoc.trackingId,
         }
         return api.doc.abortSend(params)
-                  .then(function() { util.redirect("/search/"+trackingId)});
+                  .then(function() { location.reload(); });
     }
 
     function setupButtonAction() {
@@ -169,15 +178,13 @@ window.addEventListener("load", function() {
         $btnAction.hide();
         if (!currentUser)
             return;
+        var route = util.parseJSON($("input#document").val());
         var params = {
-            officeId: currentUser.officeId,
-            trackingId: currentDoc.trackingId,
+            officeId: route ? route.officeId : currentUser.officeId,
+            routeId:  route ? route.id : -1,
         }
-        api.office.actionFor(params, function(resp) {
-            resp = (resp || "").trim();
-            // TODO:
-            // for some reason, resp has an newline prepended to it
-
+        api.office.actionForRoute(params, function(resp) {
+            console.log("action for", resp);
             $btnAction.show();
             $btnAction.data("action", resp);
             switch(resp) {
@@ -190,66 +197,6 @@ window.addEventListener("load", function() {
                 default:
                     $btnAction.hide();
             }
-        });
-    }
-
-    function setupOfficeSelection(doc) {
-        var param = {
-            trackingId: doc.trackingId,
-        }
-        var p1 = api.doc.currentRoutes(param);
-        var p2 = api.doc.nextRoutes(param);
-        var p3 = api.office.nextOffices({
-            officeId: currentUser.officeId
-        });
-        Promise.all([p1, p2, p3]).then(function(values) {
-            var routes = values[0];
-            var nextRoutes = values[1];
-            var offices = values[2];
-
-            $selOffices.html("");
-            offices.forEach(function(off) {
-                var $option = $("<option>");
-                $option.val(off.id);
-                $option.text(off.name + " " + off.campus_name);
-                $selOffices.append($option);
-            });
-
-            if (routes && routes.map) {
-                var officeIds = routes.map(function(r) {
-                    return r.officeId;
-                });
-                disableOffices(officeIds);
-            }
-            if (nextRoutes && nextRoutes.map) {
-                var officeIds = nextRoutes.map(function(r) {
-                    return r.officeId;
-                });
-                selectOffices(officeIds);
-            }
-        });
-    }
-
-    function selectOffices(officeIds) {
-        var index = -1;
-        var value = -1;
-        $selOffices.find("option").each(function(i, opt) {
-            var offId = parseInt(opt.value);
-            if (officeIds.indexOf(offId) >= 0) {
-                opt.selected = true;
-                index = i;
-                value = offId;
-            }
-        });
-        if (value >= 0)
-            $selOffices.val(value);
-    }
-    function disableOffices(officeIds) {
-        $selOffices.find("option").each(function(_, opt) {
-            opt.disabled = false;
-            var offId = parseInt(opt.value);
-            if (officeIds.indexOf(offId) >= 0)
-                opt.disabled = true;
         });
     }
 });

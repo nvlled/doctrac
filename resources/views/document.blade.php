@@ -14,6 +14,7 @@ TODO
     <p class='error'>{{$error ?? ""}}</p>
     <div id="view-document">
         <input id="trackingId" value="{{$trackingId ?? ""}}" type="hidden">
+        <input id="routeId" value="{{$routeId ?? ""}}" type="hidden">
         <input id="document" value="{{$doc ?? ""}}" type="hidden">
         <input id="user" value="{{$user ?? ""}}" type="hidden">
         <h2>
@@ -38,16 +39,13 @@ TODO
         <ul class='activities'>
         </ul>
         <div class="">
-            <div class="send-data">
+            <div class="send-data hidden">
+                <!--TODO-->
                 <textarea name="annotation" rows="5" class="full annots"
                 placeholder="comments, notes or annotation" ></textarea>
                 <br>
-                <h3>Office destinations</h3>
-                @if (optional(Auth::user())->gateway)
+                <strong>Destination</strong>
                 @include("sub/office-selection")
-                @else
-                <strong>Destination</strong>: <select class="offices"></select>
-                @endif
             </div>
             <div class="center">
                 <button class='action half'>SEND / RECEIVE / ABORT SEND / </button>

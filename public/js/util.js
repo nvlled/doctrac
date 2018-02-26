@@ -32,6 +32,7 @@ var util = {
     },
 
     interpolate: function(str, data) {
+        data = data || {};
         return str.replace(/{(\w+)}/g, function(...args) {
             var k = args[1];
             var v = data[k];
@@ -127,5 +128,12 @@ var util = {
             result[k] = v;
         });
         return result;
+    },
+
+    parseJSON: function(str) {
+        try {
+            return JSON.parse(str);
+        } catch (e) { }
+        return null;
     },
 }

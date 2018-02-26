@@ -83,6 +83,7 @@ Route::middleware(['auth'])->group(function() {
             return view('document', [
                 "trackingId"=>$trackingId,
                 "doc" => $docJson,
+                "routeId" => optional($route)->id,
                 "user" => optional(Auth::user())->toJson(),
                 "error" => $error,
             ]);

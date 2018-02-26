@@ -6,9 +6,7 @@ var dispatch = {
         var $userName = $container.find(".user-name");
         var $userOffice = $container.find(".user-office");
 
-        var officeSel = new UI.OfficeSelection(
-            $container.find("div.office-selection")
-        );
+        var officeSel = null;
 
         var currentUser = null;
         api.user.change(setCurrentUser);
@@ -22,8 +20,15 @@ var dispatch = {
             if (user) {
                 $userName.text(user.firstname + " " + user.lastname);
                 $userOffice.text(user.office_name);
-                officeSel.officeId = user.officeId;
-                officeSel.setOfficeId(user.officeId);
+
+                officeSel = new UI.OfficeSelection(
+                    $container.find("div.office-selection"),
+                    {
+                        officeId: currentUser.officeId,
+                        campusId: currentUser.campus_id,
+                        gateway:  currentUser.gateway,
+                    }
+                );
             } else {
                 $userName.text("");
                 $userOffice.text("");
