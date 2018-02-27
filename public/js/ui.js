@@ -113,11 +113,13 @@ var UI = {
         var select = $select[0];
         if (select) {
             var count = 10;
-            while (count-- > 10 && $select.val() == val) {
+            var matches = $select.val() == val;
+            while (--count > 0 && matches) {
                 var i = select.selectedIndex++;
                 if (i == select.children.length-1) {
                     select.selectedIndex++;
                 }
+                matches = $select.val() == val;
             }
         }
     },
