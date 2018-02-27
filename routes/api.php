@@ -172,6 +172,7 @@ Route
             }
             $route->save();
         }
+        \Flash::add("document retracted: {$doc->trackingId}");
     });
 
     Route::any('/receive/{trackingId}', function (Request $req, $trackingId) {
@@ -202,6 +203,7 @@ Route
             $route->arrivalTime = now();
             $route->save();
         }
+        \Flash::add("document received: {$doc->trackingId}");
     });
 
     Route::any('/forward/{trackingId}', function (Request $req, $trackingId) {
@@ -298,7 +300,7 @@ Route
         if ($errors) {
             return ["errors"=>["forward"=>$errors]];
         }
-
+        \Flash::add("document forwarded: {$doc->trackingId}");
     });
 
     Route::any('/{trackingId}/set-attachment',
@@ -395,7 +397,7 @@ Route
             }
         });
 
-        $req->session()->flash("action-notice", "document sent");
+        \Flash::add("document sent: {$doc->trackingId}");
         return $doc;
     });
 });
@@ -412,6 +414,7 @@ Route::any('/users/login', function (Request $req) {
 
 Route::any('/users/logout', function (Request $req) {
     Auth::logout();
+    \Flash::add("You are now logged out");
     return "logout";
 });
 

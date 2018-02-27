@@ -42,14 +42,25 @@
                  @endif
             </ul>
         </nav>
-        <div class='flash-success hidden'>
-            @foreach (flashMessages() as $msg)
+
+        @if (\Flash::has())
+        <div class='flash-success'>
+            @foreach (\Flash::getAll() as $msg)
                 <span class="icon">♫</span>
                 <span class="msg">{{$msg}}</span><br>
             @endforeach
         </div>
+        @endif
+
+        @if (\Flash::hasError())
         <div class='flash-error'>
+            @foreach (\Flash::errorAll() as $msg)
+                <span class="icon">✗</span>
+                <span class="msg">{{$msg}}</span><br>
+            @endforeach
         </div>
+        @endif
+
         @yield("contents")
     </div>
     @yield("scripts")

@@ -20,6 +20,7 @@
     "autoload": {
         "files": [
             "app/Config.php",
+            "app/Flash.php",
             "app/Helpers.php",
             "app/Maint.php"
         ],

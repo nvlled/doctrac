@@ -38,7 +38,3 @@ function disk() {
     return Storage::disk();
 }
 
-function flashMessages() {
-    // TODO: 
-    return request()->session()->flash("action-notice") ?? [];
-}
