@@ -13,7 +13,13 @@
             <span class='title'>{{$doc->title}}</span>
             <small>@ <span class='office'>{{$origin->office_name}}</span></small>
         </h2>
-        <pre>details: <span class='details'>{{$doc->details}}</span></pre>
+        <p class="info"><strong>tracking ID:</strong>
+            <a class="trackingId"
+               href="{{route('view-routes', $doc->trackingId)}}">
+                {{$doc->trackingId}}
+            </a>
+        </p>
+        <h3>Destinations</h3>
         @foreach ($routes as $route)
             <ul>
                 <li>

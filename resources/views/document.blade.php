@@ -21,27 +21,37 @@ TODO
             <span class='title'>doc title</span>
             <small>@ <span class='office'>office</span></small>
         </h2>
-        <p>tracking ID:
+        <p class="info"><strong>tracking ID:</strong>
             <a class="trackingId"
                href="{{route('view-routes', $trackingId)}}">
                 {{$trackingId}}
             </a>
+            @if ($document->type == "parallel")
             <a href="{{route('view-subroutes', $trackingId)}}"
-               class="action">other destinations</a>
+               class="action">other routes</a>
+            @endif
         </p>
-aisdjf
-        <p class=''>status: <span class='status'>status</span></p>
-        <pre>details: <span class='details'></span></pre>
-        <pre>annotations: <span class='annotations'></span></pre>
+        <p class='info'>
+            <strong>status:</strong>
+            <span class='status'>status</span>
+        </p>
+        <p class='info'>
+            <strong>details:</strong>
+            <span class='details'></span>
+        </p>
+        <p class='info'>
+            <strong>annotations:</strong>
+            <span class='annotations'></span>
+        </p>
         <p class='info attachment'>
-            attachment:
+            <strong>attachment:</strong>
             <a href="#" target="_blank">filename.docx</a>
         </p>
+        <p class='info'>
+            <strong>seen by:</strong>
+            <span class='seen-by'></span>
+        </p>
 
-        <div class=''>
-            <button class='action hidden'>send/receive</button>
-        </div>
-        <pre>seen by: <span class='seen-by'></span></pre>
         <hr>
         <p>activity log: </p>
         <ul class='activities'>

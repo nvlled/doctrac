@@ -7,8 +7,11 @@
         <span class='contents'></span>
         (<small class='type'>*</small>)
     </h2>
-    <p class='info details'></p>
-    <p class='info attachment'>attachment: <a href="#" target="_blank">filename.docx</a></p>
+    <p class='info'>
+        <strong>details:</strong>
+        <span class='details'></span>
+    </p>
+    <p class='info attachment'><strong>attachment</strong>: <a href="#" target="_blank">filename.docx</a></p>
     <h4>Routes</h4>
 
     <table class='full'>
@@ -25,9 +28,3 @@
     </table>
     <script src="{{asset('js/sub/routes.js')}}"></script>
 </section>
-<style>
-#doc-history p.info {
-    padding-left: 5px;
-    border-left: 7px solid #dd6;
-}
-</style>

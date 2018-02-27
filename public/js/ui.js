@@ -227,4 +227,9 @@ var UI = {
             $node.hide();
         }
     },
+
+    breakLines: function($node) {
+        var text = $node.text();
+        $node.html(text.replace(/\n/g, "<BR>"));
+    },
 }

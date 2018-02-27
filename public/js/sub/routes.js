@@ -239,9 +239,10 @@ window.addEventListener("load", function() {
     function updateDocInfo(doc) {
         $docTitle.text(doc.title);
         $docType.text(doc.type);
-        $docDetails.text(doc.details);
 
         UI.setText($docDetails, doc.details);
+        UI.breakLines($docDetails);
+
         if (doc.attachment_filename) {
             $docAttachment.parent().show();
             $docAttachment.text(doc.attachment_filename);

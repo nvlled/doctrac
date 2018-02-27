@@ -78,8 +78,12 @@ window.addEventListener("load", function() {
 
         $viewDoc.find(".trackingId").text(id);
         $viewDoc.find(".title").text(info.document_title || "");
-        $viewDoc.find(".details").text(info.document_details);
         $viewDoc.find(".status").text(info.status);
+
+        var $details = $viewDoc.find(".details");
+        $details.text(info.document_details);
+        UI.breakLines($details);
+
         if (info.nextId)
             $viewDoc.find(".office").text(
                 info.office_name + " ~> " +
@@ -97,9 +101,11 @@ window.addEventListener("load", function() {
         }
 
         var $annotations = $viewDoc.find(".annotations");
+
         if (info.annotations) {
             $annotations.parent().show();
             $annotations.text(info.annotations);
+            UI.breakLines($annotations);
         } else {
             $annotations.parent().hide();
         }

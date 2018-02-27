@@ -169,3 +169,8 @@ hr {
     height: 1px;
     background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(150, 0, 0, 0.35), rgba(0, 0, 0, 0));
 }
+
+p.info {
+    padding-left: 5px;
+    border-left: 7px solid #dd6;
+}
