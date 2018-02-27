@@ -9,6 +9,8 @@ UI.OfficeSelection = function(sel, args) {
     this.$input = this.$node.find("input.officeId");
     this.$table = this.$node.find("table");
     var args = args || {};
+    this.type = args.type || "serial";
+    this.gateway = args.gateway;
     this.officeId = args.officeId;
     this.campusId = args.campusId;
 
@@ -16,7 +18,7 @@ UI.OfficeSelection = function(sel, args) {
         this.$table.hide();
         this.$btnAdd.hide();
     }
-    if ( ! args.gateway) {
+    if ( ! this.gateway) {
         this.$campusSel.attr("disabled", true);
     }
 
@@ -59,6 +61,8 @@ UI.OfficeSelection.prototype = {
     clear: function() {
         this.clearValue();
         this.clearSelections();
+        this.checkDestinations();
+        this.updateOfficeSelection();
     },
 
     value: function() {
@@ -119,10 +123,20 @@ UI.OfficeSelection.prototype = {
             });
     },
 
+    isAdded: function(officeId) {
+        // TODO: use a set or map instead
+        var ids = this.getSelectedIds();
+        return ids.some(function(x) {
+            return x == officeId;
+        });
+    },
+
     loadOffices: function(offices) {
         if (!offices)
             return;
         offices.forEach(function(office) {
+            if (this.isAdded(office.id))
+                return;
             var $tr = util.jq([
                 "<tr>",
                 //" <td class='id'></td>",
@@ -154,9 +168,14 @@ UI.OfficeSelection.prototype = {
     },
 
     updateOfficeSelection: function() {
-        var offices = this.getSelectedOffices();
-        var office = offices[offices.length-1];
-        var officeId = office ? office.id : this.officeId;
+        var officeId = null;
+        if (this.type == "serial") {
+            var offices = this.getSelectedOffices();
+            var office = offices[offices.length-1];
+            officeId = office ? office.id : this.officeId;
+        } else {
+            officeId = this.officeId;
+        }
 
         var $officeSel = this.$officeSel;
         $officeSel.find("option")
@@ -169,6 +188,34 @@ UI.OfficeSelection.prototype = {
                     $option.attr("disabled", false);
                 }
             });
+    },
+
+    checkDestinations: function() {
+        var offices = this.getSelectedOffices();
+        var office = offices[offices.length-1];
+
+        if ( ! this.gateway) {
+            this.setCampusId(this.campusId);
+            this.$campusSel.attr("disabled", true);
+        }
+
+        if (this.type == "serial") {
+            if (office && office.gateway && this.campusId != office.campusId) {
+                this.$input.attr("disabled", true);
+                this.$btnAdd.attr("disabled", true);
+                this.$officeSel.attr("disabled", true);
+                this.$campusSel.attr("disabled", true);
+                this.setCampusId(this.campusId);
+            } else {
+                this.$input.attr("disabled", false);
+                this.$btnAdd.attr("disabled", false);
+                this.$officeSel.attr("disabled", false);
+                if (office && !office.gateway)
+                    this.$campusSel.attr("disabled", true);
+                else
+                    this.$campusSel.attr("disabled", false);
+            }
+        }
     },
 
     loadData: function() {
@@ -185,27 +232,6 @@ UI.OfficeSelection.prototype = {
         this.$input.blur();
     },
 
-    checkDestinations: function() {
-        var offices = this.getSelectedOffices();
-        var office = offices[offices.length-1];
-
-        if (office && office.gateway && this.campusId != office.campusId) {
-            this.$input.attr("disabled", true);
-            this.$btnAdd.attr("disabled", true);
-            this.$officeSel.attr("disabled", true);
-            this.$campusSel.attr("disabled", true);
-            this.setCampusId(this.campusId);
-        } else {
-            this.$input.attr("disabled", false);
-            this.$btnAdd.attr("disabled", false);
-            this.$officeSel.attr("disabled", false);
-            if (office && !office.gateway)
-                this.$campusSel.attr("disabled", true);
-            else
-                this.$campusSel.attr("disabled", false);
-        }
-
-    },
 
     setCampusId: function(id) {
         UI.setSelectedValue(this.$campusSel, id);

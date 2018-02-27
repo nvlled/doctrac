@@ -180,7 +180,7 @@ window.addEventListener("load", function() {
             return;
         var route = util.parseJSON($("input#document").val());
         var params = {
-            officeId: route ? route.officeId : currentUser.officeId,
+            officeId: currentUser.officeId,
             routeId:  route ? route.id : -1,
         }
         api.office.actionForRoute(params, function(resp) {

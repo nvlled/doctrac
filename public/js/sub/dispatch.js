@@ -14,6 +14,7 @@ var dispatch = {
             .then(setCurrentUser);
 
         setupSendButton();
+        setupTypeRadio();
 
         function setCurrentUser(user) {
             currentUser = user;
@@ -33,6 +34,18 @@ var dispatch = {
                 $userName.text("");
                 $userOffice.text("");
             }
+        }
+
+        function getDispatchType() {
+            return $("input[name=dispatch-type][checked]").val();
+        }
+
+        function setupTypeRadio() {
+            $container.find("input[name=dispatch-type]")
+                .change(function() {
+                    officeSel.type = getDispatchType();
+                    officeSel.clear();
+                });
         }
 
         function setupSendButton() {

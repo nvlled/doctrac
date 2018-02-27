@@ -40,7 +40,9 @@ class Office extends Model
     }
 
     public function actionForRoute($route) {
-        return $this->actionForStatus(optional($route)->status);
+        if ($route->officeId == $this->id)
+            return $this->actionForStatus(optional($route)->status);
+        return "";
     }
 
     public function actionFor($doc) {
