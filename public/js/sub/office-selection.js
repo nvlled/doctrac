@@ -135,7 +135,7 @@ UI.OfficeSelection.prototype = {
         if (!offices)
             return;
         offices.forEach(function(office) {
-            if (this.isAdded(office.id))
+            if (this.type == "parallel" && this.isAdded(office.id))
                 return;
             var $tr = util.jq([
                 "<tr>",

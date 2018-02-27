@@ -78,13 +78,14 @@ window.addEventListener("load", function() {
         $docTitle.parent().show()
 
         if (doc.type == "parallel") {
-            loadParallelRoutes(doc.trackingId);
+            loadParallelRoutes(doc);
         } else {
-            loadSerialRoutes(doc.trackingId);
+            loadSerialRoutes(doc);
         }
     }
 
-    function loadParallelRoutes(id) {
+    function loadParallelRoutes(doc) {
+        var id = doc.trackingId;
         var params = {trackingId: id};
         Promise.all([
             api.route.parallel(params),
@@ -100,12 +101,14 @@ window.addEventListener("load", function() {
 
             var status = getOriginStatus(origins);
             var origin = origins[0];
-            origin.status = status;
-            origin.link = url;
+            if (origin) {
+                origin.status = status;
+                origin.link = url;
+                data.unshift(origin);
+            }
 
-            data.unshift(origin);
             table.loadData(data);
-            initRows();
+            initRows(doc);
         });
     }
 
@@ -132,19 +135,20 @@ window.addEventListener("load", function() {
         return "*";
     }
 
-    function loadSerialRoutes(id) {
+    function loadSerialRoutes(doc) {
+        var id = doc.trackingId;
         api.route.serial({trackingId: id})
            .then(function(data) {
                table.loadData(data);
-               initRows();
+               initRows(doc);
            });
     }
 
-    function initRows() {
+    function initRows(doc) {
         table.eachRow(function($tr, i) {
             if (!currentUser)
                 return;
-            if (i > 0) {
+            if (i > 0 && doc.type == "parallel") {
                 indentRow($tr);
             }
             var officeId = currentUser.officeId;
