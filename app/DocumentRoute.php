@@ -14,7 +14,9 @@ class DocumentRoute extends Model
         "attachment_filename",
         "attachment_size",
         "attachment_url",
-        "status", "office_name",
+        "status",
+        "office_name",
+        "next_office_name",
         "sender_name", "receiver_name",
         "detailed_info",
         "activities",
@@ -81,7 +83,13 @@ class DocumentRoute extends Model
         $office  = $this->office;
         if (!$office)
             return "";
-        return $office->name . " " . $office->campus_name;
+        return $office->complete_name;
+    }
+
+    public function getNextOfficeNameAttribute() {
+        if ( ! $this->nextRoute)
+            return "";
+        return optional($this->nextRoute->office)->complete_name;
     }
 
     public function findNextRoute($officeId) {

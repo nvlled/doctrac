@@ -80,7 +80,13 @@ window.addEventListener("load", function() {
         $viewDoc.find(".title").text(info.document_title || "");
         $viewDoc.find(".details").text(info.document_details);
         $viewDoc.find(".status").text(info.status);
-        $viewDoc.find(".office").text(info.office_name);
+        if (info.nextId)
+            $viewDoc.find(".office").text(
+                info.office_name + " ~> " +
+                info.next_office_name
+            );
+        else
+            $viewDoc.find(".office").text(info.office_name);
 
         if (info.attachment_filename) {
             $docAttachment.parent().show();

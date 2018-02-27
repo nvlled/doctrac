@@ -8,7 +8,6 @@ window.addEventListener("load", function() {
     var $docAttachment = $container.find(".attachment a");
     var $selOffices = $container.find("select.offices");
     var $annots = $container.find(".annots");
-    var $origin = $container.find(".origin");
     var currentUser = null;
 
     var table = UI.createTable($table, {
@@ -90,24 +89,50 @@ window.addEventListener("load", function() {
         Promise.all([
             api.route.parallel(params),
             api.route.origins(params),
+            api.util.urlFor({
+                routeName: "view-subroutes",
+                trackingId: id,
+            })
         ]).then(function(values) {
             var data = values[0];
             var origins = values[1];
+            var url = values[2].url;
 
-            if (origins.length > 0) {
-                $origin.removeClass("hidden");
-                $origin.show();
-                $origin.find(".contents").text(
-                    origins[0].office_name
-                );
-            }
+            var status = getOriginStatus(origins);
+            var origin = origins[0];
+            origin.status = status;
+            origin.link = url;
+
+            data.unshift(origin);
             table.loadData(data);
             initRows();
         });
     }
 
+    function getOriginStatus(origins) {
+        var delivering = 0;
+        var processing = 0;
+        var done = 0;
+        origins.forEach(function(route) {
+            if (route.status == "delivering")
+                delivering++;
+            else if (route.status == "processing")
+                processing++;
+            else if (route.status == "done")
+                done++;
+        });
+        if (done == origins.length)
+            return "done";
+        if (delivering > 0 && processing > 0)
+            return "delivering/processing"
+        if (delivering > 0)
+            return "delivering"
+        if (processing > 0)
+            return "processing"
+        return "*";
+    }
+
     function loadSerialRoutes(id) {
-        $origin.hide();
         api.route.serial({trackingId: id})
            .then(function(data) {
                table.loadData(data);
@@ -116,15 +141,22 @@ window.addEventListener("load", function() {
     }
 
     function initRows() {
-        table.eachRow(function($tr) {
+        table.eachRow(function($tr, i) {
             if (!currentUser)
                 return;
+            if (i > 0) {
+                indentRow($tr);
+            }
             var officeId = currentUser.officeId;
             if (officeId && $tr.data("value").officeId == officeId)
                 $tr.addClass("sel");
 
             addDetails($tr);
         });
+    }
+
+    function indentRow($tr) {
+        $tr.addClass("indented");
     }
 
     function addDetails($tr) {

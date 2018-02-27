@@ -1,19 +1,16 @@
 
-
-TODO for the night:
-* use office-selection component on document view
-* create a route page, sepate from search page
-* edit route table appearance
-
 TODO:
+
+* fix document info appearance
+* notifications
+    | Office has received urd-2018-123
+    | Office has seen mis-2018-432
 
 * file attachments
 * improve UI
 * popup when asking for final route
 
 * add more tests
-* parallel route bugs on user list
-* fix bug on document search
 
 * ask if project can be made opensores/made public
   so I could solicit contrabutions (i.e. on the frontend design)

@@ -194,6 +194,9 @@ UI.OfficeSelection.prototype = {
         var offices = this.getSelectedOffices();
         var office = offices[offices.length-1];
 
+        this.$campusSel.attr("disabled", false);
+        this.$officeSel.attr("disabled", false);
+
         if ( ! this.gateway) {
             this.setCampusId(this.campusId);
             this.$campusSel.attr("disabled", true);

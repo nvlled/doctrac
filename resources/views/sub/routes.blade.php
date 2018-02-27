@@ -10,7 +10,7 @@
     <p class='info details'></p>
     <p class='info attachment'>attachment: <a href="#" target="_blank">filename.docx</a></p>
     <h4>Routes</h4>
-    <h4 class='origin hidden'>Document origin: <span class='contents'></span></h4>
+
     <table class='full'>
         <thead>
         <tr>

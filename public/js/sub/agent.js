@@ -139,7 +139,7 @@ window.addEventListener("load", function() {
                 var $a = $li.find("a");
                 var id = info.document_type == "serial"
                     ? info.trackingId
-                    : info.trackingId + "-" + info.pathId;
+                    : info.trackingId + "[" + info.id + "]";
                 var text = util.interpolate(
                     "({trackingId}) {title}",
                     {id: info.id, trackingId: id, title: info.document_title}

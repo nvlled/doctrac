@@ -349,7 +349,7 @@ Route
                 $errors[] =
                     "cannot forward document on path={$route->$pathId},
                     route={$route->id}, destination is final";
-            continue;
+                continue;
             }
 
             $destOfficeId = $req->officeId;

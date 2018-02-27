@@ -21,7 +21,15 @@ TODO
             <span class='title'>doc title</span>
             <small>@ <span class='office'>office</span></small>
         </h2>
-        <p>trackingId: <a class="trackingId" href="{{route('view-routes', $trackingId)}}">{{$trackingId}}</a></p>
+        <p>tracking ID:
+            <a class="trackingId"
+               href="{{route('view-routes', $trackingId)}}">
+                {{$trackingId}}
+            </a>
+            <a href="{{route('view-subroutes', $trackingId)}}"
+               class="action">other destinations</a>
+        </p>
+aisdjf
         <p class=''>status: <span class='status'>status</span></p>
         <pre>details: <span class='details'></span></pre>
         <pre>annotations: <span class='annotations'></span></pre>

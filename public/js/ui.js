@@ -41,8 +41,8 @@ Table.prototype = Object.assign(Table.prototype, {
     },
 
     eachRow: function(fn) {
-        this.$table.find("tbody > tr").each(function() {
-            fn($(this));
+        this.$table.find("tbody > tr").each(function(i) {
+            fn($(this), i);
         });
     },
 

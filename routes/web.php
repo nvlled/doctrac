@@ -82,12 +82,24 @@ Route::middleware(['auth'])->group(function() {
             }
             return view('document', [
                 "trackingId"=>$trackingId,
+                "document" => $route->document,
                 "doc" => $docJson,
                 "routeId" => optional($route)->id,
                 "user" => optional(Auth::user())->toJson(),
                 "error" => $error,
             ]);
         })->name("view-document");
+
+        Route::get('/{trackingId}/sub-routes', function ($trackingId) {
+            $doc = App\Document::where("trackingId", $trackingId)->firstOrFail();
+            $routes = $doc->startingRoutes();
+            return view('sub-routes', [
+                "doc" => $doc,
+                "origin" => $routes[0],
+                "routes" => $routes,
+                "user" => optional(Auth::user())->toJson(),
+            ]);
+        })->name("view-subroutes");
     });
 });
 
@@ -99,6 +111,3 @@ Route::get('/logout', function () {
     Auth::logout();
     return redirect()->route("login");
 })->name("logout");
-
-
-
