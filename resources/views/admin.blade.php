@@ -3,10 +3,16 @@
 
 @section("contents")
 
-<section id="context">
+<section id="offices">
     <h2>offices</h2>
     <div class="add-office">
-        <input class="campus-name" placeholder="campus">
+        <ul class='errors'></ul>
+        <ul class='msgs'></ul>
+        <input class="campus-name autocomplete" 
+               data-url='/api/campuses/search'
+               data-key='id'
+               data-format='{name}'
+               placeholder="campus">
         <input class="office-name" placeholder="office">
         <button class="add">add</button>
         <table>
@@ -24,7 +30,7 @@
     <script src="{{asset('js/sub/add-office.js')}}"></script>
 </section>
 
-<section id="context">
+<section id="users">
     <h2>staff positions</h2>
     <div class="positions">
         <input class="pos-name" placeholder="position title or name">

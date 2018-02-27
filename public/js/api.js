@@ -6,9 +6,11 @@ function getInternalError(err) {
 }
 
 function defaultHandler(resp) {
-    console.log("response: ", resp);
-    if (resp && resp.errors)
-        console.warn("errors: ", resp.errors);
+    if (resp && resp.errors) {
+        console.warn("errors: ", JSON.stringify(resp.errors));
+    } else {
+        console.log("api response", resp);
+    }
 }
 
 function makeHandler(url) {
@@ -36,6 +38,27 @@ var api = {
         },
     },
 
+    dev: {
+        cleanDB: makeHandler("/api/dev/clean-db"),
+        createUser: makeHandler("/api/dev/create-dev-user"),
+    },
+
+    file: {
+        upload: function(data) {
+            var fd = new FormData();
+            fd.append('filename', data.title);
+            fd.append('filedata', data.filedata );
+
+            return $.ajax({
+                url: '/api/files/upload',
+                data: fd,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+            }).then(defaultHandler);
+        },
+    },
+
     doc: {
         send: makeHandler("/api/docs/send"),
         get: makeHandler("/api/docs/get/{trackingId}"),
@@ -54,15 +77,49 @@ var api = {
                 handler(arg);
             });
         },
+
+        setAttachment: function(data) {
+            var fd = new FormData();
+            var trackingId = data.trackingId;
+            fd.append('trackingId', data.trackingId);
+            fd.append('filename',   data.filename);
+            fd.append('filedata',   data.filedata );
+
+            var url = util.interpolate(
+                '/api/docs/{trackingId}/set-attachment',
+                {trackingId: trackingId},
+            );
+            return $.ajax({
+                url: url,
+                data: fd,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+            }).then(defaultHandler);
+        },
     },
 
     route: {
         serial: makeHandler("/api/routes/serial/{trackingId}"),
         parallel: makeHandler("/api/routes/parallel/{trackingId}"),
         origins: makeHandler("/api/routes/origins/{trackingId}"),
+        next: makeHandler("/api/routes/next/{routeId}"),
+        nextOffices: makeHandler("/api/routes/next-offices/{trackingId}"),
+        abortSend: makeHandler("/api/routes/{routeId}/abort-send"),
+        forward: makeHandler("/api/routes/{routeId}/forward"),
+    },
+
+    campus: {
+        offices: makeHandler("/api/campuses/{campusId}/offices"),
+        add: makeHandler("/api/campuses/add"),
+        get: makeHandler("/api/campuses/{code}/get"),
+        fetch: makeHandler("/api/campuses/list"),
+        search: makeHandler("/api/campuses/search"),
     },
 
     user: {
+        login: makeHandler("/api/users/login"),
+        logout: makeHandler("/api/users/logout"),
         search: makeHandler("/api/users/search"),
         emit: function(data) {
             events.trigger("user-change", data);
@@ -78,21 +135,11 @@ var api = {
 
         self: makeHandler("/api/users/self"),
         clearSelf: makeHandler("/api/users/self/clear"),
-        setSelf: function(data, fn) {
-            var url = "/api/users/self/{userId}";
-            url = util.interpolate(url, data);
-            fn = fn || defaultHandler;
-            return api.req.post(url, data, fn)
-                .then(function(user) {
-                    api.user.emit(user);
-                });
-        },
 
-        get: function(id, fn) {
-            fn = fn || defaultHandler;
-            var url = "/api/users/get/"+id;
-            return api.req.post(url, {}, fn);
-        },
+        setSelf: makeHandler("/api/users/self/{userId}"),
+
+        get: makeHandler("/api/users/get/{id}"),
+
         add: function(user, fn) {
             fn = fn || defaultHandler;
             var url = "/api/users/add";
@@ -162,6 +209,8 @@ var api = {
     office: {
         search: makeHandler("/api/offices/search"),
         actionFor: makeHandler("/api/offices/{officeId}/action-for/{trackingId}"),
+        actionForRoute:
+            makeHandler("/api/offices/{officeId}/action-for-route/{routeId}"),
 
         canSend: function(officeId, trackingId, fn) {
             fn = fn || defaultHandler;
@@ -180,30 +229,24 @@ var api = {
         dispatched: makeHandler("/api/offices/{officeId}/dispatched"),
         final: makeHandler("/api/offices/{officeId}/final"),
 
-        add: function(office, fn) {
-            fn = fn || defaultHandler;
-            var url = "/api/offices/add";
-            if (!office.name)
-                return fn({errors: ["name is required"]});
-            if (!office.campus)
-                return fn({errors: ["campus is required"]});
-
-            return api.req.post(url, {
-                name: office.name,
-                campus: office.campus,
-            }, fn);
-        },
+        add: makeHandler("/api/offices/add"),
+        get: makeHandler("/api/offices/get"),
 
         fetch: function(fn) {
             var url = "/api/offices/list";
             return api.req.get(url, {}, fn || defaultHandler)
         },
 
+        nextOffices: makeHandler("/api/offices/{officeId}/next-offices"),
+
         delete: function(id, fn) {
             fn = fn || defaultHandler;
             var url = "/api/offices/del/"+id;
             return api.req.post(url, {}, fn)
         },
-    }
-};
+    },
 
+    util: {
+        urlFor: makeHandler("/api/util/url-for/{routeName}"),
+    },
+};

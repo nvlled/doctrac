@@ -32,9 +32,13 @@ var util = {
     },
 
     interpolate: function(str, data) {
+        data = data || {};
         return str.replace(/{(\w+)}/g, function(...args) {
             var k = args[1];
-            return data[k] || args[0];
+            var v = data[k];
+            if (v == null)
+                return args[0];
+            return v;
         });
     },
 
@@ -84,7 +88,52 @@ var util = {
     refresh: function() {
         window.location.reload();
     },
+
     redirect: function(url) {
         window.location = url;
+    },
+
+    redirectRoute: function(routeName, params) {
+        params["routeName"] = routeName;
+        api.util.urlFor(params).then(function(resp) {
+            if (resp.url) {
+                util.redirect(resp.url);
+            } else if (resp.errors) {
+                console.warn("failed to redirect", resp.errors);
+            }
+        });
+    },
+
+    toArray: function(iterator) {
+        var result = [];
+        while(true) {
+            var state = iterator.next();
+            if (!state || state.done) {
+                break;
+            }
+            result.push(state.value);
+        }
+        return result;
+    },
+
+    getFormData: function(form) {
+        if (form instanceof $) // is a jquery object
+            form = form[0];
+
+        var formData = new FormData(form);
+        var result = {};
+        util.toArray(formData.entries()).forEach(function(entry) {
+            var k = entry[0];
+            var v = entry[1];
+            result[k] = v;
+        });
+        return result;
+    },
+
+    parseJSON: function(str) {
+        try {
+            return JSON.parse(str);
+        } catch (e) { }
+        return null;
     },
 }

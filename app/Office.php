@@ -7,7 +7,22 @@ use Illuminate\Support\Facades\Validator;
 
 class Office extends Model
 {
-    public function holdsDoc($doc) {
+    protected $appends = ["campus_name", "campus_code"];
+    protected $hidden = ["campus"];
+
+    function campus() {
+        return $this->hasOne("App\Campus", "id", "campusId");
+    }
+
+    function getCampusCodeAttribute() {
+        return optional($this->campus)->code;
+    }
+
+    function getCampusNameAttribute() {
+        return optional($this->campus)->name;
+    }
+
+    function holdsDoc($doc) {
         foreach ($doc->currentOffices() as $office) {
             if ($this->id == $office->id)
                 return true;
@@ -21,6 +36,12 @@ class Office extends Model
             case "delivering": return "abort";
             case "waiting": return "recv";
         }
+        return "";
+    }
+
+    public function actionForRoute($route) {
+        if ($route->officeId == $this->id)
+            return $this->actionForStatus(optional($route)->status);
         return "";
     }
 
@@ -90,7 +111,6 @@ class Office extends Model
         return false;
     }
 
-    // TODO:
     public function canAbortSend($doc) {
         foreach ($doc->currentRoutes() as $route) {
             $nextRoute = $route->nextRoute;
@@ -115,10 +135,52 @@ class Office extends Model
         return false;
     }
 
+    public function getCompleteNameAttribute() {
+        return "{$this->name} {$this->campus_name}";
+    }
+
     public function validate() {
         return Validator::make($this->toArray(), [
-            'name'   => 'required',
-            'campus' => 'required',
+            'name'     => 'required',
+            'campusId' => 'required',
         ]);
+    }
+
+    // Note: I'm not sure if the 4 digit tracking number
+    // should be shared across campuses
+    public function generateTrackingID() {
+        $now = now();
+        $num = TrackingCounter::nextId();
+        return "{$this->campus_code}-{$now->year}-$num";
+    }
+
+    public function isLinkedTo($office) {
+        if (!$office)
+            return false;
+        return ($this->gateway && $office->gateway)
+            || ($this->campusId == $office->campusId);
+    }
+
+    public function nextOffices() {
+        $campusId = $this->campusId;
+        if ($this->gateway) {
+            // get all local offices and
+            // all gateway (i.e. records) offices
+            // except the current one
+            return self::query()
+                ->where("id", "<>", $this->id)
+                ->where(function($query) use ($campusId) {
+                    $query->where("campusId", $campusId)
+                          ->orWhere("gateway", true);
+                })
+                ->get();
+        } else {
+            // get all local offices
+            // except the current one
+            return self::query()
+                ->where("id", "<>", $this->id)
+                ->where("campusId", $campusId)
+                ->get();
+        }
     }
 }

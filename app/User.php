@@ -12,10 +12,12 @@ class User extends Authenticatable
     use Notifiable;
 
     protected $appends = [
+        "campus_id",
         "position_name",
         "office_name",
         "privilege_name",
         "fullname",
+        "gateway",
     ];
     protected $hidden = ["position", "office", "privilege", "password"];
 
@@ -36,6 +38,14 @@ class User extends Authenticatable
         return title_case("{$this->firstname} {$this->lastname}");
     }
 
+    public function getCampusIdAttribute() {
+        return optional($this->office)->campusId;
+    }
+
+    public function getGatewayAttribute() {
+        return optional($this->office)->gateway;
+    }
+
     public function getPositionNameAttribute() {
         return optional($this->position)->name;
     }
@@ -44,24 +54,27 @@ class User extends Authenticatable
         return optional($this->privilege)->name;
     }
     public function getOfficeNameAttribute() {
-        $office = $this->office;
-        if (!$office)
-            return "";
-        return $office->campus . " " . $office->name;
+        return optional($this->office)->complete_name;
     }
 
     public function seenRoutes() {
         return SeenRoute::where("userId", $this->id)->get();
     }
 
+    public function isKeeper() {
+        return optional($this->office)->gateway;
+    }
+
     public function validate() {
-        return Validator::make($this->toArray(), [
-            'email'  => 'required|unique:users|email',
+        $data = $this->toArray();
+        $data["password"] = $this->password;
+        return Validator::make($data, [
+            'username'  => 'required|unique:users,username',
+            'password'  => 'required',
             'firstname'  => 'required',
-            'middlename'   => 'required',
             'lastname'   => 'required',
-            'positionId' => 'required|exists:positions,id',
-            'privilegeId' => 'required|exists:privileges,id',
+            //'positionId' => 'required|exists:positions,id',
+            //'privilegeId' => 'required|exists:privileges,id',
             'officeId' => 'required|exists:offices,id',
         ]);
     }

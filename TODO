@@ -1,20 +1,29 @@
 
-* User view
-- Incoming documents
-- Currently-held documents
-- Received documents
+TODO:
 
-* do not show ID on autocompleted input
-* pages
-* changeable starting office
+* fix document info appearance
+* notifications
+    | Office has received urd-2018-123
+    | Office has seen mis-2018-432
+
+* file attachments
+* improve UI
+* popup when asking for final route
+
+* add more tests
+
+* ask if project can be made opensores/made public
+  so I could solicit contrabutions (i.e. on the frontend design)
+* Notify the office when user has seen the delivery
+* email/sms notifications
+
+* set more than one attachments and notes/annotations
+    ** Add model: Note(id, trackingId, officeId, contents)
+
+--------------------------------------------
+
 * num of days/minutes
 * subject searching
-* attachments
-* add seen
 * show loading indicators
-* use domvmjs thingy
-
 * page queries
-* save input value locally
-* edit/update of models
 * handle deletion (or prevent)

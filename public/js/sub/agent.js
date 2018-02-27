@@ -31,10 +31,17 @@ window.addEventListener("load", function() {
         $container.find(".user-name").text(user.fullname);
         $container.find(".office-id").text(user.officeId);
         $container.find(".office-name").text(user.office_name);
-        loadIncoming();
-        loadHeld();
-        loadDispatched();
-        loadFinal();
+
+
+        var userId = currentUser ? currentUser.id : null;
+        api.user.seenRoutes({userId: userId})
+           .then(function(seen) {
+               loadIncoming(seen);
+               loadHeld(seen);
+               loadDispatched(seen);
+               loadFinal(seen);
+           });
+
         viewDocument(null);
     }
 
@@ -94,23 +101,28 @@ window.addEventListener("load", function() {
         $finalList.html("");
     }
 
-    function loadIncoming() { return loadList($incomingList, api.office.incoming) }
-    function loadHeld() { return loadList($heldList, api.office.held) }
-    function loadDispatched() { return loadList($dispatchedList, api.office.dispatched) }
-    function loadFinal() { return loadList($finalList, api.office.final) }
+    function loadIncoming(seen) {
+        return loadList($incomingList, seen, api.office.incoming);
+    }
+    function loadHeld(seen) {
+        return loadList($heldList, seen, api.office.held);
+    }
+    function loadDispatched(seen) {
+        return loadList($dispatchedList, seen, api.office.dispatched);
+    }
+    function loadFinal(seen) {
+        return loadList($finalList, seen, api.office.final);
+    }
 
-    function loadList($list, loader) {
+    function loadList($list, seen, loader) {
         if (!currentUser)
             return;
         $list.html("");
 
-        var userId = currentUser ? currentUser.id : null;
         Promise.all([
             loader({officeId: currentUser.officeId}),
-            api.user.seenRoutes({userId: userId}),
         ]).then(function(values) {
             var data = values[0];
-            var seen = values[1] || {};
 
             $list.html("");
             $list.parent().hide();
@@ -127,7 +139,7 @@ window.addEventListener("load", function() {
                 var $a = $li.find("a");
                 var id = info.document_type == "serial"
                     ? info.trackingId
-                    : info.trackingId + "-" + info.pathId;
+                    : info.trackingId + "[" + info.id + "]";
                 var text = util.interpolate(
                     "({trackingId}) {title}",
                     {id: info.id, trackingId: id, title: info.document_title}

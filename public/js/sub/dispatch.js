@@ -1,35 +1,20 @@
 
 var dispatch = {
     setup: function($container) {
-        var $table = $container.find("table.route");
         var $message = $container.find(".message");
-        var $btnRand = $container.find("button.rand");
         var $btnSend = $container.find("button.send");
-        var $input = $container.find(".trackingId");
         var $userName = $container.find(".user-name");
         var $userOffice = $container.find(".user-office");
-        var $addError = $container.find(".add-error");
-        var $officeInput = $container.find("#dispatch-officeId");
 
-        var officeIdFilter = [];
+        var officeSel = null;
+
         var currentUser = null;
         api.user.change(setCurrentUser);
         api.user.self()
             .then(setCurrentUser);
 
-        $btnRand.click(function(e) {
-            e.preventDefault();
-            var user = currentUser;
-            var officeId = user ? user.officeId : "";
-            api.doc.randomId({
-                officeId: officeId,
-            }, function(id) {
-                $input.val(id);
-            });
-        });
-
-        setupAddButton();
         setupSendButton();
+        setupTypeRadio();
 
         function setCurrentUser(user) {
             currentUser = user;
@@ -37,101 +22,95 @@ var dispatch = {
                 $userName.text(user.firstname + " " + user.lastname);
                 $userOffice.text(user.office_name);
 
-                $officeInput.data("params", {
-                    except: officeIdFilter.concat([user.id]),
-                });
+                officeSel = new UI.OfficeSelection(
+                    $container.find("div.office-selection"),
+                    {
+                        officeId: currentUser.officeId,
+                        campusId: currentUser.campus_id,
+                        gateway:  currentUser.gateway,
+                    }
+                );
             } else {
                 $userName.text("");
                 $userOffice.text("");
             }
         }
 
+        function getDispatchType() {
+            return $("input[name=dispatch-type][checked]").val();
+        }
+
+        function setupTypeRadio() {
+            $container.find("input[name=dispatch-type]")
+                .change(function() {
+                    officeSel.type = getDispatchType();
+                    officeSel.clear();
+                });
+        }
+
         function setupSendButton() {
             $btnSend.click(function() {
+                $btnSend.attr("disabled", true);
                 $message.text("");
                 UI.clearErrors($container);
-                var officeIds = [];
-                $table.find("tbody tr").each(function(i) {
-                    var id = $(this).data("officeId");
-                    officeIds.push(id);
-                });
+
+                var officeIds = officeSel.getSelectedIds();
+
                 var doc = {
                     userId: currentUser ? currentUser.id : null,
                     title: $container.find(".title").val(),
-                    trackingId: $container.find(".trackingId").val(),
                     details: $container.find(".details").val(),
                     officeIds: officeIds,
                     type: getDispatchType(),
                 }
                 $btnSend.text("sending...");
                 api.doc.send(doc, function(resp) {
-                    $btnSend.text("Send");
-                    if (resp.errors)
+                    if (resp.errors) {
+                        $btnSend.text("Send");
+                        $btnSend.attr("disabled", false);
                         UI.showErrors($container, resp.errors);
-                    else {
-                        officeIds.splice(0);
-                        $message.text("document sent: " + doc.trackingId);
-                        console.log("okay", resp);
-                        $table.find("tbody").html("");
-                        $container.find("form")[0].reset();
+                    } else {
+                        var trackingId = resp.trackingId;
+                        var fileInput = $container.find("input[name=attachment]")[0];
+                        var file = fileInput.files[0];
+                        uploadFile(trackingId, file).then(function() {
+                            $message.text("document sent: " + trackingId);
+                            officeSel.clear();
+                            $container.find("form")[0].reset();
+                            $btnSend.text("Send");
+                            $btnSend.attr("disabled", false);
+
+                            util.redirectRoute("view-routes",{
+                                trackingId: trackingId,
+                            });
+                        });
                     }
                 });
             });
+        }
+
+        function uploadFile(trackingId, file) {
+            if (file) {
+                $btnSend.text("uploading file...");
+                return api.doc.setAttachment({
+                    trackingId: trackingId,
+                    filename: file.name,
+                    filedata: file,
+                }).then(function(resp) {
+                    if (resp && resp.errors)
+                        return UI.showErrors($container, resp.errors);
+                });
+            } else {
+                $btnSend.text("Send");
+                $btnSend.attr("disabled", false);
+                return Promise.resolve();
+            }
         }
 
         function getDispatchType() {
             return $container.find("input[name=dispatch-type]:checked").val();
         }
 
-        function setupAddButton() {
-            var $btn = $container.find("button.add");
-
-            $officeInput.change(function() {
-                setTimeout(function() {
-                    $addError.text("");
-
-                    if (!$officeInput.val())
-                        return;
-
-                    var office = $officeInput.data("object");
-
-                    if (!office) {
-                        $addError.text("office not found");
-                        return;
-                    }
-                    $officeInput[0].clear();
-
-                    var $tr = util.jq([
-                        "<tr>",
-                        " <td class='id'></td>",
-                        " <td class='name'></td>",
-                        " <td class='action'>",
-                        "   <a href='#' class='del'>X</a>",
-                        "</td>",
-                        "</tr>",
-                    ]);
-                    officeIdFilter.push(office.id);
-                    updateOfficeInputParams();
-
-                    $tr.data("officeId", office.id);
-                    $tr.find(".id").text(office.id);
-                    $tr.find(".name").text(office.campus + " " + office.name);
-                    $tr.find(".del").click(function(e) {
-                        util.arrayRemove(officeIdFilter, office.id);
-                        updateOfficeInputParams();
-                        e.preventDefault();
-                        $tr.remove();
-                    });
-                    $table.append($tr);
-                })
-            });
-        }
-        function updateOfficeInputParams() {
-            var userId = currentUser ? currentUser.id : null;
-            $officeInput.data("params", {
-                except: officeIdFilter.concat([userId]),
-            });
-        }
     }
 }
 

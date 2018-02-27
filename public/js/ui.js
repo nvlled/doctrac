@@ -41,8 +41,8 @@ Table.prototype = Object.assign(Table.prototype, {
     },
 
     eachRow: function(fn) {
-        this.$table.find("tbody > tr").each(function() {
-            fn($(this));
+        this.$table.find("tbody > tr").each(function(i) {
+            fn($(this), i);
         });
     },
 
@@ -98,7 +98,6 @@ Table.prototype = Object.assign(Table.prototype, {
                 "<td colspan='"+n+"' class='center'><i>(none)</i></td>",
                 "</tr>",
             ]);
-            console.log("X");
             this.$table.find("tbody").append($tr);
         } else {
             data.forEach(function(row) {
@@ -110,6 +109,31 @@ Table.prototype = Object.assign(Table.prototype, {
 });
 
 var UI = {
+    selectOther: function($select, val) {
+        var select = $select[0];
+        if (select) {
+            var count = 10;
+            var matches = $select.val() == val;
+            while (--count > 0 && matches) {
+                var i = select.selectedIndex++;
+                if (i == select.children.length-1) {
+                    select.selectedIndex++;
+                }
+                matches = $select.val() == val;
+            }
+        }
+    },
+
+    setSelectedValue: function($select, val) {
+        var i = null;
+        $select.find("option").each(function(i_) {
+            if (this.value == val)
+                i = i_;
+        });
+        if (i != null) {
+            $select[0].selectedIndex = i;
+        }
+    },
 
     createTable: function($table, opts) {
         return new Table($table, opts);
@@ -128,7 +152,7 @@ var UI = {
            });
         $input.change(function() {
             $output.text("");
-            api.user.get($input.val(), function(user) {
+            api.user.get({id: $input.val()}, function(user) {
                 api.user.emit(user);
                 if (!user || user.errors) {
                     $output.text("(no match)");
@@ -141,6 +165,29 @@ var UI = {
         });
     },
     
+    showMessages: function($div, msgs) {
+        var $msgs = $div.find("ul.msgs");
+        if ($msgs.length == 0) {
+            $msgs = $("<ul class='msgs'>");
+            $div.append($msgs);
+        }
+        if (!msgs)
+            return;
+
+        if (typeof msgs == "string")
+            msgs = [msgs];
+
+        msgs.forEach(function(msg) {
+            var $li = $("<li>");
+            $li.text(msg);
+            $msgs.append($li);
+        });
+    },
+
+    clearMessages: function($div) {
+        $div.find("ul.msgs").html("");
+    },
+
     showErrors: function($div, errors) {
         var $errors = $div.find("ul.errors");
         if ($errors.length == 0) {
@@ -170,5 +217,19 @@ var UI = {
         if ($errors.length > 0) {
             $errors.html("");
         }
+    },
+
+    setText: function($node, text) {
+        $node.text(text);
+        if (text) {
+            $node.show();
+        } else {
+            $node.hide();
+        }
+    },
+
+    breakLines: function($node) {
+        var text = $node.text();
+        $node.html(text.replace(/\n/g, "<BR>"));
     },
 }

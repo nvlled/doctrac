@@ -1,25 +1,23 @@
 
 body {
-    font-size: 20px;
-    font-family: Monospace;
-    color: #dff;
-    background-color: #333;
+    font-family: sans-serif;
 }
 a {
-    color: white;
     text-decoration: none;
+    color: #337;
 }
 
 section {
     min-height: 200px;
     padding: 20px;
-    background-color: #555;
-    border-radius: 8px;
-    border: 1px solid #ccc;
     margin: 10px;
     margin-bottom: 50px;
 }
 
+ul.msgs {
+    list-style-type: square;
+    color: #3d3;
+}
 ul.errors {
     list-style-type: square;
     color: #d33;
@@ -33,8 +31,11 @@ input, textarea, button, select {
 }
 
 input[type=submit], button, select {
-    color: white;
-    background-color: #522;
+}
+
+select[disabled] {
+    background-color: white;
+    border: 0px;
 }
 
 .full { width: 98%; }
@@ -43,7 +44,7 @@ input[type=submit], button, select {
 .right { text-align: right; }
 
 .site-wrap {
-    width: 900px;
+    width: 700px;
     margin: 0 auto;
 }
 
@@ -65,7 +66,7 @@ td.action a::before { content: "["; }
 td.action a::after { content: "]"; }
 
 table tbody tr.sel {
-    background-color: #6b6;
+    border-right: 10px solid #6b6;
 }
 table tbody tr.no-sel {
     background-color: inherit !important;
@@ -78,11 +79,17 @@ table tbody tr.sel:hover {
     background-color: #3d3;
     cursor: pointer;
 }
+table tr.indented td:first-child {
+    padding-left: 80px;
+    border-left: 5px solid gray;
+}
 
 table tbody td.details {
     border-left: 10px solid white;
 }
 
+a.action::before { content: "["}
+a.action::after { content: "]"}
 button.action {
     font-size: 20px;
 }
@@ -104,7 +111,6 @@ li.sel::before { content: "["; }
 li.sel::after  { content: "]"; }
 
 li.new a {
-    color: #7f7;
 }
 li.new a::after {
     content: " (new) ";
@@ -121,4 +127,50 @@ nav.main li {
 }
 nav.main li a {
     text-decoration: underline;
+}
+
+header.site {
+    margin-bottom: 15px;
+    padding: 5px;
+    background-color: #ca0;
+}
+header.site a {
+    color: white;
+    text-decoration: none !important;
+}
+div.flash-success {
+    margin: 10px;
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid gray;
+    border-color: rgba(80, 250, 80, 0.5);
+    background-color: rgba(80, 250, 80, 0.2);
+}
+div.flash-error {
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid gray;
+    border-color: rgba(200, 20, 80, 0.5);
+    background-color: rgba(200, 20, 80, 0.2);
+}
+
+header.site nav.main li {
+    margin-right: 5px;
+}
+header.site nav a {
+    font-size: 30px;
+}
+header.site nav a:hover {
+    color: red;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(150, 0, 0, 0.35), rgba(0, 0, 0, 0));
+}
+
+p.info {
+    padding-left: 5px;
+    border-left: 7px solid #dd6;
 }

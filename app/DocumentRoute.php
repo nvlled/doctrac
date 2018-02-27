@@ -10,7 +10,13 @@ class DocumentRoute extends Model
         "document_title",
         "document_details",
         "document_type",
-        "status", "office_name",
+        "campus_id",
+        "attachment_filename",
+        "attachment_size",
+        "attachment_url",
+        "status",
+        "office_name",
+        "next_office_name",
         "sender_name", "receiver_name",
         "detailed_info",
         "activities",
@@ -18,6 +24,7 @@ class DocumentRoute extends Model
         "seen_by",
         "link",
     ];
+
     public $hidden = ["office", "document", "prevRoute", "nextRoute", "sender", "receiver"];
 
     public function office() {
@@ -68,11 +75,21 @@ class DocumentRoute extends Model
         return route("view-document", ["id"=>$this->id]);
     }
 
+    public function getCampusIdAttribute() {
+        return optional($this->office)->campusId;
+    }
+
     public function getOfficeNameAttribute() {
         $office  = $this->office;
         if (!$office)
             return "";
-        return $office->name . " " . $office->campus;
+        return $office->complete_name;
+    }
+
+    public function getNextOfficeNameAttribute() {
+        if ( ! $this->nextRoute)
+            return "";
+        return optional($this->nextRoute->office)->complete_name;
     }
 
     public function findNextRoute($officeId) {
@@ -111,6 +128,10 @@ class DocumentRoute extends Model
         }
 
         return "*";
+    }
+
+    public function isDone() {
+        return $this->status == "done";
     }
 
     public function getActivitiesAttribute() {
@@ -235,5 +256,38 @@ class DocumentRoute extends Model
 
         return $sortedRoutes;
     }
+
+    public function getAttachmentFilenameAttribute() {
+        return optional($this->document)->attachment_filename;
+    }
+
+    public function getAttachmentSizeAttribute() {
+        return optional($this->document)->attachment_size;
+    }
+
+    public function getAttachmentUrlAttribute() {
+        return optional($this->document)->attachment_url;
+    }
+
+    public function canBeAbortedBy($office) {
+        if ( ! $office)
+            return false;
+        $nextRoute = $this->nextRoute;
+        if ($this->officeId == $office->id &&
+            $nextRoute && $nextRoute->receiverId == null)
+            return true;
+        return false;
+    }
+
+    public function canBeSentBy($office) {
+        if ( ! $office)
+            return false;
+        if ($this->officeId != $office->id)
+            return false;
+        $doc = $this->document;
+        return $office->holdsDoc($doc)
+            && !$office->isFinal($doc);
+    }
+
 }
 

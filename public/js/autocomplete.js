@@ -9,14 +9,7 @@ var autocomplete = {
         if (!$input.data("key"))
             $input.data("key", "id");
 
-
         var recentData = {};
-        var labelSel = $input.data("output") || "";
-        var $label = $(labelSel);
-        if ($label.length == 0) {
-            $label = $("<label>");
-            $label.insertAfter($input);
-        }
 
         $datalist.insertAfter($input);
 
@@ -24,27 +17,23 @@ var autocomplete = {
         $input.attr("list", id);
         $input.attr("autocomplete", "on");
 
-        $input.focus(function() {
-            $input.addClass("half");
-            $label.hide();
-            loadDataList();
-        });
-        $input.change(function() {
-            if (Object.keys(recentData).length == 0) {
-                loadDataList().then(update);
-            } else {
-                update();
+        $input.on("set-value", function(_, data) {
+            if (data) {
+                $input.val(makeValue(data));
             }
         });
-        $input.blur(function() {
-            $label.show();
-            $input.removeClass("half");
+        $input.focus(function() {
+            $input.select();
+            loadDataList();
+        });
+        // TODO: handle slow network
+        $input.change(function() {
+            loadDataList().then(update);
         });
         $input.each(function() {
             this.clear = function() {
                 $input.val("");
                 $input.data("object", null);
-                $label.text("");
             }
         });
 
@@ -53,25 +42,37 @@ var autocomplete = {
         });
 
         function update() {
-            $input.removeClass("half");
-            $label.show();
             var value = $input.val();
             var data = recentData[value];
-            var hideText = $input.data("hidetext");
 
             if (recentData && data) {
+                $input.data("value", data.value);
                 $input.data("object", data.row);
-                if (!hideText)
-                    $label.text(data.text);
+                $input.trigger("complete", data.value);
             } else {
-                $label.text("");
+                $input.data("value", null);
                 $input.data("object", null);
+                $input.trigger("complete", null);
             }
         }
+
+        function makeValue(data) {
+            var key = $input.data("key");
+            var format = $input.data("format");
+            var value = data[key];
+            var text = "";
+            if (format) {
+                text = util.interpolate(format, data);
+                return "("+value+") "+text;
+            }
+            return value;
+        }
+
         function loadDataList() {
             var url = $input.data("url");
             var params = $input.data("params") || {};
             params["q"] = $input.val();
+            url = util.interpolate(url, params);
             return $.get(url, params)
                 .then(function(data) {
                     if (!data || !data.forEach)
@@ -83,23 +84,21 @@ var autocomplete = {
                     delete recentData;
                     recentData = {};
 
-                    var key = $input.data("key");
                     data.forEach(function(x) {
-                        var format = $input.data("format");
+                        var key = $input.data("key");
                         var value = x[key];
-                        var text = "";
-                        if (format) {
-                            text = util.interpolate(format, x);
-                        } else {
-                            text = Object.values(x).toString();
-                        }
-                        var optionData = {
-                            text: text,
-                            value: value,
+                        value = makeValue(x);
+
+                        var $option = util.jq("<option>", {
+                            text: value,
                             row: x,
-                        }
-                        var $option = util.jq("<option>", optionData);
-                        recentData[value] = optionData;
+                        });
+
+                        recentData[value] = {
+                            value: x[key],
+                            text: value,
+                            row: x,
+                        };
                         $datalist.append($option);
                     });
                 });

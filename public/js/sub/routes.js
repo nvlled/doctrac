@@ -5,9 +5,9 @@ window.addEventListener("load", function() {
     var $docTitle = $container.find(".title > .contents");
     var $docType = $container.find(".type");
     var $docDetails = $container.find(".details");
+    var $docAttachment = $container.find(".attachment a");
     var $selOffices = $container.find("select.offices");
     var $annots = $container.find(".annots");
-    var $origin = $container.find(".origin");
     var currentUser = null;
 
     var table = UI.createTable($table, {
@@ -36,22 +36,25 @@ window.addEventListener("load", function() {
     });
 
 
+    $docTitle.parent().hide()
+    $docAttachment.parent().hide()
     api.user.self()
        .then(function(user) {
            currentUser = user;
-           loadDocument();
+           var json = $container.find("#document").val();
+           var doc = JSON.parse(json);
+           if (doc)
+               showDocument(doc);
        });
-    $input.change(loadDocument);
+
+    $input.on("complete", loadDocument);
     api.user.change(function(user) {
         currentUser = user;
         loadDocument();
     });
 
-    loadDocument();
-
-    var currentDocument;
     function loadDocument() {
-        var id = $input.val();
+        var id = $input.data("value");
 
         var params = {trackingId: id};
         api.doc.get(params, function(doc) {
@@ -62,61 +65,102 @@ window.addEventListener("load", function() {
                 UI.showErrors($container, doc.errors);
                 return;
             }
-            clearDocInfo(doc);
-            if (!doc) {
-                return;
-            }
-            currentDocument = doc;
-            updateDocInfo(doc);
-
-            if (doc.type == "parallel") {
-                loadParallelRoutes(id);
-            } else {
-                loadSerialRoutes(id);
-            }
+            showDocument(doc);
         });
     }
 
-    function loadParallelRoutes(id) {
+    function showDocument(doc) {
+        clearDocInfo(doc);
+        if (!doc) {
+            return;
+        }
+        updateDocInfo(doc);
+        $docTitle.parent().show()
+
+        if (doc.type == "parallel") {
+            loadParallelRoutes(doc);
+        } else {
+            loadSerialRoutes(doc);
+        }
+    }
+
+    function loadParallelRoutes(doc) {
+        var id = doc.trackingId;
         var params = {trackingId: id};
         Promise.all([
             api.route.parallel(params),
             api.route.origins(params),
+            api.util.urlFor({
+                routeName: "view-subroutes",
+                trackingId: id,
+            })
         ]).then(function(values) {
             var data = values[0];
             var origins = values[1];
+            var url = values[2].url;
 
-            if (origins.length > 0) {
-                $origin.removeClass("hidden");
-                $origin.show();
-                $origin.find(".contents").text(
-                    origins[0].office_name
-                );
+            var status = getOriginStatus(origins);
+            var origin = origins[0];
+            if (origin) {
+                origin.status = status;
+                origin.link = url;
+                data.unshift(origin);
             }
+
             table.loadData(data);
-            initRows();
+            initRows(doc);
         });
     }
 
-    function loadSerialRoutes(id) {
-        $origin.hide();
+    function getOriginStatus(origins) {
+        var delivering = 0;
+        var processing = 0;
+        var done = 0;
+        origins.forEach(function(route) {
+            if (route.status == "delivering")
+                delivering++;
+            else if (route.status == "processing")
+                processing++;
+            else if (route.status == "done")
+                done++;
+        });
+        if (done == origins.length)
+            return "done";
+        if (delivering > 0 && processing > 0)
+            return "delivering/processing"
+        if (delivering > 0)
+            return "delivering"
+        if (processing > 0)
+            return "processing"
+        return "*";
+    }
+
+    function loadSerialRoutes(doc) {
+        var id = doc.trackingId;
         api.route.serial({trackingId: id})
            .then(function(data) {
                table.loadData(data);
-               initRows();
+               initRows(doc);
            });
     }
 
-    function initRows() {
-        table.eachRow(function($tr) {
+    function initRows(doc) {
+        table.eachRow(function($tr, i) {
             if (!currentUser)
                 return;
+            if (i > 0 && doc.type == "parallel") {
+                indentRow($tr);
+            }
             var officeId = currentUser.officeId;
             if (officeId && $tr.data("value").officeId == officeId)
                 $tr.addClass("sel");
 
             addDetails($tr);
         });
+    }
+
+    function indentRow($tr) {
+        $tr.addClass("indented");
     }
 
     function addDetails($tr) {
@@ -148,7 +192,8 @@ window.addEventListener("load", function() {
             .insertAfter($tr);
 
         $tr.click(function() {
-            $trDetails.toggle();
+            util.redirect(route.link);
+            //$trDetails.toggle();
         });
     }
 
@@ -158,7 +203,7 @@ window.addEventListener("load", function() {
             userId: user ? user.id : null,
             officeId: parseInt($selOffices.val()),
             annotations: $annots.val(),
-            trackingId: $input.val(),
+            trackingId: $input.data("value"),
         }
         return api.doc.forward(params);
     }
@@ -168,7 +213,7 @@ window.addEventListener("load", function() {
         var params = {
             userId: user ? user.id : null,
             officeId: parseInt($selOffices.val()),
-            trackingId: $input.val(),
+            trackingId: $input.data("value"),
         }
         return api.doc.receive(params);
     }
@@ -178,24 +223,36 @@ window.addEventListener("load", function() {
         var params = {
             userId: user ? user.id : null,
             officeId: parseInt($selOffices.val()),
-            trackingId: $input.val(),
+            trackingId: $input.data("value"),
         }
         return api.doc.abortSend(params);
     }
 
     function clearDocInfo(doc) {
-        var details = $input.val() ? "(no matching document found)" : "";
+        var details = $input.data("value") ? "(no matching document found)" : "";
 
+        $docTitle.parent().hide()
+        $docAttachment.parent().hide()
         updateDocInfo({
-            title: "---",
+            title: "",
             details: details,
-            type: "*",
+            type: "",
         });
     }
+
     function updateDocInfo(doc) {
         $docTitle.text(doc.title);
         $docType.text(doc.type);
-        $docDetails.text(doc.details);
-    }
 
+        UI.setText($docDetails, doc.details);
+        UI.breakLines($docDetails);
+
+        if (doc.attachment_filename) {
+            $docAttachment.parent().show();
+            $docAttachment.text(doc.attachment_filename);
+            $docAttachment.attr("href", doc.attachment_url);
+        } else {
+            $docAttachment.parent().hide();
+        }
+    }
 });

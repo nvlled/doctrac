@@ -3,30 +3,26 @@
 
 @section("contents")
 <section id="session">
-    <h3>Login</h3>
-    user ID: <input id="session-userid" name="userId"
-        size=7
-        class="userId autocomplete"
-        placeholder="search for user or office name"
-        data-format="{lastname}, {firstname} | ({officeId}) {office_name}"
-        data-output="#session .user-info"
-        data-url="/api/users/search">
-    <br>
-    <p class="user-info"></p>
-    <script>
-    $("#session input#session-userid").change(function() {
-        if (this.value.trim())
-            api.user.setSelf({userId: this.value});
-    });
-    api.user.self()
-       .then(function(user) {
-           if (!user)
-               return;
-           $("#session .user-info").text(util.interpolate(
-               "{lastname}, {firstname} | ({officeId}) {office_name}",
-               user
-           ));
-       });
-    </script>
+<form class="login pure-form pure-form-aligned">
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="name">Username</label>
+            <input id="name" name="username" required type="text" placeholder="Username">
+            <span class="pure-form-message-inline"></span>
+        </div>
+
+        <div class="pure-control-group">
+            <label for="password">Password</label>
+            <input id="password" name="password" required type="password" placeholder="Password">
+            <span class="pure-form-message-inline"></span>
+        </div>
+
+        <div class="pure-controls">
+            <p class='msg'></p>
+            <button type="submit" class="pure-button pure-button-primary">Login</button>
+        </div>
+    </fieldset>
+</form>
+<script src="{{asset('js/sub/login.js')}}"></script>
 </section>
 @endsection

@@ -7,6 +7,15 @@ use Illuminate\Support\Facades\Validator;
 
 class Document extends Model
 {
+    public $appends = [
+        "attachment_filename",
+        "attachment_size",
+        "attachment_url",
+    ];
+    public $hidden = [
+        "attachment",
+    ];
+
     public function create($user, $data) {
     }
 
@@ -104,14 +113,10 @@ class Document extends Model
 
     public function createParallelRoutes($officeIds, $officeId, $user) {
         foreach ($officeIds as $officeId) {
-            if ($officeId == $route->officeId) {
-                throw new Exception("routes cannot point to self");
-            }
-
             $pathId = generateId();
             $route = new \App\DocumentRoute();
-            $route->trackingId  = $doc->trackingId;
-            $route->officeId    = $officeId;
+            $route->trackingId  = $this->trackingId;
+            $route->officeId    = $user->officeId;
             $route->receiverId  = $user->id;
             $route->senderId    = $user->id;
             $route->pathId      = $pathId;
@@ -119,8 +124,12 @@ class Document extends Model
             $route->forwardTime = now();
             $route->save();
 
+            if ($user->officeId == $officeId) {
+                throw new \Exception("routes cannot point to self");
+            }
+
             $nextRoute = new \App\DocumentRoute();
-            $nextRoute->trackingId = $doc->trackingId;
+            $nextRoute->trackingId = $this->trackingId;
             // TODO: check if office id is valid
             // TODO: route and nextRoute must not be the same
             $nextRoute->officeId = $officeId;
@@ -148,14 +157,26 @@ class Document extends Model
         $route->forwardTime = now();
         $route->save();
 
+        $office = \App\Office::find($officeId);
+
         foreach ($officeIds as $officeId) {
             if ($officeId == $route->officeId) {
-                throw new Exception("routes cannot point to self");
+                throw new \Exception("routes cannot point to self");
+            }
+
+            $nextOffice = \App\Office::find($officeId);
+            if (!$nextOffice) {
+                throw new \Exception("office not found: $officeId");
+            }
+            if (!$office->isLinkedTo($nextOffice)) {
+                throw new \Exception(
+                    "invalid route, cannot forward {$office->complete_name}"
+                    ." to {$nextOffice->complete_name}"
+                );
             }
 
             $nextRoute = new \App\DocumentRoute();
             $nextRoute->trackingId = $this->trackingId;
-            // TODO: check if office id is valid
             $nextRoute->officeId = $officeId;
             $nextRoute->pathId = $pathId;
             $nextRoute->save(); // save first to get an ID
@@ -167,10 +188,40 @@ class Document extends Model
             $nextRoute->save();
 
             $route = $nextRoute;
+            $office = $nextOffice;
         }
         $route->final = true;
         $route->save();
+    }
 
+    public function attachment() {
+        return $this->hasOne("App\File", "id", "attachmentId");
+    }
+
+    public function getAttachmentFilenameAttribute() {
+        return optional($this->attachment)->name;
+    }
+
+    public function getAttachmentSizeAttribute() {
+        return optional($this->attachment)->size;
+    }
+
+    public function getAttachmentUrlAttribute() {
+        $attachment = $this->attachment;
+        if ( ! $attachment)
+            return "";
+        return route("download-file", [
+            "id"      => $attachment->id,
+            "filename"=> $attachment->name,
+        ]);
+    }
+
+    public function isSerial() {
+        return $this->type == "serial";
+    }
+    public function isParallel() {
+        return $this->type == "parallel";
     }
 }
+
 

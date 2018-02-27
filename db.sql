@@ -1,4 +1,5 @@
 
+delete from campuses;
 delete from offices;
 delete from positions;
 delete from privileges;
@@ -6,57 +7,61 @@ delete from users;
 delete from documents;
 delete from document_routes;
 
-insert into offices(id, campus, name, created_at, updated_at) values
-(@rec:=1,    'urdaneta', 'records', NOW(), NOW()),
-(@mis:=2,  'urdaneta', 'MIS', NOW(), NOW()),
-(@acc:=3,  'urdaneta', 'accounting', NOW(), NOW()),
-(@coc:=4,  'urdaneta', 'COC', NOW(), NOW()),
-(@csh:=5,  'urdaneta', 'cashier', NOW(), NOW()),
-(6,  'lingayen', 'MIS', NOW(), NOW()),
-(7,  'lingayen', 'accounting', NOW(), NOW()),
-(8,  'lingayen', 'COC', NOW(), NOW()),
-(9,  'asingan', 'registrar', NOW(), NOW()),
-(10, 'asingan', 'MIS', NOW(), NOW()),
-(11, 'asingan', 'accounting', NOW(), NOW()),
-(12, 'asingan', 'COC', NOW(), NOW());
-
-insert into positions(id, name, created_at, updated_at) values
-(@head := 1,  'Head', NOW(), NOW()),
-(@asst := 2,  'Assistant', NOW(), NOW()),
-(@fact := 3,  'Faculty', NOW(), NOW()),
-(@clrk := 4,  'Clerk', NOW(), NOW());
-
-insert into privileges(id, name, created_at, updated_at) values
-(@admin   := 1,  'admin', NOW(), NOW()),
-(@officer := 2,  'record officer', NOW(), NOW()),
-(@agent   := 3,  'agent', NOW(), NOW());
-
 set @t = NOW();
 
--- password == bcrypt('x')
-set @p = "$2y$10$eW9b3pHETP.xhdww1nUare66H39WqlQW6rLS8gGvH7OK3IN6ji66.";
-insert into users
-(
-    created_at, 
-    updated_at,
-    id, 
-    email,
-    password,
-    firstname, 
-    middlename, 
-    lastname, 
-    positionId,
-    privilegeId,
-    officeId
-) values
-(@t, @t, 1,        "a@x.y", @p, "Astaroth", "Cosette", "Aida", @head, @admin, 1),
-(@t, @t, @off1:=2, "b@x.y", @p, "Rohan", "Othello", "Zuleika", @asst, @officer, 2),
-(@t, @t, @off2:=3, "c@x.y", @p, "Igerna", "Aramis", "Gandalf", @clrk, @officer, 3),
-(@t, @t, 4,        "d@x.y", @p, "Ruslan", "Guenevere", "Mehrab", @clrk, @agent, 4),
-(@t, @t, 5,        "e@x.y", @p, "Bedwyr", "Daenerys", "Medraut", @fact, @agent, 2),
-(@t, @t, 6,        "f@x.y", @p, "Enobarbus", "Merlin", "Malvina", @asst, @agent, 6),
-(@t, @t, 7,        "g@x.y", @p, "Ossian", "Bayard", "Lalage", @head, @agent, 5),
-(@t, @t, 8,        "h@x.y", @p, "Morgen", "Cyrano", "Turin", @fact, @agent, 1);
+insert into campuses(id, code, name, created_at, updated_at) values
+(1,  "ala", "Alaminos", @t, @t),
+(2,  "asi", "Asingan", @t, @t),
+(3,  "bay", "Bayambang", @t, @t),
+(4,  "bin", "Binmaley", @t, @t),
+(5,  "inf", "Infanta", @t, @t),
+(6,  "lin", "Lingayen", @t, @t),
+(7,  "car", "San Carlos", @t, @t),
+(8,  "sta", "Sta Maria", @t, @t),
+(9, "urd",  "Urdaneta", @t, @t);
+
+insert into offices(id, campusId, gateway, name, created_at, updated_at) values
+(1,        1, 1, 'Records', @t, @t),
+(2,        1, 0, 'MIS', @t, @t),
+(3,        1, 0, 'Registrar', @t, @t),
+(4,        2, 1, 'Records', @t, @t),
+(5,        2, 0, 'MIS', @t, @t),
+(6,        2, 0, 'Registrar', @t, @t),
+(7,        3, 1, 'Records', @t, @t),
+(8,        3, 0, 'MIS', @t, @t),
+(9,        3, 0, 'Registrar', @t, @t),
+(10,       4, 1, 'Records', @t, @t),
+(11,       4, 0, 'MIS', @t, @t),
+(12,       4, 0, 'Registrar', @t, @t),
+(13,       5, 1, 'Records', @t, @t),
+(14,       5, 0, 'MIS', @t, @t),
+(15,       5, 0, 'Registrar', @t, @t),
+(16,       6, 1, 'Records', @t, @t),
+(17,       6, 0, 'MIS', @t, @t),
+(18,       6, 0, 'Registrar', @t, @t),
+(19,       7, 1, 'Records', @t, @t),
+(20,       7, 0, 'MIS', @t, @t),
+(21,       7, 0, 'Registrar', @t, @t),
+(22,       8, 1, 'Records', @t, @t),
+(23,       8, 0, 'MIS', @t, @t),
+(24,       8, 0, 'Registrar', @t, @t),
+(@urec:=25,9, 1, 'Records', @t, @t),
+(@umis:=26,9, 0, 'MIS', @t, @t),
+(@uacc:=27,9, 0, 'Accounting', @t, @t),
+(@ucoc:=28,9, 0, 'COC', @t, @t),
+(@ucsh:=29,9, 0, 'Cashier', @t, @t);
+
+insert into positions(id, name, created_at, updated_at) values
+(@head := 1,  'Head', @t, @t),
+(@asst := 2,  'Assistant', @t, @t),
+(@fact := 3,  'Faculty', @t, @t),
+(@clrk := 4,  'Clerk', @t, @t);
+
+insert into privileges(id, name, created_at, updated_at) values
+(@admin   := 1,  'admin', @t, @t),
+(@officer := 2,  'record officer', @t, @t),
+(@agent   := 3,  'agent', @t, @t);
+
 
 insert into documents
 (
@@ -87,30 +92,29 @@ insert into document_routes
 ) values
 
 --                      recvr  sender  P   N    arrv   forw
-(1, 1, @trackID1, @rec, @off1, @off1,  @_, 2,   @day1, @day1, false, @_),
-(2, 1, @trackID1, @mis, @_,    @_,     1, @_,   @_,    @_,    true,  @_),
+(1, 1, @trackID1, @urec, @off1, @off1,  @_, 2,   @day1, @day1, false, @_),
+(2, 1, @trackID1, @umis, @_,    @_,     1, @_,   @_,    @_,    true,  @_),
 
-(3, 2, @trackID2, @mis, @off2, @off2,  @_, 4,   @day1, @day1, false, @_),
-(4, 2, @trackID2, @csh, 3,     @_,     3,  5,   @day2, @_,    false, 'something'),
-(5, 2, @trackID2, @acc, @_,    @_,     4,  6,   @_,    @_,    false, @_),
-(6, 2, @trackID2, @coc, @_,    @_,     5,  @_,  @_,    @_,    true,  @_),
+(3, 2, @trackID2, @umis, @off2, @off2,  @_, 4,   @day1, @day1, false, @_),
+(4, 2, @trackID2, @ucsh, 3,     @_,     3,  5,   @day2, @_,    false, 'something'),
+(5, 2, @trackID2, @uacc, @_,    @_,     4,  6,   @_,    @_,    false, @_),
+(6, 2, @trackID2, @ucoc, @_,    @_,     5,  @_,  @_,    @_,    true,  @_),
 
-(23, 7, @trackID3, @mis, @off2, @off2, @_, 24,  @day1, @day1, false, @_),
-(24, 7, @trackID3, @csh, 3,     4,     23, 25,  @day2, @day2, false, 'something'),
-(25, 7, @trackID3, @acc, @_,    @_,    24, 26,  @_,    @_,    false, @_),
-(26, 7, @trackID3, @coc, @_,    @_,    25, @_,  @_,    @_,    true,  @_),
+(23, 7, @trackID3, @umis, @off2, @off2, @_, 24,  @day1, @day1, false, @_),
+(24, 7, @trackID3, @ucsh, 3,     4,     23, 25,  @day2, @day2, false, 'something'),
+(25, 7, @trackID3, @uacc, @_,    @_,    24, 26,  @_,    @_,    false, @_),
+(26, 7, @trackID3, @ucoc, @_,    @_,    25, @_,  @_,    @_,    true,  @_),
 
-(7,  3, @trackID4, @coc, @off1, @off1, @_, 8,   @day1, @day1, false, @_),
-(8,  3, @trackID4, @csh, 5,     5,     7,  9,   @day2, @day2, false, 'sign'),
-(9,  3, @trackID4, @mis, 6,     @_,    8,  @_,  @day3, @_,    true, 'blah'),
+(7,  3, @trackID4, @ucoc, @off1, @off1, @_, 8,   @day1, @day1, false, @_),
+(8,  3, @trackID4, @ucsh, 5,     5,     7,  9,   @day2, @day2, false, 'sign'),
+(9,  3, @trackID4, @umis, 6,     @_,    8,  @_,  @day3, @_,    true, 'blah'),
 
-(11, 4, @trackID5, @rec, @off2, @off2, @_, 14,  @day1, @day2, false, @_),
-(12, 5, @trackID5, @rec, @off2, @off2, @_, 15,  @day1, @day2, false, @_),
-(13, 6, @trackID5, @rec, @off2, @off2, @_, 16,  @day1, @day2, false,  @_),
+(11, 4, @trackID5, @urec, @off2, @off2, @_, 14,  @day1, @day2, false, @_),
+(12, 5, @trackID5, @urec, @off2, @off2, @_, 15,  @day1, @day2, false, @_),
+(13, 6, @trackID5, @urec, @off2, @off2, @_, 16,  @day1, @day2, false,  @_),
 
-(14, 4, @trackID5, @coc, 3,     @_,    11, @_,  @_,    @_,    true, @_),
-(15, 5, @trackID5, @csh, 4,     @_,    12, @_,  @_,    @_,    true, @_),
-(16, 6, @trackID5, @mis, 5,     @_,    13, @_,  @_,    @_,    true,  @_);
-
+(14, 4, @trackID5, @ucoc, 3,     @_,    11, @_,  @_,    @_,    true, @_),
+(15, 5, @trackID5, @ucsh, 4,     @_,    12, @_,  @_,    @_,    true, @_),
+(16, 6, @trackID5, @umis, 5,     @_,    13, @_,  @_,    @_,    true,  @_);
 
 

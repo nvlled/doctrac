@@ -5,11 +5,14 @@ window.addEventListener("load", function() {
     var $sendData = $container.find(".send-data");
     var $btnAction = $container.find("button.action");
     var $annots = $container.find(".annots");
-    var $selOffices = $container.find("select.offices");
+    var $docAttachment = $container.find(".attachment a");
 
     var currentUser = null;
     var currentDoc = null;
 
+    var officeSel = null;
+
+    $sendData.removeClass("hidden").hide();
     api.user.self().then(setUser);
     api.user.change(setUser);
     setupButtonAction();
@@ -20,6 +23,16 @@ window.addEventListener("load", function() {
             $container.find(".office-id").text("_");
             $container.find(".user-name").text("____");
             $container.find(".office-name").text("____");
+        } else {
+            officeSel = new UI.OfficeSelection(
+                $container.find("div.office-selection"),
+                {
+                    officeId: currentUser.officeId,
+                    campusId: currentUser.campus_id,
+                    gateway:  currentUser.gateway,
+                    hideTable: true,
+                }
+            );
         }
         $container.find(".user-name").text(user.fullname);
         $container.find(".office-id").text(user.officeId);
@@ -29,12 +42,21 @@ window.addEventListener("load", function() {
 
     function loadDocument() {
         var trackingId = $("input#trackingId").val();
+        var routeId = $("input#routeId").val();
 
+        var params = {trackingId: trackingId};
         util.loadJson(
             "input#document", 
-            api.doc.get({trackingId: trackingId})
+            api.doc.get(params)
         ).then(function(doc) {
-            setupOfficeSelection(doc);
+            api.route.next({routeId: routeId})
+               .then(function(route) {
+                   officeSel.setOffice({
+                       officeId: route.officeId,
+                       campusId: route.campus_id,
+                   });
+               });
+
             viewDocument(doc);
             updateButtonAction();
         });
@@ -55,15 +77,35 @@ window.addEventListener("load", function() {
             id += "-"+info.pathId;
 
         $viewDoc.find(".trackingId").text(id);
-        $viewDoc.find(".title").text(info.document_details);
+        $viewDoc.find(".title").text(info.document_title || "");
         $viewDoc.find(".status").text(info.status);
-        $viewDoc.find(".office").text(info.office_name);
-        $viewDoc.find(".details").text(info.document_details);
+
+        var $details = $viewDoc.find(".details");
+        $details.text(info.document_details);
+        UI.breakLines($details);
+
+        if (info.nextId)
+            $viewDoc.find(".office").text(
+                info.office_name + " ~> " +
+                info.next_office_name
+            );
+        else
+            $viewDoc.find(".office").text(info.office_name);
+
+        if (info.attachment_filename) {
+            $docAttachment.parent().show();
+            $docAttachment.text(info.attachment_filename);
+            $docAttachment.attr("href", info.attachment_url);
+        } else {
+            $docAttachment.parent().hide();
+        }
 
         var $annotations = $viewDoc.find(".annotations");
+
         if (info.annotations) {
             $annotations.parent().show();
             $annotations.text(info.annotations);
+            UI.breakLines($annotations);
         } else {
             $annotations.parent().hide();
         }
@@ -94,14 +136,18 @@ window.addEventListener("load", function() {
     function forwardDocument() {
         var user = currentUser;
         var trackingId = currentDoc.trackingId;
-        var params = {
-            userId: user ? user.id : null,
-            officeId: parseInt($selOffices.val()),
-            annotations: $annots.val(),
-            trackingId: currentDoc.trackingId,
+        var route = util.parseJSON($("input#document").val());
+        if (!route) {
+            console.warn("no route found");
+            return;
         }
-        return api.doc.forward(params)
-                  .then(function() { util.redirect("/search/"+trackingId)});
+        var params = {
+            officeId: parseInt(officeSel.getOfficeId()),
+            annotations: $annots.val(),
+            routeId: route.id,
+        }
+        return api.route.forward(params)
+                  .then(function() { location.reload(); });
     }
 
     function receiveDocument() {
@@ -109,23 +155,24 @@ window.addEventListener("load", function() {
         var trackingId = currentDoc.trackingId;
         var params = {
             userId: user ? user.id : null,
-            officeId: parseInt($selOffices.val()),
+            officeId: parseInt(officeSel.getOfficeId()),
             trackingId: currentDoc.trackingId,
         }
         return api.doc.receive(params)
-                  .then(function() { util.redirect("/search/"+trackingId)});
+                  .then(function() { location.reload(); });
     }
 
     function abortSendDocument() {
         var user = currentUser;
         var trackingId = currentDoc.trackingId;
+        var route = util.parseJSON($("input#document").val());
+        if (!route)
+            return Promise.resolve();
         var params = {
-            userId: user ? user.id : null,
-            officeId: parseInt($selOffices.val()),
-            trackingId: currentDoc.trackingId,
+            routeId: route.id,
         }
-        return api.doc.abortSend(params)
-                  .then(function() { util.redirect("/search/"+trackingId)});
+        return api.route.abortSend(params)
+                  .then(function() { location.reload(); });
     }
 
     function setupButtonAction() {
@@ -148,11 +195,13 @@ window.addEventListener("load", function() {
         $btnAction.hide();
         if (!currentUser)
             return;
+        var route = util.parseJSON($("input#document").val());
         var params = {
             officeId: currentUser.officeId,
-            trackingId: currentDoc.trackingId,
+            routeId:  route ? route.id : -1,
         }
-        api.office.actionFor(params, function(resp) {
+        api.office.actionForRoute(params, function(resp) {
+            console.log("action for", resp);
             $btnAction.show();
             $btnAction.data("action", resp);
             switch(resp) {
@@ -165,64 +214,6 @@ window.addEventListener("load", function() {
                 default:
                     $btnAction.hide();
             }
-        });
-    }
-
-    function setupOfficeSelection(doc) {
-        var param = {
-            trackingId: doc.trackingId,
-        }
-        var p1 = api.doc.currentRoutes(param);
-        var p2 = api.doc.nextRoutes(param);
-        var p3 = api.office.fetch()
-        Promise.all([p1, p2, p3]).then(function(values) {
-            var routes = values[0];
-            var nextRoutes = values[1];
-            var offices = values[2];
-
-            $selOffices.html("");
-            offices.forEach(function(off) {
-                var $option = $("<option>");
-                $option.val(off.id);
-                $option.text(off.name + " " + off.campus);
-                $selOffices.append($option);
-            });
-
-            if (routes && routes.map) {
-                var officeIds = routes.map(function(r) {
-                    return r.officeId;
-                });
-                disableOffices(officeIds);
-            }
-            if (nextRoutes && nextRoutes.map) {
-                var officeIds = nextRoutes.map(function(r) {
-                    return r.officeId;
-                });
-                selectOffices(officeIds);
-            }
-        });
-    }
-
-    function selectOffices(officeIds) {
-        var index = -1;
-        var value = -1;
-        $selOffices.find("option").each(function(i, opt) {
-            var offId = parseInt(opt.value);
-            if (officeIds.indexOf(offId) >= 0) {
-                opt.selected = true;
-                index = i;
-                value = offId;
-            }
-        });
-        if (value >= 0)
-            $selOffices.val(value);
-    }
-    function disableOffices(officeIds) {
-        $selOffices.find("option").each(function(_, opt) {
-            opt.disabled = false;
-            var offId = parseInt(opt.value);
-            if (officeIds.indexOf(offId) >= 0)
-                opt.disabled = true;
         });
     }
 });

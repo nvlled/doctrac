@@ -11,14 +11,16 @@ window.addEventListener("load", function() {
         $btn.click(function(e) {
             e.preventDefault();
             UI.clearErrors($container);
+            UI.clearMessages($container);
             var office = {
                 name:   $container.find(".office-name").val(),
-                campus: $container.find(".campus-name").val(),
+                campusId: $container.find(".campus-name").data("value"),
             };
             api.office.add(office, function(resp) {
                 if (resp.errors)
                     UI.showErrors($container, resp.errors);
                 else {
+                    UI.showMessages($container, "new office added: " + office.name);
                     addOfficeRow(resp);
                     clearInputs();
                 }
@@ -43,11 +45,11 @@ window.addEventListener("load", function() {
         ]);
         $tr.find(".id").text(office.id);
         $tr.find(".name").text(office.name);
-        $tr.find(".campus").text(office.campus);
+        $tr.find(".campus").text(office.campus_name);
         $tr.find(".del").click(function(e) {
             e.preventDefault();
             var proceed = confirm("delete office: " 
-                + office.name + "--" + office.campus); 
+                + office.name + "--" + office.campus_name);
             if (!proceed)
                 return;
             deleteRow(office, $tr);
