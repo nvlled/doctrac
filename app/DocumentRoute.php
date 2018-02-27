@@ -260,5 +260,26 @@ class DocumentRoute extends Model
     public function getAttachmentUrlAttribute() {
         return optional($this->document)->attachment_url;
     }
+
+    public function canBeAbortedBy($office) {
+        if ( ! $office)
+            return false;
+        $nextRoute = $this->nextRoute;
+        if ($this->officeId == $office->id &&
+            $nextRoute && $nextRoute->receiverId == null)
+            return true;
+        return false;
+    }
+
+    public function canBeSentBy($office) {
+        if ( ! $office)
+            return false;
+        if ($this->officeId != $office->id)
+            return false;
+        $doc = $this->document;
+        return $office->holdsDoc($doc)
+            && !$office->isFinal($doc);
+    }
+
 }
 

@@ -215,6 +215,13 @@ class Document extends Model
             "filename"=> $attachment->name,
         ]);
     }
+
+    public function isSerial() {
+        return $this->type == "serial";
+    }
+    public function isParallel() {
+        return $this->type == "parallel";
+    }
 }
 
 

@@ -88,6 +88,124 @@ Route
             return $r->office;
         });
     });
+
+    Route::any('/{routeId}/abort-send', function (Request $req, $routeId) {
+        $route = App\DocumentRoute::find($routeId);
+        if (!$route)
+            return ["errors"=>["doc"=>"invalid route id"]];
+        $user = Auth::user();
+        if (!$user)
+            return ["errors"=>["user"=>"invalid user"]];
+
+        if (!$user->office)
+            return ["errors"=>["user"=>"user has no valid office"]];
+
+        if (!$route->canBeAbortedBy($user->office)) {
+            return ["errors"=>["doc"=>"cannot abort send"]];
+        }
+        if ($user->office->id != $route->officeId) {
+            return ["errors"=>["doc"=>"cannot abort send"]];
+        }
+
+        $office = $user->office;
+        $route->senderId = null;
+        $route->forwardTime = null;
+        if ($route->nextRoute) {
+            $route->nextRoute->annotations = null;
+            $route->nextRoute->save();
+        }
+        $route->save();
+        \Flash::add("document retracted: {$route->trackingId}");
+    });
+
+    Route::any('/{routeId}/forward', function (Request $req, $routeId) {
+        $route = App\DocumentRoute::find($routeId);
+        if (!$route)
+            return ["errors"=>["doc"=>"invalid tracking id"]];
+        $user = Auth::user();
+        if (!$user)
+            return ["errors"=>["user"=>"invalid user"]];
+
+        if (!$user->office)
+            return ["errors"=>["user"=>"user has no valid office"]];
+
+        if ( ! $route->canBeSentBy($user->office)) {
+            return ["errors"=>["doc"=>"user cannot send document"]];
+        }
+
+        $office = $user->office;
+
+        if ($route->final) {
+            return ["errors"=>["doc"=>
+                "cannot forward document on path={$route->$pathId},
+                route={$route->id}, destination is final"
+            ]];
+        }
+
+        $destOfficeId = $req->officeId;
+        $nextRoute = $route->nextRoute;
+        if (!$destOfficeId || !$nextRoute) {
+            return ["errors"=>["doc"=>
+                "no next destination specified"
+            ]];
+        }
+        if ($destOfficeId == $route->officeId) {
+            return ["errors"=>["doc"=>
+                "cannot forward documents to the same place"
+            ]];
+        }
+        $nextOffice = \App\Office::find($destOfficeId);
+        if (!$office->isLinkedTo($nextOffice)) {
+            $nextOfficeName = $nextOffice->complete_name ?? "unknown office";
+            return ["errors"=>["doc"=>
+                "invalid route, cannot forward {$office->complete_name}"
+                ." to {$nextOfficeName}"
+            ]];
+        }
+
+        $route->senderId = $user->id;
+        $route->forwardTime = now();
+
+        $annotations = $req->annotations;
+        if ($destOfficeId == $nextRoute->officeId) {
+            $nextRoute->annotations = $annotations;
+            $route->save();
+            $nextRoute->save();
+        } else {
+            $shortcut = $route->findNextRoute($destOfficeId);
+            if ($shortcut) {
+                // TODO: delete skipped routes
+
+                // take a shortcut route
+                $route->nextId = $shortcut->id;
+                $shortcut->prevId = $route->id;
+                $shortcut->annotations = $annotations;
+                $route->save();
+                $shortcut->save();
+            } else {
+                // insert a detour route
+                $detour = new App\DocumentRoute();
+                $detour->trackingId = $route->trackingId;
+                $detour->officeId = $destOfficeId;
+                $detour->pathId = $route->pathId;
+                $detour->annotations = $annotations;
+                $detour->save(); // save first to get an ID
+
+                $route->nextId = $detour->id;
+                $detour->prevId = $route->id;
+                if ($nextRoute) {
+                    $detour->nextId = $nextRoute->id;
+                    $nextRoute->prevId = $detour->id;
+                }
+
+                $route->save();
+                $detour->save();
+                if ($nextRoute)
+                    $nextRoute->save();
+            }
+        }
+        \Flash::add("document forwarded: {$route->trackingId}");
+    });
 });
 
 

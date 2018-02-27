@@ -124,13 +124,17 @@ window.addEventListener("load", function() {
     function forwardDocument() {
         var user = currentUser;
         var trackingId = currentDoc.trackingId;
+        var route = util.parseJSON($("input#document").val());
+        if (!route) {
+            console.warn("no route found");
+            return;
+        }
         var params = {
-            userId: user ? user.id : null,
             officeId: parseInt(officeSel.getOfficeId()),
             annotations: $annots.val(),
-            trackingId: currentDoc.trackingId,
+            routeId: route.id,
         }
-        return api.doc.forward(params)
+        return api.route.forward(params)
                   .then(function() { location.reload(); });
     }
 
@@ -149,12 +153,13 @@ window.addEventListener("load", function() {
     function abortSendDocument() {
         var user = currentUser;
         var trackingId = currentDoc.trackingId;
+        var route = util.parseJSON($("input#document").val());
+        if (!route)
+            return Promise.resolve();
         var params = {
-            userId: user ? user.id : null,
-            officeId: parseInt(officeSel.getOfficeId()),
-            trackingId: currentDoc.trackingId,
+            routeId: route.id,
         }
-        return api.doc.abortSend(params)
+        return api.route.abortSend(params)
                   .then(function() { location.reload(); });
     }
 
