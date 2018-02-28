@@ -31,6 +31,33 @@ Route::middleware(['auth'])->group(function() {
     Route::get('/search', function() {
         return view('search');
     });
+
+    Route::get('/notifications', function() {
+        $user = Auth::user();
+        if (!$user)
+            return abort(404);
+        $messages = [
+            [
+                "contents"=>"MIS Urdaneta has seen urd-2018-23",
+                "routeId"=>1,
+                "date"=>now()->subHours(random_int(3,50)),
+            ],
+            [
+                "contents"=>"Registrar Urdaneta has received urd-2018-73",
+                "routeId"=>2,
+                "date"=>now()->subHours(random_int(3,50)),
+            ],
+            [
+                "contents"=>"Accouting Lingayen has sent a document",
+                "routeId"=>1,
+                "date"=>now()->subHours(random_int(3,50)),
+            ],
+        ];
+        return view('notifications', [
+            "messages"=>$messages,
+        ]);
+    });
+
     Route::post('/search', function(Request $req) {
         $id = $req->trackingId;
         $doc = \App\Document::where("trackingId", $id)->first();

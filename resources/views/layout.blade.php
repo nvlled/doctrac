@@ -39,7 +39,7 @@
                  @if ($user && optional($user->office)->gateway)
                  <li><a href='/dispatch'>dispatch</a></li>
                  @endif
-                 <li><a class='notifications' href='/search'>3 🌎</a></li>
+                 <li><a class='notifications' href='/notifications'>3 🌎</a></li>
                  @endif
             </ul>
         </nav>

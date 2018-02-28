@@ -964,7 +964,7 @@ Route
 Route::any('/util/url-for/{routeName}', function (Request $req, $routeName) {
     try {
         $params = $req->toArray();
-        $params["routeName"] = null;
+        unset($params["routeName"]);
         return [
             "url" => route($routeName, $params)
         ];
