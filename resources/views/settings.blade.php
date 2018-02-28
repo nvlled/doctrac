@@ -3,42 +3,6 @@
 
 @section("contents")
 <section id="settings">
-<form class="settings pure-form pure-form-aligned">
-    {{ csrf_field() }}
-    <fieldset>
-        <div class="pure-control-group">
-            <label for="name">Email</label>
-            <input id="email" name="email" required type="email" placeholder="email">
-            <span class="pure-form-message-inline"></span>
-        </div>
-
-        <div class="pure-control-group">
-            <label for="mobileno">Mobile #</label>
-            <input id="mobileno" name="mobileno" required placeholder="090XXXXXXX">
-            <span class="pure-form-message-inline"></span>
-        </div>
-
-        <div class="pure-controls">
-            <p class='msg'></p>
-            <button type="submit" class="logout pure-button pure-button-secondary">
-                Logout
-            </button>
-            <button type="submit" class="save pure-button pure-button-primary">Save Changes</button>
-        </div>
-    </fieldset>
-    <script>
-    var $settingsForm = $("form.settings");
-    var $btnLogout = $settingsForm.find("button.logout");
-    $btnLogout.click(function(e) {
-        e.preventDefault();
-        api.user.logout()
-            .then(function(resp) {
-                util.redirect("/login");
-            });
-    });
-    </script>
-</form>
-<hr>
 <form class="change-pass pure-form pure-form-aligned">
     {{ csrf_field() }}
     <fieldset class='hidden'>
@@ -67,17 +31,57 @@
         <button type="submit" class="show-fields pure-button pure-button-default">
             Change password
         </button>
+        <button type="submit" class="logout pure-button pure-button-secondary">
+            Logout
+        </button>
     </div>
     <script>
     var $changePassForm = $("form.change-pass");
     var $fieldset = $changePassForm.find("fieldset");
+    var $btnLogout = $changePassForm.find("button.logout");
     var $btnShow = $changePassForm.find("button.show-fields")
+    $btnShow.click(function(e) {
+        return alert("not yet implemented...");
+        e.preventDefault();
+        $fieldset.removeClass("hidden").show();
+        $btnShow.hide();
+    });
+    $btnLogout.click(function(e) {
+        e.preventDefault();
+        api.user.logout()
+            .then(function(resp) {
+                util.redirect("/login");
+            });
+    });
+    </script>
+</form>
+<hr>
+<form class="settings pure-form pure-form-aligned">
+    {{ csrf_field() }}
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="name">Email</label>
+            <input id="email" name="email" required type="email" placeholder="email">
+            <span class="pure-form-message-inline"></span>
+        </div>
 
-        $btnShow.click(function(e) {
-            e.preventDefault();
-            $fieldset.removeClass("hidden").show();
-            $btnShow.hide();
-        });
+        <div class="pure-control-group">
+            <label for="mobileno">Mobile #</label>
+            <input id="mobileno" name="mobileno" required placeholder="090XXXXXXX">
+            <span class="pure-form-message-inline"></span>
+        </div>
+
+        <div class="pure-controls">
+            <p class='msg'></p>
+            <button type="submit" class="save pure-button pure-button-primary">Save Changes</button>
+        </div>
+    </fieldset>
+    <script>
+    var $settingsForm = $("form.settings");
+    var $btnSave = $settingsForm.find("button.save");
+    $btnSave.click(function(e) {
+        alert("not yet implemented...");
+    });
     </script>
 </form>
 </section>
