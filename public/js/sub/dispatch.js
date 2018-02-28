@@ -60,6 +60,7 @@ var dispatch = {
                     userId: currentUser ? currentUser.id : null,
                     title: $container.find(".title").val(),
                     details: $container.find(".details").val(),
+                    annotations: $container.find(".annotations").val(),
                     officeIds: officeIds,
                     type: getDispatchType(),
                 }

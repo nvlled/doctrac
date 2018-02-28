@@ -477,6 +477,7 @@ Route
         $doc->type = $req->type;
         $doc->details = $req->details;
         $doc->trackingId = $user->office->generateTrackingID();
+        $annotations = $req->annotations;
 
         $v = $doc->validate();
         if ($v->fails()) {
@@ -508,17 +509,17 @@ Route
             $officeId = $user->officeId;
         }
 
-        DB::transaction(function() use ($doc, $ids, $user, $officeId) {
+        DB::transaction(function() use ($doc, $ids, $user, $officeId, $annotations) {
             $doc->save();
 
             $routes = [];
             if ($doc->type == "serial") {
-                $routes = $doc->createSerialRoutes($ids, $officeId, $user);
+                $routes = $doc->createSerialRoutes($ids, $officeId, $user, $annotations);
             } else {
-                $routes = $doc->createParallelRoutes($ids, $officeId, $user);
+                $routes = $doc->createParallelRoutes($ids, $officeId, $user, $annotations);
             }
             foreach ($routes as $route)
-                \Notif::sentAll($route);
+                \Notif::sent($route);
         });
 
         \Flash::add("document sent: {$doc->trackingId}");

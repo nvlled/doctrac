@@ -6,6 +6,9 @@
     <input name="title" class="full title" placeholder="document name or title">
     <textarea name="details" rows="7" class="full details"
         placeholder="document details"></textarea>
+    <br><hr>
+    <textarea name="annotations" rows="4" class="full annotations"
+        placeholder="notes/annotations"></textarea>
     </form>
     <p class="">
         Attachment:

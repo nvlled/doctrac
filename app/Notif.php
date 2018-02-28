@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Notifications\DocumentAction;
+
 class Notif {
     public static function countUnread() {
         $user = \Auth::user();
@@ -11,6 +13,8 @@ class Notif {
     }
 
     public static function seen($srcRoute) {
+        if (!$srcRoute)
+            return;
         $dstRoute = $srcRoute->nextRoute;
         $office = $dstRoute->office;
         foreach ($office->getMembers() as $user) {
@@ -23,6 +27,8 @@ class Notif {
     }
 
     public static function received($srcRoute) {
+        if (!$srcRoute)
+            return;
         $dstRoute = $srcRoute->nextRoute;
         $office = $dstRoute->office;
         foreach ($office->getMembers() as $user) {
@@ -35,6 +41,8 @@ class Notif {
     }
 
     public static function sent($srcRoute) {
+        if (!$srcRoute)
+            return;
         $dstRoute = $srcRoute->nextRoute;
         $office = $srcRoute->office;
         foreach ($office->getMembers() as $user) {

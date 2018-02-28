@@ -111,7 +111,7 @@ class Document extends Model
         ]);
     }
 
-    public function createParallelRoutes($officeIds, $officeId, $user) {
+    public function createParallelRoutes($officeIds, $officeId, $user, $annotations) {
         $routes = [];
         foreach ($officeIds as $officeId) {
             $pathId = generateId();
@@ -137,6 +137,7 @@ class Document extends Model
             $nextRoute->officeId = $officeId;
             $nextRoute->pathId = $pathId;
             $nextRoute->final = true;
+            $nextRoute->annotations = $annotations;
             $nextRoute->save(); // save first to get an ID
 
             $route->nextId     = $nextRoute->id;
@@ -148,7 +149,7 @@ class Document extends Model
         return $routes;
     }
 
-    public function createSerialRoutes($officeIds, $officeId, $user) {
+    public function createSerialRoutes($officeIds, $officeId, $user, $annotations) {
         $pathId = generateId();
         $route = new \App\DocumentRoute();
         $route->trackingId  = $this->trackingId;
@@ -162,6 +163,7 @@ class Document extends Model
 
         $office = \App\Office::find($officeId);
 
+        $annotate = true;
         foreach ($officeIds as $officeId) {
             if ($officeId == $route->officeId) {
                 throw new \Exception("routes cannot point to self");
@@ -182,6 +184,12 @@ class Document extends Model
             $nextRoute->trackingId = $this->trackingId;
             $nextRoute->officeId = $officeId;
             $nextRoute->pathId = $pathId;
+
+            if ($annotate) {
+                $nextRoute->annotations = $annotations;
+                $annotate = false;
+            }
+
             $nextRoute->save(); // save first to get an ID
 
             $route->nextId     = $nextRoute->id;
@@ -195,7 +203,7 @@ class Document extends Model
         }
         $route->final = true;
         $route->save();
-        return $route;
+        return [$route];
     }
 
     public function attachment() {
