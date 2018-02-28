@@ -189,3 +189,16 @@ a.has.notifications {
 a.notifications img {
     width: 20px;
 }
+
+div.notif-msg {
+    margin: 10px;
+}
+div.notif-msg.unread {
+    border-left: 10px solid rgba(200, 200, 90, 0.6);
+}
+div.notif-msg:hover {
+    background-color: #efe;
+    cursor: pointer;
+}
+
+

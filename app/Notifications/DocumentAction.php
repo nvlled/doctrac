@@ -11,22 +11,24 @@ class DocumentAction extends Notification
 {
     use Queueable;
 
-    private $action = ""; // seen, received, sent
-    private $route  = null;
-    private $office = null;
-    private $date   = null;
+    private $action    = ""; // seen, received, sent
+    private $srcOffice = null;
+    private $dstOffice = null;
+    private $route     = null;
+    private $date      = null;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($action, $route, $office)
+    public function __construct($action, $srcOffice, $dstOffice, $route)
     {
-        $this->action = $action;
-        $this->route = $route;
-        $this->office = $office;
-        $this->date = now();
+        $this->action    = $action;
+        $this->srcOffice = $srcOffice;
+        $this->dstOffice = $dstOffice;
+        $this->route     = $route;
+        $this->date      = now();
     }
 
     /**
@@ -65,15 +67,26 @@ class DocumentAction extends Notification
      */
     public function toArray($notifiable)
     {
-        $route = optional($this->route);
-        $doc = optional($route->document);
-        $office = optional($this->office);
-        $officeName = $office->complete_name;
+        $officeName = "";
+        switch ($this->action) {
+        case "sent":
+            $officeName = $this->srcOffice->complete_name;
+            break;
+        case "received":
+            $officeName = $this->dstOffice->complete_name;
+            break;
+        case "seen":
+            $officeName = $this->dstOffice->complete_name;
+            break;
+        }
 
+        $doc = optional($this->route)->document;
         $message = "{$officeName} has {$this->action} {$doc->title} 
-                    ($doc->trackingId) on {$this->date}";
+                    [$doc->trackingId] on {$this->date}";
         return [
-            "routeId"=>$route->id,
+            "date"=>$this->date->toDateTimeString(),
+            "action"=>$this->action,
+            "routeId"=>$this->route->id,
             "title"=>$doc->title,
             "trackingId"=>$doc->trackingId,
             "officeName"=>$officeName,
@@ -81,3 +94,4 @@ class DocumentAction extends Notification
         ];
     }
 }
+

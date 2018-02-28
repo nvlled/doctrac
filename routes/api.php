@@ -205,7 +205,7 @@ Route
             }
         }
         \Flash::add("document forwarded: {$route->trackingId}");
-        \Notif::sent($route);
+        \Notif::sent($office, $nextOffice, $nextRoute);
     });
 });
 
@@ -321,7 +321,8 @@ Route
             $route->receiverId = $user->id;
             $route->arrivalTime = now();
             $route->save();
-            \Notif::received($prevRoute);
+            //\Notif::received($prevRoute);
+            Notif::received($prevRoute->office, $route->office, $prevRoute);
         }
         \Flash::add("document received: {$doc->trackingId}");
     });
@@ -379,10 +380,12 @@ Route
             $route->forwardTime = now();
 
             $annotations = $req->annotations;
+            $notifyOffice = null;
             if ($destOfficeId == $nextRoute->officeId) {
                 $nextRoute->annotations = $annotations;
                 $route->save();
                 $nextRoute->save();
+                $destRoute = $nextRoute;
             } else {
                 $shortcut = $route->findNextRoute($destOfficeId);
                 if ($shortcut) {
@@ -392,6 +395,7 @@ Route
                     $route->nextId = $shortcut->id;
                     $shortcut->prevId = $route->id;
                     $shortcut->annotations = $annotations;
+                    $destRoute = $shortcut;
                     $route->save();
                     $shortcut->save();
                 } else {
@@ -412,11 +416,12 @@ Route
 
                     $route->save();
                     $detour->save();
+                    $destRoute = $detour;
                     if ($nextRoute)
                         $nextRoute->save();
                 }
             }
-            \Notif::sent($route);
+            \Notif::sent($office, $destRoute->office, $destRoute->id);
         }
         if ($errors) {
             return ["errors"=>["forward"=>$errors]];
@@ -512,14 +517,15 @@ Route
         DB::transaction(function() use ($doc, $ids, $user, $officeId, $annotations) {
             $doc->save();
 
-            $routes = [];
             if ($doc->type == "serial") {
-                $routes = $doc->createSerialRoutes($ids, $officeId, $user, $annotations);
+                $routes = $doc->createSerialRoutes($ids, $user, $annotations);
+                $nextRoute = $routes[1];
+                \Notif::sent($user->office, $nextRoute->office, $nextRoute);
             } else {
-                $routes = $doc->createParallelRoutes($ids, $officeId, $user, $annotations);
+                $routes = $doc->createParallelRoutes($ids, $user, $annotations);
+                foreach ($routes as $nextRoute)
+                    \Notif::sent($user->office, $nextRoute->office, $nextRoute);
             }
-            foreach ($routes as $route)
-                \Notif::sent($route);
         });
 
         \Flash::add("document sent: {$doc->trackingId}");
@@ -552,18 +558,47 @@ Route
 ::prefix("users")
 ->middleware(["auth"])
 ->group(function() {
+    Route::any('/read-notification', function(Request $req) {
+        $user = Auth::user();
+        if (! $user)
+            return;
+        $user->notifications->where('id', $req->id)->markAsRead();
+    });
+
+    Route::any('/doc-notifications', function(Request $req) {
+        $user = Auth::user();
+        if (! $user)
+            return collect();
+        $notifications = collect();
+        foreach ($user->notifications as $notif) {
+            if ($notif->type != "App\Notifications\DocumentAction") {
+                continue;
+            }
+            $data = $notif->data;
+            $data['diff'] = (new \Carbon\Carbon($notif["date"]))->diffForHumans();
+            $data['url'] = route("view-document", $data["routeId"]);
+            $data['id'] = $notif->id;
+            $data['unread'] = $notif->read_at == null;
+            $notifications->push($data);
+        }
+        return $notifications;
+    });
+
     Route::any('/{userId}/see-route/{routeId}', 
         function (Request $req, $userId, $routeId) {
             $user  = App\User::find($userId);
             $route = App\DocumentRoute::find($routeId);
             if (!$user || !$route)
                 return null;
+
             try {
                 $route->seenBy($user);
-                \Notif::seen($route->prevRoute);
+                $prevRoute = $route->prevRoute;
+                \Notif::seen($prevRoute->office, $route->office, $prevRoute);
                 return "okay";
-            } catch (Exception $e) { }
-                return null;
+            } catch (Exception $e) {
+                return $e->getMessage();
+            }
     });
 
     Route::any('/{userId}/seen-routes', function (Request $req, $userId) {
@@ -613,7 +648,7 @@ Route
         if ($user)
             Auth::login($user);
         return $user;
-    });
+    })->middleware(\App\Http\Middleware\LocalEnv::class);
 
     Route::post('/del/{id}', function (Request $req, $id) {
         $user = App\User::findOrFail($id);

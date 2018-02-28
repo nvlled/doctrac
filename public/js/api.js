@@ -118,6 +118,8 @@ var api = {
     },
 
     user: {
+        notifications: makeHandler("/api/users/doc-notifications"),
+        readNotification: makeHandler("/api/users/read-notification"),
         login: makeHandler("/api/users/login"),
         logout: makeHandler("/api/users/logout"),
         search: makeHandler("/api/users/search"),

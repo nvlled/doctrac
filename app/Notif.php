@@ -12,44 +12,35 @@ class Notif {
         return $user->unreadNotifications()->count();
     }
 
-    public static function seen($srcRoute) {
-        if (!$srcRoute)
-            return;
-        $dstRoute = $srcRoute->nextRoute;
-        $office = $dstRoute->office;
-        foreach ($office->getMembers() as $user) {
+    public static function seen($srcOffice, $destOffice, $route) {
+        foreach ($srcOffice->getMembers() as $user) {
             $user->notify(new DocumentAction(
                 "seen",
-                $srcRoute,
-                $office
+                $srcOffice,
+                $destOffice,
+                $route
             ));
         }
     }
 
-    public static function received($srcRoute) {
-        if (!$srcRoute)
-            return;
-        $dstRoute = $srcRoute->nextRoute;
-        $office = $dstRoute->office;
-        foreach ($office->getMembers() as $user) {
+    public static function received($srcOffice, $destOffice, $route) {
+        foreach ($srcOffice->getMembers() as $user) {
             $user->notify(new DocumentAction(
                 "received",
-                $srcRoute,
-                $office
+                $srcOffice,
+                $destOffice,
+                $route
             ));
         }
     }
 
-    public static function sent($srcRoute) {
-        if (!$srcRoute)
-            return;
-        $dstRoute = $srcRoute->nextRoute;
-        $office = $srcRoute->office;
-        foreach ($office->getMembers() as $user) {
+    public static function sent($srcOffice, $destOffice, $route) {
+        foreach ($destOffice->getMembers() as $user) {
             $user->notify(new DocumentAction(
                 "sent",
-                $dstRoute,
-                $office
+                $srcOffice,
+                $destOffice,
+                $route
             ));
         }
     }

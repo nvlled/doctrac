@@ -3,18 +3,16 @@
 
 @section("contents")
 <section id="notifications">
-<em>TODO</em>
-@foreach($messages as $msg)
+<div class="notifs">
     <div class="notif-msg">
-    <input type="hidden" name="route-id" value="{{$msg['routeId']}}">
-    <strong class='num'>{{$loop->iteration}}</strong> 
-    {{$msg['contents']}}
-    (<small>{{$msg['date']->diffForHumans()}}</small>)
+    <strong class='num'></strong> 
+    <span class='contents'></span>
+    (<small class='diff'></small>)
     </div>
-@endforeach
-<br>
+</div>
+<div class="loading-msg">loading...</div>
 <div class='center'>
-    <button>clear notifications</button>
+    <button class='hidden'>clear notifications</button>
 </div>
 </section>
 <style>
@@ -27,24 +25,34 @@
 }
 </style>
 <script>
-api.util.urlFor({
-    routeName: "view-document",
-    routeId:  "___",
-}).then(function(resp) {
-    var url = resp.url
-    function createLink(routeId, trackingId) {
-        var href = url.replace("___", routeId);
-        return "<a href='"+href+"'>"+trackingId+"</a>";
+
+api.user.notifications().then(function(notifs) {
+    $(".loading-msg").remove();
+    var $container = $("div.notifs");
+    var $template = $("div.notif-msg").detach();
+    if (!notifs || notifs.length == 0) {
+        $container.append("<h3 class='center'>no notifications</h3>");
+        return;
     }
-    $(".notif-msg").each(function() {
-        var $notif = $(this);
-        var html = $notif.html();
-        var idPattern = /\w{3,5}-\d{4}-\d+/;
-        var routeId = $notif.find("input[name=route-id]").val();
-        html = html.replace(idPattern, function(trackingId) {
-            return createLink(routeId, trackingId);
+    notifs.forEach(function(notif, i) {
+        // 2018, I still make this mistake......
+        //for (var i = 0; i < notifs.length; i++) {
+        //    var notif = notifs[i];
+
+        var $div = $template.clone();
+        if (notif.unread)
+            $div.addClass("unread");
+        $div.find(".num").text(i+1);
+        $div.find(".contents").text(notif.message + "!"+notif.routeId);
+        $div.find(".diff").text(notif.diff);
+        $div.click(function() {
+            api.user.readNotification({
+            id: notif.id,
+            }).then(function() {
+                util.redirect(notif.url);
+            });
         });
-        $notif.html(html);
+        $container.append($div);
     });
 });
 </script>

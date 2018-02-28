@@ -47,8 +47,8 @@ class Maint {
                 }
                 $user = new \App\User();
                 $user->username = $campus->code . "-" . strtolower($office->name);
-                $user->firstname = "_";
-                $user->lastname  = "_";
+                $user->firstname = $office->name;
+                $user->lastname  = $campus->name;
                 $user->password = bcrypt("x");
                 $user->privilegeId = 0;
                 $user->positionId  = 0;

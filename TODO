@@ -1,16 +1,16 @@
 
 TODO:
 
-* use css grid for site layout
-* fix document info appearance
+
 * notifications
     For the mean time, just create
     the page
     | Office has received urd-2018-123
     | Office has seen mis-2018-432
 
-* file attachments
-* improve UI
+* add time on route table
+* add confirmation for each action
+* use css grid for site layout
 * popup when asking for final route
 
 * add more tests
