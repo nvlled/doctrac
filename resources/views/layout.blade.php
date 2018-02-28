@@ -36,9 +36,10 @@
                  @if ($user)
                  <li><a href='/'>{{$user->office_name ?? "home"}}</a></li>
                  <li><a href='/search'>search</a></li>
-                 @endif
                  @if ($user && optional($user->office)->gateway)
                  <li><a href='/dispatch'>dispatch</a></li>
+                 @endif
+                 <li><a class='notifications' href='/notifications'>3 🌎</a></li>
                  @endif
             </ul>
         </nav>
