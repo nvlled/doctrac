@@ -205,6 +205,7 @@ Route
             }
         }
         \Flash::add("document forwarded: {$route->trackingId}");
+        \Notif::sent($route);
     });
 });
 
@@ -320,6 +321,7 @@ Route
             $route->receiverId = $user->id;
             $route->arrivalTime = now();
             $route->save();
+            \Notif::received($prevRoute);
         }
         \Flash::add("document received: {$doc->trackingId}");
     });
@@ -414,6 +416,7 @@ Route
                         $nextRoute->save();
                 }
             }
+            \Notif::sent($route);
         }
         if ($errors) {
             return ["errors"=>["forward"=>$errors]];
@@ -508,11 +511,14 @@ Route
         DB::transaction(function() use ($doc, $ids, $user, $officeId) {
             $doc->save();
 
+            $routes = [];
             if ($doc->type == "serial") {
-                $doc->createSerialRoutes($ids, $officeId, $user);
+                $routes = $doc->createSerialRoutes($ids, $officeId, $user);
             } else {
-                $doc->createParallelRoutes($ids, $officeId, $user);
+                $routes = $doc->createParallelRoutes($ids, $officeId, $user);
             }
+            foreach ($routes as $route)
+                \Notif::sentAll($route);
         });
 
         \Flash::add("document sent: {$doc->trackingId}");
@@ -553,6 +559,7 @@ Route
                 return null;
             try {
                 $route->seenBy($user);
+                \Notif::seen($route->prevRoute);
                 return "okay";
             } catch (Exception $e) { }
                 return null;

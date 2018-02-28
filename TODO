@@ -1,6 +1,9 @@
 
 TODO:
 
+* add annotations on dispatch
+* remove final flag on dispatch
+
 * use css grid for site layout
 * fix document info appearance
 * notifications

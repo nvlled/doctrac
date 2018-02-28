@@ -178,7 +178,14 @@ p.info {
 a.notifications {
     text-decoration: none !important;
     padding: 5px 10px;
-    color: white;
-    background-color: red;
+    color: #333;
+    background-color: #ddd;
     display: inline-block;
+}
+a.has.notifications {
+    background-color: red;
+}
+
+a.notifications img {
+    width: 20px;
 }

@@ -112,6 +112,7 @@ class Document extends Model
     }
 
     public function createParallelRoutes($officeIds, $officeId, $user) {
+        $routes = [];
         foreach ($officeIds as $officeId) {
             $pathId = generateId();
             $route = new \App\DocumentRoute();
@@ -123,6 +124,7 @@ class Document extends Model
             $route->arrivalTime = now();
             $route->forwardTime = now();
             $route->save();
+            $routes []= $route;
 
             if ($user->officeId == $officeId) {
                 throw new \Exception("routes cannot point to self");
@@ -143,6 +145,7 @@ class Document extends Model
             $route->save();
             $nextRoute->save();
         }
+        return $routes;
     }
 
     public function createSerialRoutes($officeIds, $officeId, $user) {
@@ -192,6 +195,7 @@ class Document extends Model
         }
         $route->final = true;
         $route->save();
+        return $route;
     }
 
     public function attachment() {
