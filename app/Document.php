@@ -201,7 +201,6 @@ class Document extends Model
             $route = $nextRoute;
             $office = $nextOffice;
         }
-        $route->final = true;
         $route->save();
         return [$route];
     }
