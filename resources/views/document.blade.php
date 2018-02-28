@@ -53,9 +53,11 @@ TODO
         </p>
 
         <hr>
-        <p>activity log: </p>
-        <ul class='activities'>
-        </ul>
+        <p class="info">
+            <strong>activity log: </strong>
+            <ul class='activities'></ul>
+        </p>
+
         <div class="">
             <div class="send-data hidden">
                 <!--TODO-->
