@@ -18,7 +18,7 @@
     </div>
     <header class='site'>
         <h1 class='center'>
-            <a href="/">Qbphzrag Genpxre</a>
+            <a href="/">document tracker</a>
         </h1>
         <nav class='main left'>
             <ul class='lstype-none'>

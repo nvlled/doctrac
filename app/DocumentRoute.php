@@ -3,6 +3,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class DocumentRoute extends Model
 {
@@ -10,6 +11,7 @@ class DocumentRoute extends Model
         "document_title",
         "document_details",
         "document_type",
+        "time_elapsed",
         "campus_id",
         "attachment_filename",
         "attachment_size",
@@ -104,7 +106,13 @@ class DocumentRoute extends Model
     }
 
     public function getTimeElapsedAttribute() {
-        return "TODO";
+        if ( ! $this->arrivalTime)
+            return "";
+
+        $d = new Carbon($this->arrivalTime);
+        if ( ! $this->nextRoute)
+            return $d->diffForHumans(now(), true);
+        return $d->diffForHumans($this->nextRoute->arrivalTime, true);
     }
 
     public function getStatusAttribute() {
