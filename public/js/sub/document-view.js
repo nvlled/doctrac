@@ -9,7 +9,6 @@ window.addEventListener("load", function() {
 
     var currentUser = null;
     var currentDoc = null;
-
     var officeSel = null;
 
     $sendData.removeClass("hidden").hide();
@@ -33,6 +32,7 @@ window.addEventListener("load", function() {
                     hideTable: true,
                 }
             );
+
         }
         $container.find(".user-name").text(user.fullname);
         $container.find(".office-id").text(user.officeId);
@@ -43,6 +43,11 @@ window.addEventListener("load", function() {
     function loadDocument() {
         var trackingId = $("input#trackingId").val();
         var routeId = $("input#routeId").val();
+
+        api.user.seeRoute({
+            userId:  currentUser.id, // TODO: should be read from the session
+            routeId: routeId,
+        });
 
         var params = {trackingId: trackingId};
         util.loadJson(

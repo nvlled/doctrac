@@ -141,20 +141,19 @@ class DocumentRoute extends Model
 
         if ($prevRoute && $prevRoute->sender) {
             $activities->push(joinLines(
-                "Dispatched from the office ({$prevRoute->office_name})
-                 on {$prevRoute->forwardTime} by {$prevRoute->sender_name}"
+                "Dispatched from ({$prevRoute->office_name})
+                 on {$prevRoute->forwardTime}"
             ));
         }
         if ($this->arrivalTime && $this->prevId != null) {
             $activities->push(joinLines(
-                "Received on office ({$this->office_name})
-                 on {$this->arrivalTime} by {$this->receiver->fullname}"
+                "Received on {$this->arrivalTime}"
             ));
         }
         if ($nextRoute && $this->sender) {
             $activities->push(joinLines(
-                "Forwarded on the next office ({$nextRoute->office_name})
-                 on {$this->forwardTime} by {$this->sender->fullname}"
+                "Forwarded to {$nextRoute->office_name}
+                 on {$this->forwardTime}"
             ));
         }
 

@@ -178,7 +178,27 @@ p.info {
 a.notifications {
     text-decoration: none !important;
     padding: 5px 10px;
-    color: white;
-    background-color: red;
+    color: #333;
+    background-color: #ddd;
     display: inline-block;
 }
+a.has.notifications {
+    background-color: red;
+}
+
+a.notifications img {
+    width: 20px;
+}
+
+div.notif-msg {
+    margin: 10px;
+}
+div.notif-msg.unread {
+    border-left: 10px solid rgba(200, 200, 90, 0.6);
+}
+div.notif-msg:hover {
+    background-color: #efe;
+    cursor: pointer;
+}
+
+

@@ -7,7 +7,7 @@
     <fieldset>
         <div class="pure-control-group">
             <label for="name">Username</label>
-            <input id="name" name="username" required type="text" placeholder="e.g. urdrec">
+            <input id="name" name="username" required type="text" placeholder="e.g. urd-records">
             <span class="pure-form-message-inline"></span>
         </div>
 

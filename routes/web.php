@@ -55,6 +55,7 @@ Route::middleware(['auth'])->group(function() {
         ];
         return view('notifications', [
             "messages"=>$messages,
+            "notifications"=>$user->notifications,
         ]);
     });
 
@@ -96,7 +97,7 @@ Route::middleware(['auth'])->group(function() {
         })->name("view-routes");
 
         Route::get('/{id}/', function ($id) {
-            $route = App\DocumentRoute::find($id);
+            $route = App\DocumentRoute::findOrFail($id);
             $error = "";
             $docJson = "";
             $trackingId = "";

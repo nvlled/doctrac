@@ -7,12 +7,16 @@
         <span class='contents'></span>
         (<small class='type'>*</small>)
     </h2>
+    <p class="info"><strong>tracking ID:</strong>
+        <span class="trackingId">
+            {{$doc->trackingId}}
+        </span>
+    </p>
     <p class='info'>
         <strong>details:</strong>
         <span class='details'></span>
     </p>
     <p class='info attachment'><strong>attachment</strong>: <a href="#" target="_blank">filename.docx</a></p>
-    <h4>Routes</h4>
 
     <table class='full'>
         <thead>

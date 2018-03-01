@@ -1,0 +1,20 @@
+
+{
+    "campuses": [
+        {"code": "ala", "name": "alaminos"},
+        {"code": "asi", "name": "asingan"},
+        {"code": "bay", "name": "bayambang"},
+        {"code": "bin", "name": "binmaley"},
+        {"code": "inf", "name": "infanta"},
+        {"code": "lin", "name": "lingayen"},
+        {"code": "car", "name": "san Carlos"},
+        {"code": "sta", "name": "sta Maria"},
+        {"code": "urd", "name": "urdaneta"}
+    ],
+    "offices": [
+        "Records",
+        "MIS",
+        "Registrar",
+        "Accouting"
+    ]
+}

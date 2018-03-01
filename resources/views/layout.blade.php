@@ -39,7 +39,17 @@
                  @if ($user && optional($user->office)->gateway)
                  <li><a href='/dispatch'>dispatch</a></li>
                  @endif
-                 <li><a class='notifications' href='/notifications'>3 🌎</a></li>
+                 @php
+                    $notifCount = Notif::countUnread();
+                    $has = $notifCount > 0 ? "has" : "";
+                 @endphp
+                 <li><a class='notifications {{$has}}' href='/notifications'>
+                        @if ($notifCount)
+                        <span class='count'>{{$notifCount}}</span>
+                        @endif
+                        <img src="{{asset('images/notify.png')}}">
+                    </a>
+                </li>
                  @endif
             </ul>
         </nav>

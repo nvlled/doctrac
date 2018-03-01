@@ -183,4 +183,8 @@ class Office extends Model
                 ->get();
         }
     }
+
+    public function getMembers() {
+        return User::where("officeId", $this->id)->get();
+    }
 }
