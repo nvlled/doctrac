@@ -11,7 +11,7 @@ window.addEventListener("load", function() {
     var currentUser = null;
 
     var table = UI.createTable($table, {
-        cols: ["office_name", "status"],
+        cols: ["office_name", "status", "time_elapsed"],
         colNames: {
             "office_name": "office name",
         },
