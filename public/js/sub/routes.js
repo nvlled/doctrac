@@ -14,6 +14,7 @@ window.addEventListener("load", function() {
         cols: ["office_name", "status", "time_elapsed"],
         colNames: {
             "office_name": "office name",
+            "time_elapsed": "elapsed",
         },
         colMap: {
             "details": function(data, $td) {
