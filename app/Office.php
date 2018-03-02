@@ -150,7 +150,8 @@ class Office extends Model
     public function generateTrackingID() {
         $now = now();
         $num = TrackingCounter::nextId();
-        return "{$this->campus_code}-{$now->year}-$num";
+        $noise = strtolower(str_random(Config::$randIDLen));
+        return "{$this->campus_code}-{$now->year}-$num-$noise";
     }
 
     public function isLinkedTo($office) {
