@@ -201,4 +201,14 @@ div.notif-msg:hover {
     cursor: pointer;
 }
 
+div.autologout {
+    background-color: yellow;
+    color: green;
+    padding: 50px;
+    bottom: 0px;
+    right: 0px;
+    position: fixed;
+}
+
+
 

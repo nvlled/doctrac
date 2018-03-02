@@ -1,2 +1,0 @@
-php-mbstring
-php-xml

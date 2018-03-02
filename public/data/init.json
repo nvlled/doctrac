@@ -7,14 +7,14 @@
         {"code": "bin", "name": "binmaley"},
         {"code": "inf", "name": "infanta"},
         {"code": "lin", "name": "lingayen"},
-        {"code": "car", "name": "san Carlos"},
-        {"code": "sta", "name": "sta Maria"},
+        {"code": "car", "name": "san carlos"},
+        {"code": "sta", "name": "sta maria"},
         {"code": "urd", "name": "urdaneta"}
     ],
     "offices": [
         "Records",
         "MIS",
         "Registrar",
-        "Accouting"
+        "Accounting"
     ]
 }

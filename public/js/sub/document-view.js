@@ -152,7 +152,12 @@ window.addEventListener("load", function() {
             routeId: route.id,
         }
         return api.route.forward(params)
-                  .then(function() { location.reload(); });
+            .then(function (resp) {
+                if (resp.errors) {
+                    return UI.showErrors($container, resp.errors);
+                }
+                location.reload();
+            });
     }
 
     function receiveDocument() {
@@ -164,31 +169,22 @@ window.addEventListener("load", function() {
             trackingId: currentDoc.trackingId,
         }
         return api.doc.receive(params)
-                  .then(function() { location.reload(); });
-    }
-
-    function abortSendDocument() {
-        var user = currentUser;
-        var trackingId = currentDoc.trackingId;
-        var route = util.parseJSON($("input#document").val());
-        if (!route)
-            return Promise.resolve();
-        var params = {
-            routeId: route.id,
-        }
-        return api.route.abortSend(params)
-                  .then(function() { location.reload(); });
+            .then(function (resp) {
+                if (resp.errors) {
+                    return UI.showErrors($container, resp.errors);
+                }
+                location.reload();
+            });
     }
 
     function setupButtonAction() {
         $btnAction.click(function(e) {
             e.preventDefault();
             var action = $btnAction.data("action");
-            var req;
+            UI.clearErrors($container);
             switch (action) {
-                case "send"  : req = forwardDocument(); break;
-                case "recv"  : req = receiveDocument(); break;
-                case "abort" : req = abortSendDocument(); break;
+                case "send"  : forwardDocument(); break;
+                case "recv"  : receiveDocument(); break;
                 default:
                     return;
             }
@@ -215,7 +211,6 @@ window.addEventListener("load", function() {
                     $sendData.show();
                     break;
                 case "recv": $btnAction.text("receive");break;
-                case "abort": $btnAction.text("abort send");break;
                 default:
                     $btnAction.hide();
             }

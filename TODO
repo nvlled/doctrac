@@ -2,22 +2,9 @@
 TODO:
 
 
-* notifications
-    For the mean time, just create
-    the page
-    | Office has received urd-2018-123
-    | Office has seen mis-2018-432
-
-* add time on route table
-* add confirmation for each action
-* use css grid for site layout
-* popup when asking for final route
-
-* add more tests
-
-* ask if project can be made opensores/made public
-  so I could solicit contrabutions (i.e. on the frontend design)
-* Notify the office when user has seen the delivery
+* add status/security for documents: open, confidential
+* js: listen for notifications
+* fix seen notifications
 * email/sms notifications
 
 * set more than one attachments and notes/annotations

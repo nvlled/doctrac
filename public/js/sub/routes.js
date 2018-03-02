@@ -14,6 +14,7 @@ window.addEventListener("load", function() {
         cols: ["office_name", "status", "time_elapsed"],
         colNames: {
             "office_name": "office name",
+            "time_elapsed": "elapsed",
         },
         colMap: {
             "details": function(data, $td) {
@@ -216,16 +217,6 @@ window.addEventListener("load", function() {
             trackingId: $input.data("value"),
         }
         return api.doc.receive(params);
-    }
-
-    function abortSendDocument() {
-        var user = currentUser;
-        var params = {
-            userId: user ? user.id : null,
-            officeId: parseInt($selOffices.val()),
-            trackingId: $input.data("value"),
-        }
-        return api.doc.abortSend(params);
     }
 
     function clearDocInfo(doc) {
