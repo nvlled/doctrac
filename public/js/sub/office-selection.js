@@ -54,7 +54,7 @@ UI.OfficeSelection.prototype = {
         UI.setSelectedValue(this.$campusSel, office.campusId);
         this.fetchOffices()
             .then(function() {
-                UI.setSelectedValue(this.$officeSel, office.id);
+                UI.setSelectedValue(this.$officeSel, office.officeId);
             }.bind(this));
     },
 
