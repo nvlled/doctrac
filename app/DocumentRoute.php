@@ -110,16 +110,19 @@ class DocumentRoute extends Model
             return "";
 
         $d = new Carbon($this->arrivalTime);
-        if ( ! $this->nextRoute)
+        if ( ! $this->nextRoute || !$this->nextRoute->arrivalTime)
             return $d->diffForHumans(now(), true);
-        return $d->diffForHumans($this->nextRoute->arrivalTime, true);
+        return $d->diffForHumans(new Carbon($this->nextRoute->arrivalTime), true);
     }
 
     public function getStatusAttribute() {
         if ($this->arrivalTime) {
             $nextRoute = $this->nextRoute;
-            if (!$nextRoute)
-                return "done";
+            if (!$nextRoute) {
+                if ($this->final)
+                    return "done";
+                return "processing";
+            }
 
             if (!$this->senderId)
                 return "processing";

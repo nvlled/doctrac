@@ -143,8 +143,7 @@ Route
         }
 
         $destOfficeId = $req->officeId;
-        $nextRoute = $route->nextRoute;
-        if (!$destOfficeId || !$nextRoute) {
+        if (!$destOfficeId) {
             return ["errors"=>["doc"=>
                 "no next destination specified"
             ]];
@@ -166,8 +165,20 @@ Route
         $route->senderId = $user->id;
         $route->forwardTime = now();
 
+        $nextRoute = $route->nextRoute;
         $annotations = $req->annotations;
-        if ($destOfficeId == $nextRoute->officeId) {
+        if (!$nextRoute) {
+            $nextRoute = new App\DocumentRoute();
+            $nextRoute->trackingId = $route->trackingId;
+            $nextRoute->officeId = $destOfficeId;
+            $nextRoute->pathId = $route->pathId;
+            $nextRoute->annotations = $annotations;
+            $nextRoute->save();
+            $route->nextId = $nextRoute->id;
+            $nextRoute->prevId = $route->id;
+            $route->save();
+            $nextRoute->save();
+        } else if ($destOfficeId == $nextRoute->officeId) {
             $nextRoute->annotations = $annotations;
             $route->save();
             $nextRoute->save();

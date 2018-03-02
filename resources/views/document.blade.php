@@ -67,6 +67,7 @@ TODO
                 <strong>Destination</strong>
                 @include("sub/office-selection")
             </div>
+            <ul class="errors"></ul>
             <div class="center">
                 <button class='action half'>SEND / RECEIVE / ABORT SEND / </button>
             </div>
