@@ -67,7 +67,6 @@ var api = {
         nextRoutes:    makeHandler("/api/docs/next-routes/{trackingId}"),
         forward:       makeHandler("/api/docs/forward/{trackingId}"),
         receive:       makeHandler("/api/docs/receive/{trackingId}"),
-        abortSend:     makeHandler("/api/docs/abort-send/{trackingId}"),
 
         emit: function(data) {
             events.trigger("doc-change", data);
@@ -105,7 +104,6 @@ var api = {
         origins: makeHandler("/api/routes/origins/{trackingId}"),
         next: makeHandler("/api/routes/next/{routeId}"),
         nextOffices: makeHandler("/api/routes/next-offices/{trackingId}"),
-        abortSend: makeHandler("/api/routes/{routeId}/abort-send"),
         forward: makeHandler("/api/routes/{routeId}/forward"),
     },
 

@@ -89,35 +89,6 @@ Route
         });
     });
 
-    Route::any('/{routeId}/abort-send', function (Request $req, $routeId) {
-        $route = App\DocumentRoute::find($routeId);
-        if (!$route)
-            return ["errors"=>["doc"=>"invalid route id"]];
-        $user = Auth::user();
-        if (!$user)
-            return ["errors"=>["user"=>"invalid user"]];
-
-        if (!$user->office)
-            return ["errors"=>["user"=>"user has no valid office"]];
-
-        if (!$route->canBeAbortedBy($user->office)) {
-            return ["errors"=>["doc"=>"cannot abort send"]];
-        }
-        if ($user->office->id != $route->officeId) {
-            return ["errors"=>["doc"=>"cannot abort send"]];
-        }
-
-        $office = $user->office;
-        $route->senderId = null;
-        $route->forwardTime = null;
-        if ($route->nextRoute) {
-            $route->nextRoute->annotations = null;
-            $route->nextRoute->save();
-        }
-        $route->save();
-        \Flash::add("document retracted: {$route->trackingId}");
-    });
-
     Route::any('/{routeId}/forward', function (Request $req, $routeId) {
         $route = App\DocumentRoute::find($routeId);
         if (!$route)
@@ -272,37 +243,6 @@ Route
         if (!$doc)
             return collect();
         return $doc->nextRoutes();
-    });
-
-    Route::any('/abort-send/{trackingId}', function (Request $req, $trackingId) {
-        $doc = App\Document::where("trackingId", $trackingId)->first();
-        if (!$doc)
-            return ["errors"=>["doc"=>"invalid tracking id"]];
-        $user = App\User::find($req->userId);
-        if (!$user)
-            return ["errors"=>["user"=>"invalid user"]];
-
-        if (!$user->office)
-            return ["errors"=>["user"=>"user has no valid office"]];
-
-        if (!$user->office->canAbortSend($doc)) {
-            return ["errors"=>["doc"=>"cannot abort send"]];
-        }
-
-        $errors = [];
-        foreach ($doc->currentRoutes() as $route) {
-            $office = $user->office;
-            if ($office->id != $route->officeId)
-                continue;
-            $route->senderId = null;
-            $route->forwardTime = null;
-            if ($route->nextRoute) {
-                $route->nextRoute->annotations = null;
-                $route->nextRoute->save();
-            }
-            $route->save();
-        }
-        \Flash::add("document retracted: {$doc->trackingId}");
     });
 
     Route::any('/receive/{trackingId}', function (Request $req, $trackingId) {
@@ -831,10 +771,6 @@ Route
             return $office->nextOffices();
         return collect();
     });
-
-    Route::post('/{officeId}/abort/{trackingId}',
-        function (Request $req, $officeId, $trackingId) {
-        });
 
     Route::post('/{officeId}/can-receive/{trackingId}',
         function (Request $req, $officeId, $trackingId) {

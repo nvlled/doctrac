@@ -218,16 +218,6 @@ window.addEventListener("load", function() {
         return api.doc.receive(params);
     }
 
-    function abortSendDocument() {
-        var user = currentUser;
-        var params = {
-            userId: user ? user.id : null,
-            officeId: parseInt($selOffices.val()),
-            trackingId: $input.data("value"),
-        }
-        return api.doc.abortSend(params);
-    }
-
     function clearDocInfo(doc) {
         var details = $input.data("value") ? "(no matching document found)" : "";
 

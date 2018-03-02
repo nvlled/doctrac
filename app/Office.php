@@ -33,8 +33,7 @@ class Office extends Model
     function actionForStatus($status) {
         switch ($status) {
             case "processing": return "send";
-            case "delivering": return "abort";
-            case "waiting": return "recv";
+            case "waiting":    return "recv";
         }
         return "";
     }

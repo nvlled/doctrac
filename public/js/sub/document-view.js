@@ -177,24 +177,6 @@ window.addEventListener("load", function() {
             });
     }
 
-    function abortSendDocument() {
-        var user = currentUser;
-        var trackingId = currentDoc.trackingId;
-        var route = util.parseJSON($("input#document").val());
-        if (!route)
-            return Promise.resolve();
-        var params = {
-            routeId: route.id,
-        }
-        return api.route.abortSend(params)
-            .then(function (resp) {
-                if (resp.errors) {
-                    return UI.showErrors($container, resp.errors);
-                }
-                location.reload();
-            });
-    }
-
     function setupButtonAction() {
         $btnAction.click(function(e) {
             e.preventDefault();
@@ -203,7 +185,6 @@ window.addEventListener("load", function() {
             switch (action) {
                 case "send"  : forwardDocument(); break;
                 case "recv"  : receiveDocument(); break;
-                case "abort" : abortSendDocument(); break;
                 default:
                     return;
             }
@@ -230,7 +211,6 @@ window.addEventListener("load", function() {
                     $sendData.show();
                     break;
                 case "recv": $btnAction.text("receive");break;
-                case "abort": $btnAction.text("abort send");break;
                 default:
                     $btnAction.hide();
             }
