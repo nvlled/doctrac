@@ -5,11 +5,11 @@ PSU document tracking system
 ## Building and running locally
 (instructions apply to Ubuntu and Debian systems, adapt instructions to other OS as needed)
 
-0. Install php7, php-composer, mysql
+0. Install php7, php composer, mysql, git
 
 1. Install package dependencies listed on `package-dependencies.txt`, e.g.
 ```
-sudo apt install php-domstring php-xml
+sudo apt install php-domstring php-xml php-mysql
 ```
 
 2. Run ```composer update``` to install php vendor dependencies required by laravel
