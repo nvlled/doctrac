@@ -13,10 +13,10 @@
     @yield("styles")
 </head>
 <body>
-    <div class="prefetch hidden">
-        @yield("prefetch")
-    </div>
     <header class='site'>
+        <div class="prefetch hidden">
+            @yield("prefetch")
+        </div>
         <h1 class='center'>
             <a href="/">document tracker</a>
         </h1>
@@ -72,8 +72,15 @@
         </div>
         @endif
 
+        <div class='site-contents'>
         @yield("contents")
+        </div>
     </div>
+    <footer>
+        <a href="/about">about</a> |
+        copyright © 2018
+    </footer>
+
     @yield("scripts")
     <script src="{{asset('js/combobox.js')}}"></script>
     <script src="{{asset('js/autocomplete.js')}}"></script>
