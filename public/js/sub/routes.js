@@ -11,12 +11,30 @@ window.addEventListener("load", function() {
     var currentUser = null;
 
     var table = UI.createTable($table, {
-        cols: ["office_name", "status", "time_elapsed"],
+        cols: ["office_name", "status", "time_elapsed", "annotations"],
         colNames: {
             "office_name": "office name",
-            "time_elapsed": "elapsed",
+            "time_elapsed": "⏲",
         },
         colMap: {
+            "status": function(data, $td) {
+                var text = data.status;
+                switch (data.status) {
+                    case "delivering":
+                        text = "✈";
+                        break;
+                    case "waiting":
+                        text = "⌛";
+                        break;
+                    case "processing":
+                        text = "♖";
+                        break;
+                    case "done":
+                        text = "✓";
+                        break;
+                }
+                $td.text(text);
+            },
             "details": function(data, $td) {
                 var time = data.arrivalTime || "";
                 var sender = data.sender_name || "";
