@@ -2,7 +2,8 @@
 TODO:
 
 
-* add status/security for documents: open, confidential
+* fix timezone
+* add classification level for documents: open, confidential
 * js: listen for notifications
 * fix seen notifications
 * email/sms notifications

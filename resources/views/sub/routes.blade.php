@@ -23,7 +23,7 @@
         <col span="1" style="width: inherit">
         <col span="1" style="width: 10px;">
         <col span="1" style="width: 30px;">
-        <col span="1" style="width: 35%;">
+        <col span="1" style="width: 45%;">
         </colgroup>
         <thead>
         <tr>
@@ -36,6 +36,9 @@
         <tbody>
         </tbody>
         <style>
+        td {
+            vertical-align: text-top;
+        }
         td.time_elapsed {
             font-size: 13px;
             text-align: center;

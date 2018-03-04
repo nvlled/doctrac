@@ -232,4 +232,40 @@ var UI = {
         var text = $node.text();
         $node.html(text.replace(/\n/g, "<BR>"));
     },
+
+    truncatedText: function(text, limit) {
+        limit = limit || 180;
+        var $div = util.jq([
+            "<div>",
+            "<span>",
+            "</span>",
+            "<a href='#' class='action'></a>",
+            "</div>",
+        ]);
+        var $a = $div.find("a");
+        var $span = $div.find("span");
+        if (text.length < limit) {
+            $span.text(text);
+            $a.hide();
+            return;
+        }
+
+        $span.text(util.truncate(text, limit));
+        $a.text("show more");
+        $a.click(function(e) {
+            e.preventDefault();
+            if ($a.text() == "show more") {
+                $span.text(text);
+                UI.breakLines($span);
+                $a.text("show less")
+            } else {
+                $span.text(util.truncate(text, limit));
+                $a.text("show more")
+            }
+        });
+
+        return $div;
+    },
+
 }
+

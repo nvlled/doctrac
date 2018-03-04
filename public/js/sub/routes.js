@@ -17,6 +17,15 @@ window.addEventListener("load", function() {
             "time_elapsed": "⏲",
         },
         colMap: {
+            "office_name": function(data, $td) {
+                var $link = $("<a>"+data.office_name+"</a>");
+                $link.attr("href", data.link);
+                $td.append($link);
+            },
+            "annotations": function(data, $td) {
+                var annots = data.annotations || "";
+                $td.append(UI.truncatedText(annots));
+            },
             "status": function(data, $td) {
                 var text = data.status;
                 switch (data.status) {
@@ -209,11 +218,6 @@ window.addEventListener("load", function() {
             .hide()
             .addClass("no-sel")
             .insertAfter($tr);
-
-        $tr.click(function() {
-            util.redirect(route.link);
-            //$trDetails.toggle();
-        });
     }
 
     function forwardDocument() {
