@@ -58,4 +58,11 @@ function fillForms() {
     }
 
 }
-fillForms();
+
+window.addEventListener("load", function() {
+    var $btn = util.jq([
+        "<button class='autofill'>AUTO-FILL FORM</button>",
+    ]);
+    $btn.click(fillForms);
+    $("body").append($btn);
+});

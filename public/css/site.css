@@ -243,6 +243,15 @@ footer {
     background-color: #ca0;
     grid-area: footer;
 }
+
 footer a {
     color: white;
+}
+
+button.autofill {
+    background-color: red;
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    padding: 20px;
 }

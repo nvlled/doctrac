@@ -2,6 +2,7 @@
 TODO:
 
 
+* read notifications related to viewed document
 * fix timezone
 * add classification level for documents: open, confidential
 * js: listen for notifications
