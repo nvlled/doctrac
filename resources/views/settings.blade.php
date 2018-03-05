@@ -61,18 +61,18 @@
     <fieldset>
         <div class="pure-control-group">
             <label for="name">Email</label>
-            <input id="email" name="email" required type="email" placeholder="email">
+            <input id="email" name="email" type="email" placeholder="email">
             <span class="pure-form-message-inline"></span>
         </div>
 
         <div class="pure-control-group">
-            <label for="mobileno">Mobile #</label>
-            <input id="mobileno" name="mobileno" required placeholder="090XXXXXXX">
+            <label for="phoneno">Mobile #</label>
+            <input id="phoneno" name="phoneno" placeholder="090XXXXXXX">
             <span class="pure-form-message-inline"></span>
         </div>
 
         <div class="pure-controls">
-            <p class='msg'></p>
+            <ul class='msgs'></ul>
             <button type="submit" class="save pure-button pure-button-primary">Save Changes</button>
         </div>
     </fieldset>
@@ -80,7 +80,24 @@
     var $settingsForm = $("form.settings");
     var $btnSave = $settingsForm.find("button.save");
     $btnSave.click(function(e) {
-        alert("not yet implemented...");
+        e.preventDefault();
+        var data = {
+            email: $("input#email").val(),
+            phone_number: $("input#phoneno").val(),
+        };
+        api.user.update(data).then(function(resp) {
+            if (resp && resp.errors)
+                UI.showErrors($settingsForm, resp.errors);
+            else
+                UI.showMessages($settingsForm, ["settings saved"]);
+            console.log(resp);
+        });
+    });
+    api.user.self().then(function(user) {
+        if (user) {
+            $("input#email").val(user.email);
+            $("input#phoneno").val(user.phone_number);
+        }
     });
     </script>
 </form>

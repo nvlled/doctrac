@@ -116,6 +116,7 @@ var api = {
     },
 
     user: {
+        update: makeHandler("/api/users/update"),
         notifications: makeHandler("/api/users/doc-notifications"),
         readNotification: makeHandler("/api/users/read-notification"),
         login: makeHandler("/api/users/login"),

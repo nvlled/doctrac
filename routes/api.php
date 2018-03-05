@@ -510,6 +510,19 @@ Route
 ::prefix("users")
 ->middleware(["auth"])
 ->group(function() {
+    Route::any('/update', function(Request $req) {
+        $user = Auth::user();
+        if (! $user)
+            return;
+        if ($req->phone_number)
+            $user->phone_number = $req->phone_number;
+        if ($req->email)
+            $user->email = $req->email;
+
+        $user->save();
+        return $user;
+    });
+
     Route::any('/read-notification', function(Request $req) {
         $user = Auth::user();
         if (! $user)
