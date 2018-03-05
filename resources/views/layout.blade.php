@@ -22,10 +22,10 @@
         </h1>
         <nav class='main left'>
             <ul class='lstype-none'>
-                <li><a href='/settings'>☺</a></li>
                 @if (!Auth::user())
                 <li><a href='/login'>◐</a></li>
                 @elseif (Auth::user()->privilegeId == 0)
+                <li><a href='/settings'>☺</a></li>
                 <li><a href='/admin'>#</a></li>
                 @endif
             </ul>

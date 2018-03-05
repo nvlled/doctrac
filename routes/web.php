@@ -12,6 +12,7 @@
 */
 
 use Illuminate\Http\Request;
+use \App\SearchRetry;
 
 Route::get('/tests', function () {
     return view('tests/api');
@@ -33,12 +34,30 @@ Route
     Route::post('/search', function(Request $req) {
         $id = $req->trackingId;
         $doc = \App\Document::where("trackingId", $id)->first();
-        if ($doc) {
-            return redirect()->route("view-routes", $id);
+
+        $retries = SearchRetry::count();
+        $msg = "invalid tracking id ($retries)";
+
+        if (SearchRetry::canReset())
+            SearchRetry::reset();
+
+        if (SearchRetry::allowed()) {
+            if ($doc) {
+                SearchRetry::reset();
+                return redirect()->route("view-routes", $id);
+            } else {
+                SearchRetry::increment();
+            }
         }
+
+        if ($retries >= \App\Config::$searchRetryLimit) {
+            $min = SearchRetry::minutesLeft();
+            $msg = "You have exceeded your search retries. Try again in $min minute(s)";
+        }
+
         return view('search', [
             "trackingId" => $id,
-            "message"=>"invalid tracking id",
+            "message"=>$msg,
         ]);
     });
 
