@@ -13,6 +13,10 @@
         </span>
     </p>
     <p class='info'>
+        <strong>classification level:</strong>
+        <span class='classification'></span>
+    </p>
+    <p class='info'>
         <strong>details:</strong>
         <span class='details'></span>
     </p>

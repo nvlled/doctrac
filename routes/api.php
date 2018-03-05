@@ -434,6 +434,7 @@ Route
         $doc->details = $req->details;
         $doc->trackingId = $user->office->generateTrackingID();
         $annotations = $req->annotations;
+        $doc->classification = $req->classification;
 
         $v = $doc->validate();
         if ($v->fails()) {

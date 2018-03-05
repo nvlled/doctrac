@@ -6,6 +6,7 @@ window.addEventListener("load", function() {
     var $docType = $container.find(".type");
     var $docDetails = $container.find(".details");
     var $docAttachment = $container.find(".attachment a");
+    var $docClass = $container.find(".classification");
     var $selOffices = $container.find("select.offices");
     var $annots = $container.find(".annots");
     var currentUser = null;
@@ -256,6 +257,7 @@ window.addEventListener("load", function() {
     function updateDocInfo(doc) {
         $docTitle.text(doc.title);
         $docType.text(doc.type);
+        $docClass.text(doc.classification);
 
         UI.setText($docDetails, doc.details);
         UI.breakLines($docDetails);
