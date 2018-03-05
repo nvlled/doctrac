@@ -267,5 +267,14 @@ var UI = {
         return $div;
     },
 
+    addNotification: function(notif) {
+        var $a = $("nav.main a.notifications")
+            .addClass("has");
+        var count = parseInt($a.find(".count").text()) || 0;
+        $a.find(".count")
+            .text(count+1)
+            .removeClass("hidden")
+            .show();
+    },
 }
 

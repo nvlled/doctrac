@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <title>doctrac</title>
     <link rel="stylesheet" href="{{asset('css/pure-min.css')}}">
@@ -48,9 +49,7 @@
                     $has = $notifCount > 0 ? "has" : "";
                  @endphp
                  <li><a class='notifications {{$has}}' href='/notifications'>
-                        @if ($notifCount)
-                        <span class='count'>{{$notifCount}}</span>
-                        @endif
+                        <span class='count {{$notifCount ? "" : "hidden"}}'>{{$notifCount}}</span>
                         <img src="{{asset('images/notify.png')}}">
                     </a>
                 </li>
@@ -91,5 +90,23 @@
     <script src="{{asset('js/autologout.js')}}"></script>
     <script src="{{asset('js/filled.js')}}"></script>
     <script src="{{asset('js/localSave.js')}}"></script>
+    <script src="//{{ Request::getHost() }}:6001/socket.io/socket.io.js"></script>
+    <script src="{{asset('js/echo.js')}}"></script>
+    <script>
+    try {
+        var echo = new Echo({
+            broadcaster: 'socket.io',
+            host: window.location.hostname + ':6001'
+        });
+        var channel = 'App.User.' + '{{Auth::id()}}';
+        echo.private(channel)
+            .notification((notification) => {
+                console.log("**notification", notification);
+                UI.addNotification(notification);
+            });
+    } catch (e) {
+        console.log(e);
+    }
+    </script>
 </body>
 </html>
