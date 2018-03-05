@@ -17,6 +17,41 @@ Route::get('/tests', function () {
     return view('tests/api');
 });
 
+Route::get('/', function() {
+    if (Auth::user())
+        return view('home');
+    return redirect()->route("search");
+});
+
+Route
+::middleware(["restrict-doc"])
+->group(function() {
+    Route::get('/search', function() {
+        return view('search');
+    })->name("search");
+
+    Route::post('/search', function(Request $req) {
+        $id = $req->trackingId;
+        $doc = \App\Document::where("trackingId", $id)->first();
+        if ($doc) {
+            return redirect()->route("view-routes", $id);
+        }
+        return view('search', [
+            "trackingId" => $id,
+            "message"=>"invalid tracking id",
+        ]);
+    });
+
+    Route::get('/{trackingId}/routes', function($trackingId) {
+        $doc = App\Document::where("trackingId", $trackingId)->firstOrFail();
+        return view('routes', [
+            "doc" => $doc,
+        ]);
+    })->name("view-routes");
+
+});
+
+
 Route::middleware(['auth'])->group(function() {
     Route::get('/dispatch', function () {
         $user = Auth::user();
@@ -24,14 +59,6 @@ Route::middleware(['auth'])->group(function() {
             return redirect("/");
         return view('dispatch');
     });
-    Route::get('/', function () {
-        return view('home');
-    });
-
-    Route::get('/search', function() {
-        return view('search');
-    });
-
     Route::get('/notifications', function() {
         $user = Auth::user();
         if (!$user)
@@ -59,18 +86,6 @@ Route::middleware(['auth'])->group(function() {
         ]);
     });
 
-    Route::post('/search', function(Request $req) {
-        $id = $req->trackingId;
-        $doc = \App\Document::where("trackingId", $id)->first();
-        if ($doc) {
-            return redirect()->route("view-routes", $id);
-        }
-        return view('search', [
-            "trackingId" => $id,
-            "message"=>"invalid tracking id",
-        ]);
-    });
-
     Route::get('/admin', function () {
         return view('admin');
     });
@@ -88,13 +103,6 @@ Route::middleware(['auth'])->group(function() {
     });
 
     Route::prefix("document")->group(function() {
-
-        Route::get('/{trackingId}/routes', function($trackingId) {
-            $doc = App\Document::where("trackingId", $trackingId)->firstOrFail();
-            return view('routes', [
-                "doc" => $doc,
-            ]);
-        })->name("view-routes");
 
         Route::get('/{id}/', function ($id) {
             $route = App\DocumentRoute::findOrFail($id);

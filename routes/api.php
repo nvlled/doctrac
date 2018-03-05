@@ -22,7 +22,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route
 ::prefix("routes")
-->middleware(["auth"])
+->middleware(["restrict-doc"])
 ->group(function() {
     Route::any('/origins/{trackingId}', function (Request $req, $trackingId) {
         $doc = App\Document::where("trackingId", $trackingId)->first();
