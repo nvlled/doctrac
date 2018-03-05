@@ -251,6 +251,7 @@ class DocumentRoute extends Model
             $seen->userId = $user->id;
             $seen->routeId = $this->id;
             $seen->status = $this->status;
+            $user->readNotification($this->id);
             $seen->save();
         } catch (Exception $_) { /* ignore */ }
     }

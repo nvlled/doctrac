@@ -78,4 +78,13 @@ class User extends Authenticatable
             'officeId' => 'required|exists:offices,id',
         ]);
     }
+
+    public function readNotification($routeId) {
+        foreach ($this->notifications as $notif) {
+            if (!$notif)
+                continue;
+            if ($notif->data["routeId"] == $routeId)
+                $notif->markAsRead();
+        }
+    }
 }
