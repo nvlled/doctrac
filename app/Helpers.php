@@ -38,3 +38,6 @@ function disk() {
     return Storage::disk();
 }
 
+function ngayon() {
+    return now(config("app.timezone"));
+}

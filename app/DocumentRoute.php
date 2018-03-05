@@ -10,6 +10,7 @@ class DocumentRoute extends Model
     public $appends = [
         "document_title",
         "document_details",
+        "document_class",
         "document_type",
         "time_elapsed",
         "campus_id",
@@ -55,6 +56,10 @@ class DocumentRoute extends Model
 
     public function getDocumentTitleAttribute() {
         return optional($this->document)->title;
+    }
+
+    public function getDocumentClassAttribute() {
+        return optional($this->document)->classification;
     }
 
     public function getDocumentTypeAttribute() {
@@ -251,6 +256,7 @@ class DocumentRoute extends Model
             $seen->userId = $user->id;
             $seen->routeId = $this->id;
             $seen->status = $this->status;
+            $user->readNotification($this->id);
             $seen->save();
         } catch (Exception $_) { /* ignore */ }
     }

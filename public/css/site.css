@@ -1,4 +1,8 @@
 
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: sans-serif;
 }
@@ -8,7 +12,6 @@ a {
 }
 
 section {
-    min-height: 200px;
     padding: 20px;
     margin: 10px;
     margin-bottom: 50px;
@@ -44,8 +47,10 @@ select[disabled] {
 .right { text-align: right; }
 
 .site-wrap {
-    width: 700px;
-    margin: 0 auto;
+    background-color: #f8f8f8;
+    grid-area: body;
+    align-self: stretch;
+    margin: 10px 50px;
 }
 
 table {
@@ -72,11 +77,11 @@ table tbody tr.no-sel {
     background-color: inherit !important;
 }
 table tbody tr:hover {
-    background-color: gray;
+    background-color: #f0f0f0;
     cursor: pointer;
 }
 table tbody tr.sel:hover {
-    background-color: #3d3;
+    background-color: #e0f0e0;
     cursor: pointer;
 }
 table tr.indented td:first-child {
@@ -117,6 +122,10 @@ li.new a::after {
     font-size: 13px;
 }
 
+.site-wrap nav.main {
+    background-color: gray;
+    padding: 10px;
+}
 nav.main ul{
     padding: 0px;
     margin: 0px;
@@ -127,12 +136,14 @@ nav.main li {
 }
 nav.main li a {
     text-decoration: underline;
+    color: white;
 }
 
 header.site {
     margin-bottom: 15px;
     padding: 5px;
     background-color: #ca0;
+    grid-area: header;
 }
 header.site a {
     color: white;
@@ -210,5 +221,37 @@ div.autologout {
     position: fixed;
 }
 
+body {
+    display: grid;
+    align-content: stretch;
+    justify-content: end;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows:
+        auto
+        1fr
+        20px;
+    grid-template-areas:
+        "header header header header header header"
+        "body body body body body body"
+        "footer footer footer footer footer footer "
+}
 
+footer {
+    font-size: 12px;
+    padding: 5px;
+    color: white;
+    background-color: #ca0;
+    grid-area: footer;
+}
 
+footer a {
+    color: white;
+}
+
+button.autofill {
+    background-color: red;
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    padding: 20px;
+}

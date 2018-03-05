@@ -32,6 +32,10 @@ TODO
             @endif
         </p>
         <p class='info'>
+            <strong>classification level:</strong>
+            <span class='classification'></span>
+        </p>
+        <p class='info'>
             <strong>status:</strong>
             <span class='status'>status</span>
         </p>

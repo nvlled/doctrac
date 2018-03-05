@@ -13,17 +13,21 @@
     @yield("styles")
 </head>
 <body>
-    <div class="prefetch hidden">
-        @yield("prefetch")
-    </div>
     <header class='site'>
+        <div class="prefetch hidden">
+            @yield("prefetch")
+        </div>
         <h1 class='center'>
             <a href="/">document tracker</a>
         </h1>
         <nav class='main left'>
             <ul class='lstype-none'>
                 <li><a href='/settings'>☺</a></li>
+                @if (!Auth::user())
+                <li><a href='/login'>◐</a></li>
+                @elseif (Auth::user()->privilegeId == 0)
                 <li><a href='/admin'>#</a></li>
+                @endif
             </ul>
         </nav>
     </header>
@@ -72,12 +76,20 @@
         </div>
         @endif
 
+        <div class='site-contents'>
         @yield("contents")
+        </div>
     </div>
+    <footer>
+        <a href="/about">about</a> |
+        copyright © 2018
+    </footer>
+
     @yield("scripts")
     <script src="{{asset('js/combobox.js')}}"></script>
     <script src="{{asset('js/autocomplete.js')}}"></script>
     <script src="{{asset('js/autologout.js')}}"></script>
+    <script src="{{asset('js/filled.js')}}"></script>
     <script src="{{asset('js/localSave.js')}}"></script>
 </body>
 </html>

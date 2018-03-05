@@ -84,6 +84,7 @@ window.addEventListener("load", function() {
         $viewDoc.find(".trackingId").text(id);
         $viewDoc.find(".title").text(info.document_title || "");
         $viewDoc.find(".status").text(info.status);
+        $viewDoc.find(".classification").text(info.document_class);
 
         var $details = $viewDoc.find(".details");
         $details.text(info.document_details);

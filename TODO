@@ -2,9 +2,8 @@
 TODO:
 
 
-* add status/security for documents: open, confidential
+* recent/active document list
 * js: listen for notifications
-* fix seen notifications
 * email/sms notifications
 
 * set more than one attachments and notes/annotations

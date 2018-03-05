@@ -10,6 +10,16 @@
     <textarea name="annotations" rows="4" class="full annotations"
         placeholder="notes/annotations"></textarea>
     </form>
+
+    <p>
+        Classification level:
+        <select class='classification'>
+            @foreach (\App\Enums::$classification as $level)
+            <option value='{{$level}}'>{{$level}}</option>
+            @endforeach
+        </select>
+    </p>
+
     <p class="">
         Attachment:
         <input name="attachment" type="file">

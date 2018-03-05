@@ -22,7 +22,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route
 ::prefix("routes")
-->middleware(["auth"])
+->middleware(["restrict-doc"])
 ->group(function() {
     Route::any('/origins/{trackingId}', function (Request $req, $trackingId) {
         $doc = App\Document::where("trackingId", $trackingId)->first();
@@ -134,7 +134,7 @@ Route
         }
 
         $route->senderId = $user->id;
-        $route->forwardTime = now();
+        $route->forwardTime = ngayon();
 
         $nextRoute = $route->nextRoute;
         $annotations = $req->annotations;
@@ -270,7 +270,7 @@ Route
             if (!$prevRoute)
                 continue;
             $route->receiverId = $user->id;
-            $route->arrivalTime = now();
+            $route->arrivalTime = ngayon();
             $route->save();
             //\Notif::received($prevRoute);
             Notif::received($prevRoute->office, $route->office, $prevRoute);
@@ -328,7 +328,7 @@ Route
             }
 
             $route->senderId = $user->id;
-            $route->forwardTime = now();
+            $route->forwardTime = ngayon();
 
             $annotations = $req->annotations;
             $notifyOffice = null;
@@ -434,6 +434,7 @@ Route
         $doc->details = $req->details;
         $doc->trackingId = $user->office->generateTrackingID();
         $annotations = $req->annotations;
+        $doc->classification = $req->classification;
 
         $v = $doc->validate();
         if ($v->fails()) {

@@ -7,7 +7,6 @@ var autologout = {
     intervalId: null,
 
     perform: function() {
-        console.log("cancel auto logout");
         this.lastActive = +new Date();
         this.$dialog.hide();
     },

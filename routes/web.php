@@ -17,47 +17,18 @@ Route::get('/tests', function () {
     return view('tests/api');
 });
 
-Route::middleware(['auth'])->group(function() {
-    Route::get('/dispatch', function () {
-        $user = Auth::user();
-        if (!$user || !optional($user->office)->gateway)
-            return redirect("/");
-        return view('dispatch');
-    });
-    Route::get('/', function () {
+Route::get('/', function() {
+    if (Auth::user())
         return view('home');
-    });
+    return redirect()->route("search");
+});
 
+Route
+::middleware(["restrict-doc"])
+->group(function() {
     Route::get('/search', function() {
         return view('search');
-    });
-
-    Route::get('/notifications', function() {
-        $user = Auth::user();
-        if (!$user)
-            return abort(404);
-        $messages = [
-            [
-                "contents"=>"MIS Urdaneta has seen urd-2018-23",
-                "routeId"=>1,
-                "date"=>now()->subHours(random_int(3,50)),
-            ],
-            [
-                "contents"=>"Registrar Urdaneta has received urd-2018-73",
-                "routeId"=>2,
-                "date"=>now()->subHours(random_int(3,50)),
-            ],
-            [
-                "contents"=>"Accouting Lingayen has sent a document",
-                "routeId"=>1,
-                "date"=>now()->subHours(random_int(3,50)),
-            ],
-        ];
-        return view('notifications', [
-            "messages"=>$messages,
-            "notifications"=>$user->notifications,
-        ]);
-    });
+    })->name("search");
 
     Route::post('/search', function(Request $req) {
         $id = $req->trackingId;
@@ -68,6 +39,32 @@ Route::middleware(['auth'])->group(function() {
         return view('search', [
             "trackingId" => $id,
             "message"=>"invalid tracking id",
+        ]);
+    });
+
+    Route::get('/{trackingId}/routes', function($trackingId) {
+        $doc = App\Document::where("trackingId", $trackingId)->firstOrFail();
+        return view('routes', [
+            "doc" => $doc,
+        ]);
+    })->name("view-routes");
+
+});
+
+
+Route::middleware(['auth'])->group(function() {
+    Route::get('/dispatch', function () {
+        $user = Auth::user();
+        if (!$user || !optional($user->office)->gateway)
+            return redirect("/");
+        return view('dispatch');
+    });
+    Route::get('/notifications', function() {
+        $user = Auth::user();
+        if (!$user)
+            return abort(404);
+        return view('notifications', [
+            "notifications"=>$user->notifications,
         ]);
     });
 
@@ -88,13 +85,6 @@ Route::middleware(['auth'])->group(function() {
     });
 
     Route::prefix("document")->group(function() {
-
-        Route::get('/{trackingId}/routes', function($trackingId) {
-            $doc = App\Document::where("trackingId", $trackingId)->firstOrFail();
-            return view('routes', [
-                "doc" => $doc,
-            ]);
-        })->name("view-routes");
 
         Route::get('/{id}/', function ($id) {
             $route = App\DocumentRoute::findOrFail($id);

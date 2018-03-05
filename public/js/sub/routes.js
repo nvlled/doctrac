@@ -6,17 +6,45 @@ window.addEventListener("load", function() {
     var $docType = $container.find(".type");
     var $docDetails = $container.find(".details");
     var $docAttachment = $container.find(".attachment a");
+    var $docClass = $container.find(".classification");
     var $selOffices = $container.find("select.offices");
     var $annots = $container.find(".annots");
     var currentUser = null;
 
     var table = UI.createTable($table, {
-        cols: ["office_name", "status", "time_elapsed"],
+        cols: ["office_name", "status", "time_elapsed", "annotations"],
         colNames: {
             "office_name": "office name",
-            "time_elapsed": "elapsed",
+            "time_elapsed": "⏲",
         },
         colMap: {
+            "office_name": function(data, $td) {
+                var $link = $("<a>"+data.office_name+"</a>");
+                $link.attr("href", data.link);
+                $td.append($link);
+            },
+            "annotations": function(data, $td) {
+                var annots = data.annotations || "";
+                $td.append(UI.truncatedText(annots));
+            },
+            "status": function(data, $td) {
+                var text = data.status;
+                switch (data.status) {
+                    case "delivering":
+                        text = "✈";
+                        break;
+                    case "waiting":
+                        text = "⌛";
+                        break;
+                    case "processing":
+                        text = "♖";
+                        break;
+                    case "done":
+                        text = "✓";
+                        break;
+                }
+                $td.text(text);
+            },
             "details": function(data, $td) {
                 var time = data.arrivalTime || "";
                 var sender = data.sender_name || "";
@@ -191,11 +219,6 @@ window.addEventListener("load", function() {
             .hide()
             .addClass("no-sel")
             .insertAfter($tr);
-
-        $tr.click(function() {
-            util.redirect(route.link);
-            //$trDetails.toggle();
-        });
     }
 
     function forwardDocument() {
@@ -234,6 +257,7 @@ window.addEventListener("load", function() {
     function updateDocInfo(doc) {
         $docTitle.text(doc.title);
         $docType.text(doc.type);
+        $docClass.text(doc.classification);
 
         UI.setText($docDetails, doc.details);
         UI.breakLines($docDetails);
