@@ -134,7 +134,7 @@ Route
         }
 
         $route->senderId = $user->id;
-        $route->forwardTime = now();
+        $route->forwardTime = ngayon();
 
         $nextRoute = $route->nextRoute;
         $annotations = $req->annotations;
@@ -270,7 +270,7 @@ Route
             if (!$prevRoute)
                 continue;
             $route->receiverId = $user->id;
-            $route->arrivalTime = now();
+            $route->arrivalTime = ngayon();
             $route->save();
             //\Notif::received($prevRoute);
             Notif::received($prevRoute->office, $route->office, $prevRoute);
@@ -328,7 +328,7 @@ Route
             }
 
             $route->senderId = $user->id;
-            $route->forwardTime = now();
+            $route->forwardTime = ngayon();
 
             $annotations = $req->annotations;
             $notifyOffice = null;
