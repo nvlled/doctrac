@@ -1,11 +1,14 @@
 
 TODO:
 
+* account management
+* handle slow connections
 * dynamic update route table
 * follow/subscribe to routes
 * recent/active document list
 * js: listen for notifications
 * email/sms notifications
+* fix logout
 
 * set more than one attachments and notes/annotations
     ** Add model: Note(id, trackingId, officeId, contents)

@@ -55,5 +55,6 @@ api.user.notifications().then(function(notifs) {
         $container.append($div);
     });
 });
+
 </script>
 @endsection

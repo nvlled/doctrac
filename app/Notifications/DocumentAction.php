@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\BroadcastMessage;
+use Illuminate\Notifications\Messages\NexmoMessage;
 
 class DocumentAction extends Notification
 {
@@ -40,7 +41,7 @@ class DocumentAction extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail', 'database', 'broadcast'];
+        return ['mail', 'database', 'broadcast', "nexmo"];
     }
 
     /**
@@ -58,6 +59,14 @@ class DocumentAction extends Notification
     }
 
     public function toHtml($notifiable) {
+    }
+
+    public function toNexmo($notifiable)
+    {
+        $data = $this->toArray($notifiable);
+        return (new NexmoMessage)
+            ->from("NEXMO")
+            ->content($data["message"]);
     }
 
     public function toBroadcast($notifiable)
@@ -100,4 +109,3 @@ class DocumentAction extends Notification
         ];
     }
 }
-
