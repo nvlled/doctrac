@@ -1,7 +1,8 @@
 
 TODO:
 
-
+* dynamic update route table
+* follow/subscribe to routes
 * recent/active document list
 * js: listen for notifications
 * email/sms notifications
@@ -16,3 +17,6 @@ TODO:
 * show loading indicators
 * page queries
 * handle deletion (or prevent)
+
+--------------------------------------------
+- restrict API access
