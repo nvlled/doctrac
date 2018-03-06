@@ -14,6 +14,58 @@ class Office extends Model
         return $this->hasOne("App\Campus", "id", "campusId");
     }
 
+    function emails() {
+        return $this->hasMany("App\OfficeEmail", "officeId");
+    }
+
+    function setEmails($emails) {
+        if (!$emails)
+            return;
+
+        foreach ($this->emails as $email)
+            $email->delete();
+
+        foreach ($emails as $data) {
+            $email = new \App\OfficeEmail();
+            $email->officeId = $this->id;
+            if (is_string($data)) {
+                $email->data = $data;
+            } else if (is_array($data)) {
+                $email->name = $data["name"];
+                $email->data = $data["data"];
+            }
+            try {
+                $email->save();
+            } catch (\Exception $e) { dump($e->getMessage()); /* ignore */ }
+        }
+    }
+
+    function mobileNumbers() {
+        return $this->hasMany("App\OfficeEmail", "officeId");
+    }
+
+    function setMobileNumbers($mobileNumbers) {
+        if (!$mobileNumbers)
+            return;
+
+        foreach ($this->mobileNumbers as $mobileNo)
+            $mobileNo->delete();
+
+        foreach ($mobileNumbers as $data) {
+            $mobileNo = new \App\OfficeEmail();
+            $mobileNo->officeId = $this->id;
+            if (is_string($data)) {
+                $mobileNo->data = $data;
+            } else if (is_array($data)) {
+                $mobileNo->name = $data["name"];
+                $mobileNo->data = $data["data"];
+            }
+            try {
+                $mobileNo->save();
+            } catch (\Exception $e) { dump($e->getMessage()); /* ignore */ }
+        }
+    }
+
     function getCampusCodeAttribute() {
         return optional($this->campus)->code;
     }
