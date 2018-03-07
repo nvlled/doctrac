@@ -57,6 +57,8 @@ class DocumentAction extends Notification
         $contents = $data["message"];
         $subject  = $data["trackingId"] . " update";
         $email    = $office->primary_email;
+        if (!$email)
+            return;
         \Log::debug("sending email to {$office->primary_email}, [$subject]");
         $mailable = new \App\Mail\OfficeEmailMessage($office, $contents, $subject);
         return $mailable->to($email);

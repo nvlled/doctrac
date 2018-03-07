@@ -9,6 +9,8 @@ if [[ $env = 'production' ]]; then
     exit
 fi
 
-php artisan migrate:fresh
+php artisan migrate:fresh && \
+    php artisan maint:initdb
+
 #mysql doctrac < db.sql
 #php artisan maintenance:create-office-users

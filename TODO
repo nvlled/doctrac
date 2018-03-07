@@ -1,14 +1,19 @@
 
 TODO:
 
+** add loading indicator on document action button
+   while waiting for notifications
+
 ** fix seen notifications
 
 ** Close path back to records,
    remove final flag
 
+* add close action for records
 * email interface
 * confirm receive with sms
 
+* add env option to disable emailing,texting
 * export data
 * office to office messaging
 * account management
@@ -22,6 +27,8 @@ TODO:
 * fix logout
     autologout: check even if tab is not active
     delete cookies when browser is closed
+
+* add facebook notifications
 
 * editable routes
 
@@ -38,3 +45,6 @@ TODO:
 
 --------------------------------------------
 - restrict API access
+
+
+
