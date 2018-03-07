@@ -41,7 +41,7 @@ class DocumentAction extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail', 'database', 'broadcast', "nexmo"];
+        return ['mail', 'database', 'broadcast'];
     }
 
     /**

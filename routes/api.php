@@ -986,11 +986,14 @@ Route
 Route
 ::prefix("globe-sms")
 ->group(function() {
+    Route::any('/subscribe', function (Request $req) {
+        // json_encode({ access_token, subscriber_number })
+        \Log::debug("new globe api subscription" .$req->getContent());
+    });
+
     Route::any('/notify', function (Request $req) {
         // TODO: REMOVE THIS LATER
-        // !!!!!!
-        // !!!!!!
-        Log::debug("received globe api notification : " .$req->getContents());
+        \Log::debug("received globe api notification : " .$req->getContent());
     });
 });
 
