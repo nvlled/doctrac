@@ -7,11 +7,94 @@ use Illuminate\Support\Facades\Validator;
 
 class Office extends Model
 {
-    protected $appends = ["campus_name", "campus_code"];
+    protected $appends = [
+        "campus_name", "campus_code",
+        "primary_email", "primary_phone_number",
+        "other_emails", "other_phone_numbers"
+    ];
     protected $hidden = ["campus"];
 
     function campus() {
         return $this->hasOne("App\Campus", "id", "campusId");
+    }
+
+    function user() {
+        return $this->hasOne("\App\User", "officeId");
+    }
+
+    function setPrimaryContactInfo($email, $phoneNo) {
+        $user = $this->user;
+        if (!$user)
+            return user;
+        $user->email = $email;
+        $user->phone_number = $phoneNo;
+        $user->save();
+    }
+
+    function getPrimaryEmailAttribute() {
+        return $this->user->email;
+    }
+
+    function getPrimaryPhoneNumberAttribute() {
+        return $this->user->phone_number;
+    }
+
+    function getOtherEmailsAttribute() {
+        return \App\OfficeEmail::where("officeId", $this->id)
+            ->get()
+            ->map(function($row) {
+                return $row->data;
+            });
+    }
+
+    function setOtherEmails($emails) {
+        if (!$emails)
+            return;
+
+        \App\OfficeEmail::where("officeId", $this->id)->delete();
+
+        foreach ($emails as $data) {
+            $email = new \App\OfficeEmail();
+            $email->officeId = $this->id;
+            if (is_string($data)) {
+                $email->data = $data;
+            } else if (is_array($data)) {
+                $email->name = $data["name"];
+                $email->data = $data["data"];
+            }
+            try {
+                $email->save();
+            } catch (\Exception $e) { $e->getMessage(); /* ignore */ }
+        }
+    }
+
+    function getOtherPhoneNumbersAttribute() {
+        return \App\OfficeMobileNumber::where("officeId", $this->id)
+            ->get()
+            ->map(function($row) {
+                return $row->data;
+            });
+    }
+
+    function setOtherPhoneNumbers($phoneNumbers) {
+        if (!$phoneNumbers)
+            return;
+
+        \App\OfficeMobileNumber::where("officeId", $this->id)->delete();
+
+        foreach ($phoneNumbers as $data) {
+            $phoneNo = new \App\OfficeMobileNumber();
+            $phoneNo->officeId = $this->id;
+            if (is_string($data)) {
+                $phoneNo->data = $data;
+            } else if (is_array($data)) {
+                $phoneNo->name = $data["name"];
+                $phoneNo->data = $data["data"];
+            }
+            try {
+                $phoneNo->save();
+            } catch (\Exception $e) { echo $e->getMessage(); /* ignore */ }
+        }
     }
 
     function getCampusCodeAttribute() {
@@ -186,5 +269,10 @@ class Office extends Model
 
     public function getMembers() {
         return User::where("officeId", $this->id)->get();
+    }
+
+
+    public static function withUserName($username) {
+        return optional(\App\User::where("username", $username)->first())->office;
     }
 }

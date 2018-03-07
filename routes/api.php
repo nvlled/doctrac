@@ -510,6 +510,19 @@ Route
 ::prefix("users")
 ->middleware(["auth"])
 ->group(function() {
+    Route::any('/update', function(Request $req) {
+        $user = Auth::user();
+        if (! $user)
+            return;
+        if ($req->phone_number)
+            $user->phone_number = $req->phone_number;
+        if ($req->email)
+            $user->email = $req->email;
+
+        $user->save();
+        return $user;
+    });
+
     Route::any('/read-notification', function(Request $req) {
         $user = Auth::user();
         if (! $user)
@@ -700,6 +713,22 @@ Route
 ::prefix("offices")
 ->middleware(["auth"])
 ->group(function() {
+    Route::any('/self', function (Request $req) {
+        if (Auth::user())
+            return Auth::user()->office;
+    });
+
+    Route::any('/{officeId}/update-contact-info', function (Request $req, $officeId) {
+        $officeId = $req->officeId;
+        $office = App\Office::find($officeId);
+        if (!$office)
+            return ["errors"=>["officeId"=>"office id is invalid"]];
+
+        $office->setPrimaryContactInfo($req->email, $req->phoneno);
+        $office->setOtherEmails($req->emails);
+        $office->setOtherPhoneNumbers($req->phonenumbers);
+    });
+
     Route::any('/{officeId}/incoming', function (Request $req) {
         $officeId = $req->officeId;
         $office = App\Office::find($officeId);
@@ -707,6 +736,7 @@ Route
             return collect();
         return $office->getReceivingRoutes();
     });
+
 
     Route::any('/{officeId}/held', function (Request $req) {
         $officeId = $req->officeId;
@@ -949,6 +979,18 @@ Route
         $file->save();
 
         return $file->id;
+    });
+});
+
+
+Route
+::prefix("globe-sms")
+->group(function() {
+    Route::any('/notify', function (Request $req) {
+        // TODO: REMOVE THIS LATER
+        // !!!!!!
+        // !!!!!!
+        Log::debug("received globe api notification : " .$req->getContents());
     });
 });
 

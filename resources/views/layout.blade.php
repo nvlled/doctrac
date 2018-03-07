@@ -93,20 +93,24 @@
     <script src="//{{ Request::getHost() }}:6001/socket.io/socket.io.js"></script>
     <script src="{{asset('js/echo.js')}}"></script>
     <script>
-    try {
-        var echo = new Echo({
-            broadcaster: 'socket.io',
-            host: window.location.hostname + ':6001'
-        });
-        var channel = 'App.User.' + '{{Auth::id()}}';
-        echo.private(channel)
-            .notification((notification) => {
-                console.log("**notification", notification);
-                UI.addNotification(notification);
+    $(function() {
+        if (!this.io)
+            return;
+        try {
+            var echo = new Echo({
+                broadcaster: 'socket.io',
+                host: window.location.hostname + ':6001'
             });
-    } catch (e) {
-        console.log(e);
-    }
+            var channel = 'App.User.' + '{{Auth::id()}}';
+            echo.private(channel)
+                .notification((notification) => {
+                    console.log("**notification", notification);
+                    UI.addNotification(notification);
+                });
+        } catch (e) {
+            console.log(e);
+        }
+    });
     </script>
 </body>
 </html>

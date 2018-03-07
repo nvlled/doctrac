@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\BroadcastMessage;
+use Illuminate\Notifications\Messages\NexmoMessage;
 
 class DocumentAction extends Notification
 {
@@ -40,7 +41,7 @@ class DocumentAction extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail', 'database', 'broadcast'];
+        return ['mail', 'database', 'broadcast', "nexmo"];
     }
 
     /**
@@ -51,13 +52,25 @@ class DocumentAction extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+        $data     = $this->toArray($notifiable);
+        $office   = $this->route->office;
+        $contents = $data["message"];
+        $subject  = $data["trackingId"] . " update";
+        $email    = $office->primary_email;
+        \Log::debug("sending email to {$office->primary_email}, [$subject]");
+        $mailable = new \App\Mail\OfficeEmailMessage($office, $contents, $subject);
+        return $mailable->to($email);
     }
 
     public function toHtml($notifiable) {
+    }
+
+    public function toNexmo($notifiable)
+    {
+        $data = $this->toArray($notifiable);
+        return (new NexmoMessage)
+            ->from("NEXMO")
+            ->content($data["message"]);
     }
 
     public function toBroadcast($notifiable)
@@ -100,4 +113,3 @@ class DocumentAction extends Notification
         ];
     }
 }
-

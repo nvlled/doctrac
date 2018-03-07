@@ -141,5 +141,13 @@ var util = {
         if (text.length < limit)
             return text;
         return text.slice(0, limit) + "...";
-    }
+    },
+
+    splitLines: function(str) {
+        if (!str)
+            return str;
+        return str.split("\n").map(function(line) {
+            return line.trim();
+        }).filter(function(line) { return !! line });
+    },
 }

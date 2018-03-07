@@ -22,6 +22,8 @@ class CreateUsersTable extends Migration
             $table->string('firstname', 255);
             $table->string('middlename', 255)->nullable();
             $table->string('lastname', 255);
+            $table->string('phone_number', 255)->nullable();
+            $table->string('email', 255)->nullable();
             $table->string('positionId', 255);
             $table->string('privilegeId', 255);
             $table->integer('officeId');

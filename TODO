@@ -1,11 +1,29 @@
 
 TODO:
 
+** fix seen notifications
+
+** Close path back to records,
+   remove final flag
+
+* email interface
+* confirm receive with sms
+
+* export data
+* office to office messaging
+* account management
+* setup https
+* handle slow connections
 * dynamic update route table
 * follow/subscribe to routes
 * recent/active document list
 * js: listen for notifications
 * email/sms notifications
+* fix logout
+    autologout: check even if tab is not active
+    delete cookies when browser is closed
+
+* editable routes
 
 * set more than one attachments and notes/annotations
     ** Add model: Note(id, trackingId, officeId, contents)
