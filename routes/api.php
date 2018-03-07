@@ -982,6 +982,18 @@ Route
     });
 });
 
+
+Route
+::prefix("globe-sms")
+->group(function() {
+    Route::any('/notify', function (Request $req) {
+        // TODO: REMOVE THIS LATER
+        // !!!!!!
+        // !!!!!!
+        Log::debug("received globe api notification : " .$req->getContents());
+    });
+});
+
 Route::any('/util/url-for/{routeName}', function (Request $req, $routeName) {
     try {
         $params = $req->toArray();
