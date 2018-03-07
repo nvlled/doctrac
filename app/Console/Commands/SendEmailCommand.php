@@ -59,14 +59,14 @@ class SendEmailCommand extends Command
 
         $this->info("sending email to $officeId...");
         $emails = $office->emails;
+        $primaryEmail = $office->primary_email;
 
-        if ($emails->count() == 0) {
+        if (!$primaryEmail && $emails->count() == 0) {
             $this->error("office has no specified email/s");
             return;
         }
 
-        $primaryEmail = $emails->first()->data;
-        $otherEmails  = $emails->slice(1)->map(function($email) {
+        $otherEmails  = $emails->map(function($email) {
             return $email->data;
         });
 

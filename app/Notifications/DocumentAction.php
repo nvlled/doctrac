@@ -52,10 +52,14 @@ class DocumentAction extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+        $data     = $this->toArray($notifiable);
+        $office   = $this->route->office;
+        $contents = $data["message"];
+        $subject  = $data["trackingId"] . " update";
+        $email    = $office->primary_email;
+        \Log::debug("sending email to {$office->primary_email}, [$subject]");
+        $mailable = new \App\Mail\OfficeEmailMessage($office, $contents, $subject);
+        return $mailable->to($email);
     }
 
     public function toHtml($notifiable) {

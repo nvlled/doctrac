@@ -7,23 +7,51 @@ use Illuminate\Support\Facades\Validator;
 
 class Office extends Model
 {
-    protected $appends = ["campus_name", "campus_code"];
+    protected $appends = [
+        "campus_name", "campus_code",
+        "primary_email", "primary_phone_number",
+        "other_emails", "other_phone_numbers"
+    ];
     protected $hidden = ["campus"];
 
     function campus() {
         return $this->hasOne("App\Campus", "id", "campusId");
     }
 
-    function emails() {
-        return $this->hasMany("App\OfficeEmail", "officeId");
+    function user() {
+        return $this->hasOne("\App\User", "officeId");
     }
 
-    function setEmails($emails) {
+    function setPrimaryContactInfo($email, $phoneNo) {
+        $user = $this->user;
+        if (!$user)
+            return user;
+        $user->email = $email;
+        $user->phone_number = $phoneNo;
+        $user->save();
+    }
+
+    function getPrimaryEmailAttribute() {
+        return $this->user->email;
+    }
+
+    function getPrimaryPhoneNumberAttribute() {
+        return $this->user->phone_number;
+    }
+
+    function getOtherEmailsAttribute() {
+        return \App\OfficeEmail::where("officeId", $this->id)
+            ->get()
+            ->map(function($row) {
+                return $row->data;
+            });
+    }
+
+    function setOtherEmails($emails) {
         if (!$emails)
             return;
 
-        foreach ($this->emails as $email)
-            $email->delete();
+        \App\OfficeEmail::where("officeId", $this->id)->delete();
 
         foreach ($emails as $data) {
             $email = new \App\OfficeEmail();
@@ -36,33 +64,36 @@ class Office extends Model
             }
             try {
                 $email->save();
-            } catch (\Exception $e) { dump($e->getMessage()); /* ignore */ }
+            } catch (\Exception $e) { $e->getMessage(); /* ignore */ }
         }
     }
 
-    function mobileNumbers() {
-        return $this->hasMany("App\OfficeEmail", "officeId");
+    function getOtherPhoneNumbersAttribute() {
+        return \App\OfficeMobileNumber::where("officeId", $this->id)
+            ->get()
+            ->map(function($row) {
+                return $row->data;
+            });
     }
 
-    function setMobileNumbers($mobileNumbers) {
-        if (!$mobileNumbers)
+    function setOtherPhoneNumbers($phoneNumbers) {
+        if (!$phoneNumbers)
             return;
 
-        foreach ($this->mobileNumbers as $mobileNo)
-            $mobileNo->delete();
+        \App\OfficeMobileNumber::where("officeId", $this->id)->delete();
 
-        foreach ($mobileNumbers as $data) {
-            $mobileNo = new \App\OfficeEmail();
-            $mobileNo->officeId = $this->id;
+        foreach ($phoneNumbers as $data) {
+            $phoneNo = new \App\OfficeMobileNumber();
+            $phoneNo->officeId = $this->id;
             if (is_string($data)) {
-                $mobileNo->data = $data;
+                $phoneNo->data = $data;
             } else if (is_array($data)) {
-                $mobileNo->name = $data["name"];
-                $mobileNo->data = $data["data"];
+                $phoneNo->name = $data["name"];
+                $phoneNo->data = $data["data"];
             }
             try {
-                $mobileNo->save();
-            } catch (\Exception $e) { dump($e->getMessage()); /* ignore */ }
+                $phoneNo->save();
+            } catch (\Exception $e) { echo $e->getMessage(); /* ignore */ }
         }
     }
 
@@ -238,5 +269,10 @@ class Office extends Model
 
     public function getMembers() {
         return User::where("officeId", $this->id)->get();
+    }
+
+
+    public static function withUserName($username) {
+        return optional(\App\User::where("username", $username)->first())->office;
     }
 }
