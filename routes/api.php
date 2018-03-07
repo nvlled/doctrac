@@ -713,6 +713,22 @@ Route
 ::prefix("offices")
 ->middleware(["auth"])
 ->group(function() {
+    Route::any('/self', function (Request $req) {
+        if (Auth::user())
+            return Auth::user()->office;
+    });
+
+    Route::any('/{officeId}/update-contact-info', function (Request $req, $officeId) {
+        $officeId = $req->officeId;
+        $office = App\Office::find($officeId);
+        if (!$office)
+            return ["errors"=>["officeId"=>"office id is invalid"]];
+
+        $office->setPrimaryContactInfo($req->email, $req->phoneno);
+        $office->setOtherEmails($req->emails);
+        $office->setOtherPhoneNumbers($req->phonenumbers);
+    });
+
     Route::any('/{officeId}/incoming', function (Request $req) {
         $officeId = $req->officeId;
         $office = App\Office::find($officeId);
@@ -720,6 +736,7 @@ Route
             return collect();
         return $office->getReceivingRoutes();
     });
+
 
     Route::any('/{officeId}/held', function (Request $req) {
         $officeId = $req->officeId;

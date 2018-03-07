@@ -208,6 +208,8 @@ var api = {
     },
 
     office: {
+        self: makeHandler("/api/offices/self"),
+
         search: makeHandler("/api/offices/search"),
         actionFor: makeHandler("/api/offices/{officeId}/action-for/{trackingId}"),
         actionForRoute:
@@ -245,6 +247,8 @@ var api = {
             var url = "/api/offices/del/"+id;
             return api.req.post(url, {}, fn)
         },
+
+        updateContactInfo: makeHandler("/api/offices/{officeId}/update-contact-info"),
     },
 
     util: {
