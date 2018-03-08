@@ -988,8 +988,8 @@ Route
 ->group(function() {
     Route::any('/subscribe', function (Request $req) {
         \Log::debug("new globe api subscription" .$req->getContent());
-        $data = json_decode($req->getContent());
-        $subscriberNumber = $data->subscriberNumber;
+        $subscriberNumber = @$req->subscriber_number;
+        $accessToken      = @$req->access_token;
 
         $number = \App\SubscribedNumber
             ::where("subscriberNumber", $subscriberNumber);
@@ -998,7 +998,7 @@ Route
             $number = new \App\SubscribedNumber();
         }
 
-        $number->accessToken      = $data->access_token;
+        $number->accessToken      = $accessToken;
         $number->subscriberNumber = $subscriberNumber;
         $number->active = true;
         $number->save();
@@ -1014,7 +1014,7 @@ Route
             return;
 
         foreach ($messages as $data) {
-            GlobeAPI::execute($data);
+            \App\GlobeAPI::execute($data);
         }
     });
 });
