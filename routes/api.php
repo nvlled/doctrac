@@ -1007,6 +1007,15 @@ Route
     Route::any('/notify', function (Request $req) {
         // TODO: REMOVE THIS LATER
         \Log::debug("received globe api notification : " .$req->getContent());
+        $data = json_decode($req->getContent());
+
+        $messages = optional(@$data->inboundSMSMessageList)->inboundSMSMessage;
+        if ( ! $messages)
+            return;
+
+        foreach ($messages as $data) {
+            GlobeAPI::execute($data);
+        }
     });
 });
 
