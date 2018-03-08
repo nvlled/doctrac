@@ -196,6 +196,16 @@ var UI = {
         }
         if (!errors)
             return;
+
+        if (errors.forEach) {
+            errors.forEach(function(err) {
+                var $li = $("<li>");
+                $li.text(err);
+                $errors.append($li);
+            });
+            return;
+        }
+
         Object.keys(errors).forEach(function(errName) {
             var subErrors = errors[errName];
             if (subErrors.forEach) {

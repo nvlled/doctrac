@@ -94,7 +94,7 @@
     <script src="{{asset('js/echo.js')}}"></script>
     <script>
     $(function() {
-        if (!this.io)
+        if (!window.io)
             return;
         try {
             var echo = new Echo({

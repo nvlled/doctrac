@@ -41,7 +41,10 @@ class DocumentAction extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail', 'database', 'broadcast'];
+        $channels = ["database", "broadcast"];
+        if ( ! env("DISABLE_EMAIL_NOTICE"))
+            $channels []= "mail";
+        return $channels;
     }
 
     /**

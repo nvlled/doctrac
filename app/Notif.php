@@ -13,35 +13,44 @@ class Notif {
     }
 
     public static function seen($srcOffice, $destOffice, $route) {
+        $msg = new DocumentAction(
+            "seen",
+            $srcOffice,
+            $destOffice,
+            $route
+        );
+        if ( ! env("DISABLE_SMS_NOTICE"))
+            $srcOffice->notifySMS($msg);
         foreach ($srcOffice->getMembers() as $user) {
-            $user->notify(new DocumentAction(
-                "seen",
-                $srcOffice,
-                $destOffice,
-                $route
-            ));
+            $user->notify($msg);
         }
     }
 
     public static function received($srcOffice, $destOffice, $route) {
+        $msg = new DocumentAction(
+            "received",
+            $srcOffice,
+            $destOffice,
+            $route
+        );
+        if ( ! env("DISABLE_SMS_NOTICE"))
+            $srcOffice->notifySMS($msg);
         foreach ($srcOffice->getMembers() as $user) {
-            $user->notify(new DocumentAction(
-                "received",
-                $srcOffice,
-                $destOffice,
-                $route
-            ));
+            $user->notify($msg);
         }
     }
 
     public static function sent($srcOffice, $destOffice, $route) {
+        $msg = new DocumentAction(
+            "sent",
+            $srcOffice,
+            $destOffice,
+            $route
+        );
+        if ( ! env("DISABLE_SMS_NOTICE"))
+            $destOffice->notifySMS($msg);
         foreach ($destOffice->getMembers() as $user) {
-            $user->notify(new DocumentAction(
-                "sent",
-                $srcOffice,
-                $destOffice,
-                $route
-            ));
+            $user->notify($msg);
         }
     }
 }

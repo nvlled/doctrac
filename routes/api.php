@@ -726,7 +726,7 @@ Route
 
         $office->setPrimaryContactInfo($req->email, $req->phoneno);
         $office->setOtherEmails($req->emails);
-        $office->setOtherPhoneNumbers($req->phonenumbers);
+        return $office->setOtherPhoneNumbers($req->phonenumbers);
     });
 
     Route::any('/{officeId}/incoming', function (Request $req) {
@@ -1007,6 +1007,15 @@ Route
     Route::any('/notify', function (Request $req) {
         // TODO: REMOVE THIS LATER
         \Log::debug("received globe api notification : " .$req->getContent());
+        $data = json_decode($req->getContent());
+
+        $messages = optional(@$data->inboundSMSMessageList)->inboundSMSMessage;
+        if ( ! $messages)
+            return;
+
+        foreach ($messages as $data) {
+            GlobeAPI::execute($data);
+        }
     });
 });
 
