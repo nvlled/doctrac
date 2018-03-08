@@ -73,7 +73,7 @@
 
         <hr>
         <div class="pure-control-group">
-            <label for="phoneno">Mobile #</label>
+            <label for="phoneno">Primary Mobile</label>
             <input id="phoneno" name="phoneno" placeholder="090XXXXXXX">
             <span class="pure-form-message-inline"></span>
         </div>
@@ -95,6 +95,7 @@
     $btnSave.click(function(e) {
         e.preventDefault();
         UI.clearMessages($settingsForm);
+        UI.clearErrors($settingsForm);
 
         if (!currentOffice)
             return;

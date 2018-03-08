@@ -726,7 +726,7 @@ Route
 
         $office->setPrimaryContactInfo($req->email, $req->phoneno);
         $office->setOtherEmails($req->emails);
-        $office->setOtherPhoneNumbers($req->phonenumbers);
+        return $office->setOtherPhoneNumbers($req->phonenumbers);
     });
 
     Route::any('/{officeId}/incoming', function (Request $req) {

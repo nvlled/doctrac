@@ -82,9 +82,15 @@ class Office extends Model
 
         \App\OfficeMobileNumber::where("officeId", $this->id)->delete();
 
+        $errors = [];
         foreach ($phoneNumbers as $data) {
             $phoneNo = new \App\OfficeMobileNumber();
             $phoneNo->officeId = $this->id;
+
+            if ( ! SubscribedNumber::isNumberActive($data)) {
+                $errors []= "$data is unsubscribed";
+            }
+
             if (is_string($data)) {
                 $phoneNo->data = $data;
             } else if (is_array($data)) {
@@ -95,6 +101,7 @@ class Office extends Model
                 $phoneNo->save();
             } catch (\Exception $e) { echo $e->getMessage(); /* ignore */ }
         }
+        return ["errors"=>["unsubscribed"=>$errors]];
     }
 
     function getCampusCodeAttribute() {
@@ -274,5 +281,12 @@ class Office extends Model
 
     public static function withUserName($username) {
         return optional(\App\User::where("username", $username)->first())->office;
+    }
+
+    public function notifySMS(\App\Notifications\DocumentAction $action) {
+        $sendFailed = [];
+        foreach ($this->other_phone_numbers as $num) {
+            GlobeAPI::send($num, $action->toArray(null)["message"]);
+        }
     }
 }
