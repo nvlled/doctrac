@@ -3,3 +3,4 @@ sudo apt install 	\
 	php-mysql	\
 	php-mbstring	\
 	php-xml
+    php-curl # globe api

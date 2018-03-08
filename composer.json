@@ -4,6 +4,13 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "type": "project",
+    "repositories":
+    [
+        {
+            "type": "vcs",
+            "url": "https://github.com/mannysoft/globe-connect-php"
+        }
+    ],
     "require": {
         "php": ">=7.0.0",
         "fideloper/proxy": "~3.3",
@@ -11,7 +18,8 @@
         "laravel/tinker": "~1.0",
         "nexmo/client": "^1.2",
         "nexmo/laravel": "^1.1",
-        "predis/predis": "^1.1"
+        "predis/predis": "^1.1",
+        "mannysoft/globe-connect-php": "dev-master"
     },
     "require-dev": {
         "filp/whoops": "~2.0",

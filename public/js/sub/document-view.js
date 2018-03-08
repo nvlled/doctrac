@@ -145,7 +145,7 @@ window.addEventListener("load", function() {
         var route = util.parseJSON($("input#document").val());
         if (!route) {
             console.warn("no route found");
-            return;
+            return Promise.resolve();
         }
         var params = {
             officeId: parseInt(officeSel.getOfficeId()),
@@ -181,13 +181,18 @@ window.addEventListener("load", function() {
     function setupButtonAction() {
         $btnAction.click(function(e) {
             e.preventDefault();
+            UI.disableButton($btnAction);
             var action = $btnAction.data("action");
             UI.clearErrors($container);
+            var promise = null;
             switch (action) {
-                case "send"  : forwardDocument(); break;
-                case "recv"  : receiveDocument(); break;
-                default:
-                    return;
+                case "send"  : promise = forwardDocument(); break;
+                case "recv"  : promise = receiveDocument(); break;
+            }
+            if (promise) {
+                promise.then(function() {
+                    UI.enableButton($btnAction);
+                });
             }
         });
     }

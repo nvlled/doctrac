@@ -49,8 +49,11 @@ select[disabled] {
 .site-wrap {
     background-color: #f8f8f8;
     grid-area: body;
+    justify-self: center;
     align-self: stretch;
     margin: 10px 50px;
+    max-width: 980px;
+    min-width: 700px;
 }
 
 table {
@@ -225,15 +228,15 @@ body {
     display: grid;
     align-content: stretch;
     justify-content: end;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     grid-template-rows:
         auto
         1fr
         20px;
     grid-template-areas:
-        "header header header header header header"
-        "body body body body body body"
-        "footer footer footer footer footer footer "
+        "header header header"
+        "body body body"
+        "footer footer footer"
 }
 
 footer {
@@ -254,4 +257,8 @@ button.autofill {
     bottom: 0px;
     right: 0px;
     padding: 20px;
+}
+
+.subtext {
+    color: gray;
 }

@@ -276,5 +276,19 @@ var UI = {
             .removeClass("hidden")
             .show();
     },
+
+
+    enableButton: function($btn) {
+        var text = $btn.data("prev-text");
+        $btn.text(text);
+        $btn.attr("disabled", false);
+    },
+
+    disableButton: function($btn) {
+        var text = $btn.text();
+        $btn.attr("prev-text", text);
+        $btn.text("☯ " + text);
+        $btn.attr("disabled", true);
+    },
 }
 

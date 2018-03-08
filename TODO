@@ -3,12 +3,11 @@ TODO:
 
 ** fix seen notifications
 
-** Close path back to records,
-   remove final flag
-
+* add close action for records
 * email interface
 * confirm receive with sms
 
+* add env option to disable emailing,texting
 * export data
 * office to office messaging
 * account management
@@ -17,11 +16,15 @@ TODO:
 * dynamic update route table
 * follow/subscribe to routes
 * recent/active document list
-* js: listen for notifications
 * email/sms notifications
 * fix logout
     autologout: check even if tab is not active
     delete cookies when browser is closed
+
+* I remember hearing something about an audit trail
+  in the last meeting, but then I'm not even sure
+
+* add facebook notifications
 
 * editable routes
 
@@ -38,3 +41,5 @@ TODO:
 
 --------------------------------------------
 - restrict API access
+
+

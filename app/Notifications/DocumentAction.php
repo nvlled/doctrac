@@ -41,7 +41,7 @@ class DocumentAction extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail', 'database', 'broadcast', "nexmo"];
+        return ['mail', 'database', 'broadcast'];
     }
 
     /**
@@ -57,6 +57,8 @@ class DocumentAction extends Notification
         $contents = $data["message"];
         $subject  = $data["trackingId"] . " update";
         $email    = $office->primary_email;
+        if (!$email)
+            return;
         \Log::debug("sending email to {$office->primary_email}, [$subject]");
         $mailable = new \App\Mail\OfficeEmailMessage($office, $contents, $subject);
         return $mailable->to($email);
