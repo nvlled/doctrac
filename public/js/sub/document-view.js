@@ -2,10 +2,16 @@
 window.addEventListener("load", function() {
     var $container = $("section#document");
     var $viewDoc = $container.find("#view-document");
-    var $sendData = $container.find(".send-data");
-    var $btnAction = $container.find("button.action");
     var $annots = $container.find(".annots");
     var $docAttachment = $container.find(".attachment a");
+
+    var $sendData = $container.find(".send-data");
+    var $btnRadios = $container.find("div.radios");
+    var $btnSend = $container.find("button.send");
+    var $btnRecv = $container.find("button.recv");
+    var $btnReject = $container.find("button.reject");
+    var $btnFinalize = $container.find("button.finalize");
+    var $btnActions = $("button.action");
 
     var currentUser = null;
     var currentDoc = null;
@@ -14,7 +20,9 @@ window.addEventListener("load", function() {
     $sendData.removeClass("hidden").hide();
     api.user.self().then(setUser);
     api.user.change(setUser);
+
     setupButtonAction();
+    setupRadios();
 
     function setUser(user) {
         currentUser = user;
@@ -23,13 +31,18 @@ window.addEventListener("load", function() {
             $container.find(".user-name").text("____");
             $container.find(".office-name").text("____");
         } else {
+            if (!currentUser.gateway) {
+                $btnReject.removeClass("hidden").show();
+            } else {
+                $btnFinalize.removeClass("hidden").show();
+            }
             officeSel = new UI.OfficeSelection(
                 $container.find("div.office-selection"),
                 {
                     officeId: currentUser.officeId,
                     campusId: currentUser.campus_id,
                     gateway:  currentUser.gateway,
-                    hideTable: true,
+                    hideTable: !currentUser.gateway,
                 }
             );
 
@@ -69,7 +82,7 @@ window.addEventListener("load", function() {
 
     function viewDocument(info) {
         currentDoc = info;
-        $btnAction.hide();
+        //$btnAction.hide();
 
         if (!info) {
             $viewDoc.hide();
@@ -154,71 +167,99 @@ window.addEventListener("load", function() {
         }
         return api.route.forward(params)
             .then(function (resp) {
-                if (resp.errors) {
-                    return UI.showErrors($container, resp.errors);
-                }
                 location.reload();
             });
     }
 
     function receiveDocument() {
+        return api.doc.receive(createAPIParams());
+    }
+
+    function finalizeDocument() {
+        return api.doc.finalize(createAPIParams());
+    }
+
+    function rejectDocument() {
+        return api.doc.reject(createAPIParams());
+    }
+
+    function createAPIParams() {
         var user = currentUser;
         var trackingId = currentDoc.trackingId;
-        var params = {
+        return {
             userId: user ? user.id : null,
             officeId: parseInt(officeSel.getOfficeId()),
             trackingId: currentDoc.trackingId,
         }
-        return api.doc.receive(params)
-            .then(function (resp) {
-                if (resp.errors) {
-                    return UI.showErrors($container, resp.errors);
-                }
-                location.reload();
-            });
     }
 
     function setupButtonAction() {
-        $btnAction.click(function(e) {
-            e.preventDefault();
-            UI.disableButton($btnAction);
-            var action = $btnAction.data("action");
-            UI.clearErrors($container);
-            var promise = null;
-            switch (action) {
-                case "send"  : promise = forwardDocument(); break;
-                case "recv"  : promise = receiveDocument(); break;
-            }
-            if (promise) {
-                promise.then(function() {
-                    UI.enableButton($btnAction);
-                });
+        makeHandler($btnSend, forwardDocument);
+        makeHandler($btnRecv, receiveDocument);
+        makeHandler($btnFinalize, finalizeDocument);
+        makeHandler($btnReject, rejectDocument);
+
+        function makeHandler($btn, onClick) {
+            $btn.click(function(e) {
+                e.preventDefault();
+                UI.disableButton($btn);
+                var action = $btn.data("action");
+                UI.clearErrors($container);
+                var promise = onClick();
+                if (promise) {
+                    promise.then(function(resp) {
+                        if (resp && resp.errors) {
+                            UI.showErrors($container, resp.errors);
+                        } else {
+                            location.reload();
+                        }
+                        UI.enableButton($btn);
+                    });
+                } else {
+                    UI.enableButton($btn);
+                }
+            });
+        }
+    }
+
+    function setupRadios() {
+        $.btnRadios.find("input[type=radio]").change(function() {
+            switch (this.value) {
+                case "forward":
             }
         });
     }
 
     function updateButtonAction() {
         $sendData.hide();
-        $btnAction.hide();
+        $btnActions.hide();
+        $btnRadios.hide();
+        $sendData.hide();
+
         if (!currentUser)
             return;
+
         var route = util.parseJSON($("input#document").val());
         var params = {
             officeId: currentUser.officeId,
             routeId:  route ? route.id : -1,
         }
         api.office.actionForRoute(params, function(resp) {
-            console.log("action for", resp);
-            $btnAction.show();
-            $btnAction.data("action", resp);
             switch(resp) {
                 case "send":
-                    $btnAction.text("send");
+                    $btnRadios.show();
+                    //$btnAction.text("send");
                     $sendData.show();
+                    $btnSend.show();
+                    if (currentUser.gateway) {
+                        $btnFinalize.show();
+                    } else {
+                        $btnReject.show();
+                    }
                     break;
-                case "recv": $btnAction.text("receive");break;
+                case "recv":
+                    $btnRecv.show();
                 default:
-                    $btnAction.hide();
             }
         });
     }
