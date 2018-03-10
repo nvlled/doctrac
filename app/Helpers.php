@@ -42,3 +42,16 @@ function ngayon() {
     return now(config("app.timezone"));
 }
 
+function arrayAsObject($array) {
+    return (object) $array;
+}
+
+function newObject(...$keyValues) {
+    $obj = [];
+    for ($i = 0; $i <= count($keyValues)-1; $i+=2) {
+        $k = @$keyValues[$i];
+        $v = @$keyValues[$i+1];
+        $obj[$k] = $v;
+    }
+    return (object) $obj;
+}

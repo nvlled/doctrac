@@ -3,22 +3,29 @@ TODO:
 
 ** fix seen notifications
 
+* add all offices (VP, CED)
 * add close action for records
 * email interface
-* confirm receive with sms
+* office contact page
+
+
+* add send test button to sms/email
 
 * export data
 * office to office messaging
 * account management
-* setup https
 * handle slow connections
-* dynamic update route table
-* follow/subscribe to routes
+* dynamic update route table (or simply reload the page)
 * recent/active document list
-* email/sms notifications
+
 * fix logout
     autologout: check even if tab is not active
     delete cookies when browser is closed
+* add further protection from search
+    /document/urd-2018-12348/routes/
+    /document/13/urd-2018-12348
+  - count 404
+
 
 * I remember hearing something about an audit trail
   in the last meeting, but then I'm not even sure

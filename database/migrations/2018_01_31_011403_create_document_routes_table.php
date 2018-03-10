@@ -24,7 +24,8 @@ class CreateDocumentRoutesTable extends Migration
             $table->integer('prevId')->nullable();
             $table->dateTime('arrivalTime')->nullable();
             $table->dateTime('forwardTime')->nullable();
-            $table->text('annotations')->nullable();
+            $table->text('annotations')->nullable(); // move to sender
+            $table->string('approvalState', 50)->nullable();
             $table->boolean('final')->default(false);
             $table->timestamps();
         });
