@@ -4,6 +4,7 @@ import re
 import sys
 
 exclude_dirs  = ["vendor", ".git", "storage"]
+exclude_files = [".*\.min\.js", ".*\.min\.css"]
 include_files = ["js", "txt", "php", "css"]
 
 def clean_whitespace(filename):
@@ -17,17 +18,21 @@ def clean_whitespace(filename):
     with open(filename, "w") as file:
         file.write(contents)
 
+def joinOr(list):
+    return "("+"|".join(list)+")"
+
 if len(sys.argv) > 1:
     for filename in sys.argv[1:]:
         clean_whitespace(filename)
 else:
     for root, dirs, files in os.walk("."):
-        pat = "./(" + "|".join(exclude_dirs) + ")(/|$)"
-        if re.match(pat, root):
+        if re.match("./"+joinOr(exclude_dirs)+"(/|$)", root):
             continue
 
-        pat = ".*\.("+"|".join(include_files)+")$"
+        pat = ".*\."+joinOr(include_files)+"$"
         for filename in files:
+            if re.match(joinOr(exclude_files), filename):
+                continue
             if not re.match(pat, filename):
                 continue
             filename = root+"/"+filename

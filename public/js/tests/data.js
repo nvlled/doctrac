@@ -105,7 +105,7 @@ var testDataSetup = {
         } = opts;
 
         for (let [code, off] of Object.entries(testData.offices)) {
-            off.campus_code = off.campus.code; 
+            off.campus_code = off.campus.code;
             off.code = code;
             let resp = await api.office.add(off);
             if (!resp || resp.error) {
@@ -155,7 +155,7 @@ var testDataInit = {
         await this.campuses();
         await this.offices();
         await this.users();
-    }, 
+    },
 
     campuses: async function(opts = {}) {
         let {
@@ -179,7 +179,7 @@ var testDataInit = {
         } = opts;
 
         for (let [code, off] of Object.entries(testData.offices)) {
-            off.campus_code = off.campus.code; 
+            off.campus_code = off.campus.code;
             off.campusId = off.campus.id;
             off.code = code;
             let resp = await api.office.get(off);

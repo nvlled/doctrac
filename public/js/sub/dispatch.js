@@ -119,4 +119,3 @@ var dispatch = {
 window.addEventListener("load", function() {
     dispatch.setup($("section#dispatch"));
 });
-

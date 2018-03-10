@@ -549,7 +549,7 @@ Route
         return $notifications;
     });
 
-    Route::any('/{userId}/see-route/{routeId}', 
+    Route::any('/{userId}/see-route/{routeId}',
         function (Request $req, $userId, $routeId) {
             $user  = App\User::find($userId);
             $route = App\DocumentRoute::find($routeId);

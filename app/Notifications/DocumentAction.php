@@ -105,7 +105,7 @@ class DocumentAction extends Notification
         }
 
         $doc = optional($this->route)->document;
-        $message = "{$officeName} has {$this->action} {$doc->title} 
+        $message = "{$officeName} has {$this->action} {$doc->title}
                     [$doc->trackingId] on {$this->date}";
         return [
             "date"=>$this->date->toDateTimeString(),

@@ -239,5 +239,3 @@ class Document extends Model
         return $this->type == "parallel";
     }
 }
-
-

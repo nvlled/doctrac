@@ -59,4 +59,3 @@ var combobox = {
 $(function() {
     combobox.init();
 });
-

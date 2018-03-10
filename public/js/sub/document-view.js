@@ -51,7 +51,7 @@ window.addEventListener("load", function() {
 
         var params = {trackingId: trackingId};
         util.loadJson(
-            "input#document", 
+            "input#document",
             api.doc.get(params)
         ).then(function(doc) {
             api.route.next({routeId: routeId})

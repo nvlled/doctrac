@@ -15,7 +15,7 @@ window.addEventListener("load", function() {
         cols: ["office_name", "status", "time_elapsed", "annotations"],
         colNames: {
             "office_name": "office name",
-            "time_elapsed": "⏲",
+            "time_elapsed": "⚉",
         },
         colMap: {
             "office_name": function(data, $td) {
@@ -31,10 +31,10 @@ window.addEventListener("load", function() {
                 var text = data.status;
                 switch (data.status) {
                     case "delivering":
-                        text = "✈";
+                        text = "⇊";
                         break;
                     case "waiting":
-                        text = "⌛";
+                        text = "⚃";
                         break;
                     case "processing":
                         text = "♖";

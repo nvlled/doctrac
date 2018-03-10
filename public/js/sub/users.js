@@ -23,11 +23,11 @@ var users = {
                     middlename: $container.find(".middlename").val(),
                     lastname: $container.find(".lastname").val(),
                     password: $container.find(".password").val(),
-                    positionId: 
+                    positionId:
                         $container.find("select.positions").val(),
-                    privilegeId: 
+                    privilegeId:
                         $container.find("select.privileges").val(),
-                    officeId: 
+                    officeId:
                         $officeId.val(),
                 };
                 api.user.add(user, function(resp) {

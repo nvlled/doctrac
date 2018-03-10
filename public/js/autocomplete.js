@@ -116,4 +116,3 @@ var autocomplete = {
 $(function() {
     autocomplete.init();
 });
-

@@ -164,7 +164,7 @@ var UI = {
             });
         });
     },
-    
+
     showMessages: function($div, msgs) {
         var $msgs = $div.find("ul.msgs");
         if ($msgs.length == 0) {
@@ -301,4 +301,3 @@ var UI = {
         $btn.attr("disabled", true);
     },
 }
-

@@ -42,4 +42,3 @@ class Flash {
         return \Session::remove(self::KEY_ERR);
     }
 }
-
