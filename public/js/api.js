@@ -60,17 +60,20 @@ var api = {
     },
 
     doc: {
-        send: makeHandler("/api/docs/send"),
-        get: makeHandler("/api/docs/get/{trackingId}"),
-        randomId: makeHandler("/api/docs/rand-id"),
+        send:          makeHandler("/api/docs/send"),
+        get:           makeHandler("/api/docs/get/{trackingId}"),
+        randomId:      makeHandler("/api/docs/rand-id"),
         currentRoutes: makeHandler("/api/docs/current-routes/{trackingId}"),
         nextRoutes:    makeHandler("/api/docs/next-routes/{trackingId}"),
         forward:       makeHandler("/api/docs/forward/{trackingId}"),
         receive:       makeHandler("/api/docs/receive/{trackingId}"),
+        finalize:      makeHandler("/api/docs/finalize/{trackingId}"),
+        reject:        makeHandler("/api/docs/reject/{trackingId}"),
 
         emit: function(data) {
             events.trigger("doc-change", data);
         },
+
         change: function(handler) {
             events.on("doc-change", function(_, arg) {
                 handler(arg);

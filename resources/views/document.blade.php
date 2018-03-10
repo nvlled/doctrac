@@ -62,19 +62,25 @@ TODO
             <ul class='activities'></ul>
         </p>
 
-        <div class="">
-            <div class="send-data hidden">
-                <!--TODO-->
-                <textarea name="annotation" rows="5" class="full annots"
-                placeholder="comments, notes or annotation" ></textarea>
-                <br>
-                <strong>Destination</strong>
-                @include("sub/office-selection")
-            </div>
-            <ul class="errors"></ul>
-            <div class="center">
-                <button class='action half'>SEND / RECEIVE / ABORT SEND / </button>
-            </div>
+        <div class="radios">
+            <label><input type="radio" name="action-type" value="forward"> forward</label>
+            <label><input type="radio" name="action-type" value="other"> other</label>
+        </div>
+        <div class="send-data hidden">
+            <!--TODO-->
+            <textarea name="annotation" rows="5" class="full annots"
+                placeholder="comments, notes or annotation" >
+            </textarea>
+            <br>
+            <strong>Destination</strong>
+            @include("sub/office-selection")
+        </div>
+        <ul class="errors"></ul>
+        <div class="center">
+            <button class='pure-button-primary action half'>receive</button>
+            <button class='pure-button-primary action half'>send</button>
+            <button class='pure-button-default action finalize half affirm green'>finalize</button>
+            <button class='pure-button-default action reject half red'>reject</button>
         </div>
     </div>
     <script src='{{asset("js/sub/office-selection.js")}}'></script>

@@ -245,6 +245,14 @@ Route
         return $doc->nextRoutes();
     });
 
+    Route::any('/finalize/{trackingId}', function (Request $req, $trackingId) {
+        return "TODO";
+    });
+
+    Route::any('/reject/{trackingId}', function (Request $req, $trackingId) {
+        return "TODO";
+    });
+
     Route::any('/receive/{trackingId}', function (Request $req, $trackingId) {
         $doc = App\Document::where("trackingId", $trackingId)->first();
         if (!$doc)

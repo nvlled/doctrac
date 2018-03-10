@@ -100,6 +100,7 @@ a.action::before { content: "["}
 a.action::after { content: "]"}
 button.action {
     font-size: 20px;
+    height: 80px !important;
 }
 
 .hidden {
@@ -261,4 +262,18 @@ button.autofill {
 
 .subtext {
     color: gray;
+}
+
+button { font-size: 20px; }
+button.red {
+    color: white;
+    background-color: red !important;
+}
+button.green {
+    color: white;
+    background-color: green !important;
+}
+button.orange {
+    color: white;
+    background-color: orange !important;
 }
