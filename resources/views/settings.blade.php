@@ -114,8 +114,7 @@
         api.office.updateContactInfo(data).then(function(resp) {
             if (resp && resp.errors)
                 UI.showErrors($settingsForm, resp.errors);
-            else
-                UI.showMessages($settingsForm, ["settings saved"]);
+            UI.showMessages($settingsForm, ["settings saved"]);
             console.log(resp);
         });
     });

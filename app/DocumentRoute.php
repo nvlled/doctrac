@@ -133,8 +133,8 @@ class DocumentRoute extends Model
                 return "processing";
 
             if (!$nextRoute->arrivalTime) {
-                if ($this->document->state == "disapproved")
-                    return "returning";
+                //if ($this->document->state == "disapproved")
+                //    return "returning";
                 return "delivering";
             }
             return "done";
@@ -308,7 +308,7 @@ class DocumentRoute extends Model
             && !$office->isFinal($doc);
     }
 
-    public function previousRecordsOffice() {
+    public function previousRecordsRoute() {
         $route = $this->prevRoute;
         while ($route) {
             if (optional($route->office)->gateway) {
@@ -330,7 +330,7 @@ class DocumentRoute extends Model
                 return [$this];
 
             // [a, a, b] == [a, b]
-            $midRoute = $this->previousRecordsOffice();
+            $midRoute = $this->previousRecordsRoute();
             if ($this->id == $midRoute->id)
                 return [$midRoute, $origin];
 

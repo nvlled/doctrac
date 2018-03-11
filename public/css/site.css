@@ -52,8 +52,8 @@ select[disabled] {
     justify-self: center;
     align-self: stretch;
     margin: 10px 50px;
-    max-width: 980px;
-    min-width: 700px;
+    max-width: 780px;
+    min-width: 600px;
 }
 
 table {
@@ -278,4 +278,21 @@ button.green {
 button.orange {
     color: white;
     background-color: orange !important;
+}
+
+.info .doc-state {
+    color: white;
+    padding: 3px;
+    border-radius: 5px;
+}
+.info .doc-state.disapproved {
+    background-color: red;
+}
+
+.info .doc-state.ongoing {
+    background-color: green;
+}
+
+.info .doc-state.completed {
+    background-color: blue;
 }

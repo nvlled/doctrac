@@ -5,7 +5,6 @@ TODO:
 
 * add all offices (VP, CED)
 * add close action for records
-* email interface
 * office contact page
 
 * change random suffix ID to 8
@@ -24,6 +23,7 @@ TODO:
 * handle slow connections
 * dynamic update route table (or simply reload the page)
 * recent/active document list
+* email interface
 
 * fix logout
     autologout: check even if tab is not active

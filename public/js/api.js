@@ -69,6 +69,7 @@ var api = {
         receive:       makeHandler("/api/docs/receive/{trackingId}"),
         finalize:      makeHandler("/api/docs/finalize/{trackingId}"),
         reject:        makeHandler("/api/docs/reject/{trackingId}"),
+        unfinishedRoutes: makeHandler("/api/docs/unfinished-routes/{trackingId}"),
 
         emit: function(data) {
             events.trigger("doc-change", data);
@@ -108,6 +109,7 @@ var api = {
         next: makeHandler("/api/routes/next/{routeId}"),
         nextOffices: makeHandler("/api/routes/next-offices/{trackingId}"),
         forward: makeHandler("/api/routes/{routeId}/forward"),
+        finalize:      makeHandler("/api/routes/finalize/{routeId}"),
     },
 
     campus: {

@@ -56,6 +56,24 @@ class Document extends Model
         });
     }
 
+    public function followTrail($start=true) {
+        $route = null;
+        if ($start)
+            $route = $this->startingRoute();
+        else
+            $route = $this->currentRoute();
+        $routes = collect();
+        while ($route) {
+            $routes->push($route);
+            $route = $route->nextRoute;
+        }
+        return $routes;
+    }
+
+    static function track($trackingId) {
+        return self::where("trackingId", $trackingId)->first();
+    }
+
     // for serial routes, there is at most one route id
     // for parallel routes, there may be more than one
     public function currentRouteIds() {
@@ -76,6 +94,10 @@ class Document extends Model
 
     public function currentRoutes() {
         return DocumentRoute::whereIn("id", $this->currentRouteIds())->get();
+    }
+
+    public function currentRoute() {
+        return $this->currentRoutes()->first();
     }
 
     public function currentOffices() {
@@ -132,6 +154,7 @@ class Document extends Model
             $route->pathId      = $pathId;
             $route->arrivalTime = now();
             $route->forwardTime = now();
+            $route->approvalState = "accepted";
             $route->save();
 
             if ($user->officeId == $officeId) {
@@ -158,20 +181,24 @@ class Document extends Model
         return $routes;
     }
 
-    public function createSerialRoutes($officeIds, /*$officeId, */$user, $annotations) {
+    public function createSerialRoutes($officeIds, $user, $annotations, $route=null) {
         $routes = [];
 
-        $pathId = generateId();
-        $route = new \App\DocumentRoute();
-        $route->trackingId  = $this->trackingId;
-        //$route->officeId    = $officeId;
-        $route->officeId    = $user->officeId;
-        $route->receiverId  = $user->id;
+        if ( ! $route) {
+            $pathId = generateId();
+            $route = new \App\DocumentRoute();
+            $route->trackingId  = $this->trackingId;
+            $route->officeId    = $user->officeId;
+            $route->receiverId  = $user->id;
+            $route->pathId      = $pathId;
+            $route->approvalState = "accepted";
+        }
+        $pathId = $route->pathId;
         $route->senderId    = $user->id;
-        $route->pathId      = $pathId;
         $route->arrivalTime = now();
         $route->forwardTime = now();
         $route->save();
+
         $routes []= $route;
 
         $office = \App\Office::find($user->officeId);

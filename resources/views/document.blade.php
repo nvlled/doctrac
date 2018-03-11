@@ -31,6 +31,11 @@ TODO
                class="action">other routes</a>
             @endif
         </p>
+        <p class="info"><strong>state: </strong>
+            <span class="doc-state {{$document->state}}">
+                {{$document->state}}
+            </span>
+        </p>
         <p class='info'>
             <strong>classification level:</strong>
             <span class='classification'></span>
@@ -77,12 +82,11 @@ TODO
         </div>
         <ul class="errors"></ul>
         <div class="center">
-            <button class='pure-button-primary action half send'>send</button>
-            <hr>
-            <button class='pure-button-primary action half recv'>receive</button>
-            <button class='pure-button-default action finalize half affirm green'>finalize</button>
-            <button class='pure-button-default action reject half red'>reject</button>
-            <button class='pure-button-default action return half red'>return</button>
+            <button class='pure-button-primary hidden action half send'>send</button>
+            <button class='pure-button-primary hidden action half recv'>receive</button>
+            <button class='pure-button-default hidden action finalize half affirm green'>finalize</button>
+            <button class='pure-button-default hidden action reject half red'>reject</button>
+            <button class='pure-button-primary hidden action return half '>return</button>
         </div>
     </div>
     <script src='{{asset("js/sub/office-selection.js")}}'></script>

@@ -6,5 +6,5 @@ class Enums {
 
     public static $classification = ["open", "confidential"];
     public static $docState = ["ongoing", "disapproved", "completed"];
-    public static $approvateState = ["accepted", "rejected"];
+    public static $approvalState = ["accepted", "rejected", "N/A"];
 }

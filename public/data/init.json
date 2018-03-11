@@ -1,15 +1,15 @@
 
 {
     "campuses": [
-        {"code": "ala", "name": "alaminos"},
-        {"code": "asi", "name": "asingan"},
-        {"code": "bay", "name": "bayambang"},
-        {"code": "bin", "name": "binmaley"},
-        {"code": "inf", "name": "infanta"},
-        {"code": "lin", "name": "lingayen"},
-        {"code": "car", "name": "san carlos"},
-        {"code": "sta", "name": "sta maria"},
-        {"code": "urd", "name": "urdaneta"}
+        {"code": "ala", "name": "Alaminos"},
+        {"code": "asi", "name": "Asingan"},
+        {"code": "bay", "name": "Bayambang"},
+        {"code": "bin", "name": "Binmaley"},
+        {"code": "inf", "name": "Infanta"},
+        {"code": "lin", "name": "Lingayen"},
+        {"code": "car", "name": "San carlos"},
+        {"code": "sta", "name": "Sta maria"},
+        {"code": "urd", "name": "Urdaneta"}
     ],
     "offices": [
         "Records",

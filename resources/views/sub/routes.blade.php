@@ -7,6 +7,11 @@
         <span class='contents'></span>
         (<small class='type'>*</small>)
     </h2>
+    <p class="info"><strong>state: </strong>
+        <span class="doc-state {{$doc->state}}">
+            {{$doc->state}}
+        </span>
+    </p>
     <p class="info"><strong>tracking ID:</strong>
         <span class="trackingId">
             {{$doc->trackingId}}
@@ -25,6 +30,7 @@
     <table class='full'>
         <colgroup>
         <col span="1" style="width: inherit">
+        <col span="1" style="width: 10px;">
         <col span="1" style="width: 10px;">
         <col span="1" style="width: 30px;">
         <col span="1" style="width: 45%;">
@@ -47,9 +53,9 @@
             font-size: 13px;
             text-align: center;
         }
-        td.status {
+        td.status, td.approvalState {
             text-align: center;
-            font-size: 30px;
+            font-size: 25px;
         }
         </style>
     </table>

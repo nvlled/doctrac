@@ -17,6 +17,7 @@ window.addEventListener("load", function() {
     var currentDoc = null;
     var officeSel = null;
 
+    $btnActions.removeClass("hidden").hide();
     $sendData.removeClass("hidden").hide();
     api.user.self().then(setUser);
     api.user.change(setUser);
@@ -61,22 +62,51 @@ window.addEventListener("load", function() {
             routeId: routeId,
         });
 
-        var params = {trackingId: trackingId};
-        util.loadJson(
-            "input#document",
-            api.doc.get(params)
-        ).then(function(doc) {
-            api.route.next({routeId: routeId})
-               .then(function(route) {
-                   officeSel.setOffice({
-                       officeId: route.officeId,
-                       campusId: route.campus_id,
-                   });
-               });
+        if (currentUser.gateway) {
+            var params = {trackingId: trackingId};
+            util.loadJson(
+                "input#document",
+                api.doc.get(params)
+            ).then(function(doc) {
+                api.doc.unfinishedRoutes({trackingId: trackingId})
+                    .then(function(routes) {
+                        if (!routes) {
+                            return;
+                        }
+                        routes = routes.slice(1);
+                        var offices = routes.map(function(route) {
+                            var names = route.office_name.split(" ");
+                            return {
+                                id: route.officeId,
+                                name: names[0],
+                                campus_name: names[1],
+                                campus_id: route.campus_id,
+                            }
+                        });
+                        officeSel.loadOffices(offices);
+                        viewDocument(doc);
+                        updateButtonAction();
+                    });
+            });
+        } else {
+            var params = {trackingId: trackingId};
+            util.loadJson(
+                "input#document",
+                api.doc.get(params)
+            ).then(function(doc) {
+                api.route.next({routeId: routeId})
+                    .then(function(route) {
+                        officeSel.setOffice({
+                            officeId: route.officeId,
+                            campusId: route.campus_id,
+                        });
+                    });
 
-            viewDocument(doc);
-            updateButtonAction();
-        });
+                viewDocument(doc);
+                updateButtonAction();
+            });
+        }
+
     }
 
     function viewDocument(info) {
@@ -159,15 +189,16 @@ window.addEventListener("load", function() {
             console.warn("no route found");
             return Promise.resolve();
         }
+
+        var officeIds = officeSel.getSelectedIds();
+        var officeId = officeSel.getOfficeId() || officeIds[0];
         var params = {
-            officeId: parseInt(officeSel.getOfficeId()),
+            officeId:  officeId,
+            officeIds: officeIds,
             annotations: $annots.val(),
             routeId: route.id,
         }
-        return api.route.forward(params)
-            .then(function (resp) {
-                location.reload();
-            });
+        return api.route.forward(params);
     }
 
     function receiveDocument() {
@@ -175,7 +206,7 @@ window.addEventListener("load", function() {
     }
 
     function finalizeDocument() {
-        return api.doc.finalize(createAPIParams());
+        return api.route.finalize(createAPIParams());
     }
 
     function rejectDocument() {
@@ -185,10 +216,12 @@ window.addEventListener("load", function() {
     function createAPIParams() {
         var user = currentUser;
         var trackingId = currentDoc.trackingId;
+        var route = util.parseJSON($("input#document").val()) || {};
         return {
             userId: user ? user.id : null,
             officeId: parseInt(officeSel.getOfficeId()),
             trackingId: currentDoc.trackingId,
+            routeId: route.id,
         }
     }
 
@@ -197,6 +230,7 @@ window.addEventListener("load", function() {
         makeHandler($btnRecv, receiveDocument);
         makeHandler($btnFinalize, finalizeDocument);
         makeHandler($btnReject, rejectDocument);
+        makeHandler($btnReturn, forwardDocument);
 
         function makeHandler($btn, onClick) {
             $btn.click(function(e) {

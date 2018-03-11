@@ -19,6 +19,11 @@ class DoctracAPI {
         return $this->errors;
     }
 
+    public function buildRoute($officeIds, $user, $annotations, $route) {
+        $doc = $route->document;
+        $doc->createSerialRoutes($officeIds, $user, $annotations, $route);
+    }
+
     public function receiveDocument($user, $trackingId) {
         if (is_string($user)) {
             $user = User::where("username", $user)->first();

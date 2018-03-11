@@ -12,10 +12,11 @@ window.addEventListener("load", function() {
     var currentUser = null;
 
     var table = UI.createTable($table, {
-        cols: ["office_name", "status", "time_elapsed", "annotations"],
+        cols: ["office_name", "status", "approvalState", "time_elapsed", "annotations"],
         colNames: {
             "office_name": "office name",
             "time_elapsed": "⚉",
+            "approvalState": "approval",
         },
         colMap: {
             "office_name": function(data, $td) {
@@ -26,6 +27,21 @@ window.addEventListener("load", function() {
             "annotations": function(data, $td) {
                 var annots = data.annotations || "";
                 $td.append(UI.truncatedText(annots));
+            },
+            "approvalState": function(data, $td) {
+                var text = data.approvalState;
+                switch (text) {
+                    case "accepted":
+                        text = "✓";
+                        break;
+                    case "rejected":
+                        text = "✗";
+                        break;
+                    default:
+                        text = "";
+                        break;
+                }
+                $td.text(text);
             },
             "status": function(data, $td) {
                 var text = data.status;

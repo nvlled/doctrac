@@ -55,3 +55,11 @@ function newObject(...$keyValues) {
 function arrayObject($array) {
     return new \App\ArrayObject($array);
 }
+
+function transactDB($fn) {
+    try {
+        DB::transaction($fn);
+    } catch (\Exception $e) {
+        return ["errors"=>["exception"=>$e->getMessage()]];
+    }
+}
