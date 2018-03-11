@@ -62,7 +62,7 @@ TODO
             <ul class='activities'></ul>
         </p>
 
-        <div class="radios">
+        <div class="hidden radios">
             <label><input type="radio" name="action-type" value="forward"> forward</label>
             <label><input type="radio" name="action-type" value="other"> other</label>
         </div>
@@ -77,10 +77,12 @@ TODO
         </div>
         <ul class="errors"></ul>
         <div class="center">
-            <button class='pure-button-primary action half'>receive</button>
-            <button class='pure-button-primary action half'>send</button>
+            <button class='pure-button-primary action half send'>send</button>
+            <hr>
+            <button class='pure-button-primary action half recv'>receive</button>
             <button class='pure-button-default action finalize half affirm green'>finalize</button>
             <button class='pure-button-default action reject half red'>reject</button>
+            <button class='pure-button-default action return half red'>return</button>
         </div>
     </div>
     <script src='{{asset("js/sub/office-selection.js")}}'></script>

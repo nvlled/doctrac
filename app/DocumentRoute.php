@@ -132,8 +132,11 @@ class DocumentRoute extends Model
             if (!$this->senderId)
                 return "processing";
 
-            if (!$nextRoute->arrivalTime)
+            if (!$nextRoute->arrivalTime) {
+                if ($this->document->state == "disapproved")
+                    return "returning";
                 return "delivering";
+            }
             return "done";
         } else {
             $prevRoute = $this->prevRoute;
@@ -305,4 +308,38 @@ class DocumentRoute extends Model
             && !$office->isFinal($doc);
     }
 
+    public function previousRecordsOffice() {
+        $route = $this->prevRoute;
+        while ($route) {
+            if (optional($route->office)->gateway) {
+                return $route;
+            }
+            $route = $route->prevRoute;
+        }
+        return null;
+    }
+
+    public function traceOriginPath() {
+        foreach ($this->document->startingRoutes() as $origin) {
+
+            if ($this->pathId != $origin->pathId)
+                continue;
+
+            // [a, _, a] == [a]
+            if ($this->id == $origin->id)
+                return [$this];
+
+            // [a, a, b] == [a, b]
+            $midRoute = $this->previousRecordsOffice();
+            if ($this->id == $midRoute->id)
+                return [$midRoute, $origin];
+
+            // [a, b, b] = [a, b]
+            if ($midRoute->id == $origin->id)
+                return [$this, $midRoute];
+
+            // [a, b, c] == [a, b, c]
+            return [$this, $midRoute, $origin];
+        }
+    }
 }

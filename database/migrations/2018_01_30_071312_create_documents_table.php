@@ -17,6 +17,7 @@ class CreateDocumentsTable extends Migration
             $table->increments('id');
             $table->string('title', 512);
             $table->integer('userId');
+            $table->string('state')->default("ongoing");
             $table->string('classification')->default("open");
             $table->string('type', 64)->default("serial");
             $table->text('details')->nullable();

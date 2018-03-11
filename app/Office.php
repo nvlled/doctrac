@@ -120,31 +120,35 @@ class Office extends Model
         return false;
     }
 
-    function actionForStatus($status) {
-        switch ($status) {
-            case "processing": return "send";
-            case "waiting":    return "recv";
+    function actionForStatus($doc, $status) {
+        //if ($status == "processing" && $doc->state == "ongoing")
+        if ($status == "processing") {
+            if ($doc->state == "disapproved")
+                return "return";
+            return "send";
+        } else if ($status == "waiting") {
+            return "recv";
         }
         return "";
     }
 
     public function actionForRoute($route) {
         if ($route->officeId == $this->id)
-            return $this->actionForStatus(optional($route)->status);
+            return $this->actionForStatus($route->document, optional($route)->status);
         return "";
     }
 
     public function actionFor($doc) {
         foreach($doc->currentRoutes() as $route) {
             if ($this->id == $route->officeId) {
-                $action = $this->actionForStatus($route->status);
+                $action = $this->actionForStatus($doc, $route->status);
                 if ($action)
                     return $action;
             }
         }
         foreach($doc->nextRoutes() as $route) {
             if ($this->id == $route->officeId) {
-                $action = $this->actionForStatus($route->status);
+                $action = $this->actionForStatus($doc, $route->status);
                 if ($action)
                     return $action;
             }
@@ -212,6 +216,7 @@ class Office extends Model
 
     public function canSendDoc($doc) {
         return $this->holdsDoc($doc)
+            && $doc->state == "ongoing"
             && !$this->isFinal($doc);
     }
 

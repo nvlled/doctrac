@@ -100,7 +100,7 @@ a.action::before { content: "["}
 a.action::after { content: "]"}
 button.action {
     font-size: 20px;
-    height: 80px !important;
+    height: 60px !important;
 }
 
 .hidden {
@@ -187,7 +187,9 @@ hr {
 
 p.info {
     padding-left: 5px;
-    border-left: 7px solid #dd6;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-left: 7px double #dd6;
 }
 
 a.notifications {

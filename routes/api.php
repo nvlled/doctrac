@@ -250,7 +250,46 @@ Route
     });
 
     Route::any('/reject/{trackingId}', function (Request $req, $trackingId) {
-        return "TODO";
+        $doc = App\Document::where("trackingId", $trackingId)->first();
+
+        // TODO: use a middleware for these common validations
+        if (!$doc)
+            return ["errors"=>["doc"=>"invalid tracking id"]];
+        $user = Auth::user();
+        if (!$user)
+            return ["errors"=>["user"=>"invalid user"]];
+
+        if (!$user->office)
+            return ["errors"=>["user"=>"user has no valid office"]];
+
+        if (!$user->office->canSendDoc($doc)) {
+            return ["errors"=>["doc"=>"user cannot send document"]];
+        }
+
+        foreach ($doc->currentRoutes() as $route) {
+            $office = $user->office;
+            if ($office->id != $route->officeId)
+                continue;
+
+            $nextRoute = new App\DocumentRoute();
+            $nextRoute->trackingId = $doc->trackingId;
+
+            $routes = $route->traceOriginPath();
+            $nextRoutes = collect($routes)->slice(1);
+
+            // TODO: add annotation to $route
+
+            // TODO: delete unused routes in old path
+            foreach ($nextRoutes as $nextRoute) {
+                $route->nextId     = $nextRoute->id;
+                $nextRoute->prevId = $route->id;
+                $route->save();
+                $nextRoute->save();
+                $route = $nextRoute;
+            }
+            $route->nextId = null;
+            $route->save();
+        }
     });
 
     Route::any('/receive/{trackingId}', function (Request $req, $trackingId) {
@@ -280,7 +319,6 @@ Route
             $route->receiverId = $user->id;
             $route->arrivalTime = ngayon();
             $route->save();
-            //\Notif::received($prevRoute);
             Notif::received($prevRoute->office, $route->office, $prevRoute);
         }
         \Flash::add("document received: {$doc->trackingId}");
@@ -321,17 +359,25 @@ Route
                     "no next destination specified";
                 continue;
             }
+
             if ($destOfficeId == $route->officeId) {
                 $errors[] =
                     "cannot forward documents to the same place";
                 continue;
             }
+
             $nextOffice = \App\Office::find($destOfficeId);
             if (!$office->isLinkedTo($nextOffice)) {
                 $nextOfficeName = $nextOffice->complete_name ?? "unknown office";
                 $errors[] =
                     "invalid route, cannot forward {$office->complete_name}"
                     ." to {$nextOfficeName}";
+                continue;
+            }
+
+            if ($destOfficeId != $nextRoute->officeId &&
+                $doc->state == "disapproved") {
+                $errors[] = "cannot reroute disapproved document";
                 continue;
             }
 
@@ -991,6 +1037,9 @@ Route
 });
 
 
+// !!!!!!!!
+// TODO:
+// Check origin of request
 Route
 ::prefix("globe-sms")
 ->group(function() {

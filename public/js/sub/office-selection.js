@@ -36,6 +36,10 @@ UI.OfficeSelection = function(sel, args) {
 }
 
 UI.OfficeSelection.prototype = {
+    disable: function() {
+        this.$campusSel.attr("disabled", false);
+        this.$officeSel.attr("disabled", false);
+    },
 
     getOfficeId: function() {
         var off = this.getOffice();

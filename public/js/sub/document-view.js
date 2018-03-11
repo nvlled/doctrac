@@ -6,10 +6,10 @@ window.addEventListener("load", function() {
     var $docAttachment = $container.find(".attachment a");
 
     var $sendData = $container.find(".send-data");
-    var $btnRadios = $container.find("div.radios");
     var $btnSend = $container.find("button.send");
     var $btnRecv = $container.find("button.recv");
     var $btnReject = $container.find("button.reject");
+    var $btnReturn = $container.find("button.return");
     var $btnFinalize = $container.find("button.finalize");
     var $btnActions = $("button.action");
 
@@ -22,7 +22,6 @@ window.addEventListener("load", function() {
     api.user.change(setUser);
 
     setupButtonAction();
-    setupRadios();
 
     function setUser(user) {
         currentUser = user;
@@ -222,18 +221,9 @@ window.addEventListener("load", function() {
         }
     }
 
-    function setupRadios() {
-        $.btnRadios.find("input[type=radio]").change(function() {
-            switch (this.value) {
-                case "forward":
-            }
-        });
-    }
-
     function updateButtonAction() {
         $sendData.hide();
         $btnActions.hide();
-        $btnRadios.hide();
         $sendData.hide();
 
         if (!currentUser)
@@ -245,10 +235,9 @@ window.addEventListener("load", function() {
             routeId:  route ? route.id : -1,
         }
         api.office.actionForRoute(params, function(resp) {
+            console.log("action for", resp);
             switch(resp) {
                 case "send":
-                    $btnRadios.show();
-                    //$btnAction.text("send");
                     $sendData.show();
                     $btnSend.show();
                     if (currentUser.gateway) {
@@ -257,9 +246,17 @@ window.addEventListener("load", function() {
                         $btnReject.show();
                     }
                     break;
+
+                case "return":
+                    officeSel.disable();
+                    $sendData.show();
+                    $annots.hide();
+                    $btnReturn.show();
+                    break;
+
                 case "recv":
                     $btnRecv.show();
-                default:
+                    break;
             }
         });
     }

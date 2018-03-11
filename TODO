@@ -8,8 +8,14 @@ TODO:
 * email interface
 * office contact page
 
+* change random suffix ID to 8
+
+* I now just remembered something about
+  lingayen campus is different from the main
+  campus, I'll just have to recheck on this one
 
 * add send test button to sms/email
+* change office name format: <CAMPUS> <OFFICE>
 
 * export data
 * office to office messaging
@@ -21,10 +27,11 @@ TODO:
 * fix logout
     autologout: check even if tab is not active
     delete cookies when browser is closed
+
 * add further protection from search
     /document/urd-2018-12348/routes/
     /document/13/urd-2018-12348
-  - count 404
+  - count 404 on these pages
 
 
 * I remember hearing something about an audit trail

@@ -3,7 +3,7 @@ import os
 import re
 import sys
 
-exclude_dirs  = ["vendor", ".git", "storage"]
+exclude_dirs  = ["vendor", ".git", "storage", "bootstrap"]
 exclude_files = [".*\.min\.js", ".*\.min\.css"]
 include_files = ["js", "txt", "php", "css"]
 
