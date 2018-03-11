@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\DoctracAPI;
 
 /*
 |--------------------------------------------------------------------------
@@ -293,35 +294,18 @@ Route
     });
 
     Route::any('/receive/{trackingId}', function (Request $req, $trackingId) {
-        $doc = App\Document::where("trackingId", $trackingId)->first();
-        if (!$doc)
-            return ["errors"=>["doc"=>"invalid tracking id"]];
         $user = Auth::user();
-        if (!$user)
-            return ["errors"=>["user"=>"invalid user"]];
+        $api = new DoctracAPI();
+        $doc = $api->receiveDocument($user, $trackingId);
+        if ($api->hasErrors())
+            return $api->getErrors();
 
-        if (!$user->office)
-            return ["errors"=>["user"=>"user has no valid office"]];
-
-        if (!$user->office->canReceiveDoc($doc)) {
-            return ["errors"=>["doc"=>"cannot receive document"]];
-        }
-
-        // TODO: handle parallel routes
-        $errors = [];
-        foreach ($doc->nextRoutes() as $route) {
-            $office = $user->office;
-            if ($office->id != $route->officeId)
-                continue;
+        foreach ($doc->currentRoutes() as $route) {
             $prevRoute = $route->prevRoute;
-            if (!$prevRoute)
-                continue;
-            $route->receiverId = $user->id;
-            $route->arrivalTime = ngayon();
-            $route->save();
             Notif::received($prevRoute->office, $route->office, $prevRoute);
         }
         \Flash::add("document received: {$doc->trackingId}");
+        return $doc;
     });
 
     Route::any('/forward/{trackingId}', function (Request $req, $trackingId) {
@@ -469,71 +453,20 @@ Route
     // TODO: rename to create
     Route::any('/send', function (Request $req) {
         $user = Auth::user();
-        if (!$user) {
-            return ["errors"=>["user id"=>"user id is invalid"]];
-        }
+        $api = new DoctracAPI();
+        $doc = $api->createDocument($user, $req->toArray());
+        if ($api->hasErrors())
+            return $api->getErrors();
 
-        if (!$user->office) {
-            return ["errors"=>["office"=>"user does not have an office"]];
-        }
-
-        if (!$user->isKeeper()) {
-            return ["errors"=>["office"=>"user does belong to records office"]];
-        }
-
-        $doc = new App\Document();
-        $doc->userId = $user->id;
-        $doc->title = $req->title;
-        $doc->type = $req->type;
-        $doc->details = $req->details;
-        $doc->trackingId = $user->office->generateTrackingID();
-        $annotations = $req->annotations;
-        $doc->classification = $req->classification;
-
-        $v = $doc->validate();
-        if ($v->fails()) {
-            return ["errors"=>$v->errors()];
-        }
-
-        // TODO: should only upload file later after validations has been made
-        if ($req->hasFile("attachment")) {
-            $attachment = $req->file("attachment");
-            if ( ! $attachment->isValid())
-                return ["errors"=>["attachment"=>"failed to upload file"]];
-            $filename = $attachment->store(\App\Config::$upload_dir);
-            $doc->attachmentFilename = $filename;
-        }
-
-        // at least one destination must be given
-        $ids = $req->officeIds;
-        if (!$ids) {
-            $msg = "select at least one destination";
-            return ["errors"=>["officeIds"=>$msg]];
-        }
-        // if there is no source office id given,
-        // use the office id of the user
-        $officeId = $req->officeId;
-        if (!$officeId) {
-            if (!App\Office::find($user->officeId)) {
-                return ["errors"=>["officeId"=>"office id is invalid"]];
-            }
-            $officeId = $user->officeId;
-        }
-
-        DB::transaction(function() use ($doc, $ids, $user, $officeId, $annotations) {
-            $doc->save();
-
-            if ($doc->type == "serial") {
-                $routes = $doc->createSerialRoutes($ids, $user, $annotations);
-                $nextRoute = $routes[1];
+        if ($doc->type == "serial") {
+            $nextRoute = $doc->nextRoute();
+            \Notif::sent($user->office, $nextRoute->office, $nextRoute);
+        } else {
+            $routes = $doc->createParallelRoutes($ids, $user, $annotations);
+            foreach ($doc->nextRoutes() as $nextRoute) {
                 \Notif::sent($user->office, $nextRoute->office, $nextRoute);
-            } else {
-                $routes = $doc->createParallelRoutes($ids, $user, $annotations);
-                foreach ($routes as $nextRoute)
-                    \Notif::sent($user->office, $nextRoute->office, $nextRoute);
             }
-        });
-
+        }
         \Flash::add("document sent: {$doc->trackingId}");
         return $doc;
     });

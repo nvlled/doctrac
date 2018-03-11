@@ -294,4 +294,10 @@ class Office extends Model
             GlobeAPI::send($num, $action->toArray(null)["message"]);
         }
     }
+
+    public static function getIDsOf($officeNames) {
+        return collect($officeNames)->map(function($name) {
+            return optional(self::withUserName($name))->id;
+        });
+    }
 }

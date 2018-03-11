@@ -41,6 +41,11 @@ class Document extends Model
             ->whereNull("prevId")
             ->get();
     }
+
+    public function startingRoute() {
+        return $this->startingRoutes()->first();
+    }
+
     public function finalRoutes() {
         return DocumentRoute::whereIn("id", $this->finalRouteIds())->get();
     }
@@ -83,6 +88,10 @@ class Document extends Model
         return mapFilter($this->currentRoutes(), function($route) {
             return $route->nextRoute;
         });
+    }
+
+    public function nextRoute() {
+        return $this->nextRoutes()->first();
     }
 
     public function nextOffices() {

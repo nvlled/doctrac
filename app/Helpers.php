@@ -42,10 +42,6 @@ function ngayon() {
     return now(config("app.timezone"));
 }
 
-function arrayAsObject($array) {
-    return (object) $array;
-}
-
 function newObject(...$keyValues) {
     $obj = [];
     for ($i = 0; $i <= count($keyValues)-1; $i+=2) {
@@ -54,4 +50,8 @@ function newObject(...$keyValues) {
         $obj[$k] = $v;
     }
     return (object) $obj;
+}
+
+function arrayObject($array) {
+    return new \App\ArrayObject($array);
 }
