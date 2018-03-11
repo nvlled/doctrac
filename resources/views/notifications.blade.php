@@ -5,7 +5,7 @@
 <section id="notifications">
 <div class="notifs">
     <div class="notif-msg">
-    <strong class='num'></strong> 
+    <strong class='num'></strong>
     <span class='contents'></span>
     (<small class='diff'></small>)
     </div>

@@ -8,4 +8,3 @@ class Config {
     public static $searchRetryLimit = 3;
     public static $searchRetryTime = 10; // minutes
 }
-

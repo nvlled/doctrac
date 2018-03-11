@@ -47,4 +47,3 @@
 
     <script src="{{asset('js/sub/agent.js')}}"></script>
 </section>
-

@@ -48,7 +48,7 @@ window.addEventListener("load", function() {
         $tr.find(".campus").text(office.campus_name);
         $tr.find(".del").click(function(e) {
             e.preventDefault();
-            var proceed = confirm("delete office: " 
+            var proceed = confirm("delete office: "
                 + office.name + "--" + office.campus_name);
             if (!proceed)
                 return;

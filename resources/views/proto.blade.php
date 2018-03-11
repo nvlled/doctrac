@@ -165,7 +165,7 @@
 <section id="doc-fr" class='hidden'>
     <form>
     <input class="userID" placeholder="user id">
-    <span class="fullname">aaaa bbbb</span>  
+    <span class="fullname">aaaa bbbb</span>
     (<small class="officename">office name</small>)
     <hr>
     <input name="trackingId" readonly class="full" value="UR-1112233">

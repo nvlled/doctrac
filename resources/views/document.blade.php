@@ -31,6 +31,11 @@ TODO
                class="action">other routes</a>
             @endif
         </p>
+        <p class="info"><strong>state: </strong>
+            <span class="doc-state {{$document->state}}">
+                {{$document->state}}
+            </span>
+        </p>
         <p class='info'>
             <strong>classification level:</strong>
             <span class='classification'></span>
@@ -62,19 +67,26 @@ TODO
             <ul class='activities'></ul>
         </p>
 
-        <div class="">
-            <div class="send-data hidden">
-                <!--TODO-->
-                <textarea name="annotation" rows="5" class="full annots"
-                placeholder="comments, notes or annotation" ></textarea>
-                <br>
-                <strong>Destination</strong>
-                @include("sub/office-selection")
-            </div>
-            <ul class="errors"></ul>
-            <div class="center">
-                <button class='action half'>SEND / RECEIVE / ABORT SEND / </button>
-            </div>
+        <div class="hidden radios">
+            <label><input type="radio" name="action-type" value="forward"> forward</label>
+            <label><input type="radio" name="action-type" value="other"> other</label>
+        </div>
+        <div class="send-data hidden">
+            <!--TODO-->
+            <textarea name="annotation" rows="5" class="full annots"
+                placeholder="comments, notes or annotation" >
+            </textarea>
+            <br>
+            <strong>Destination</strong>
+            @include("sub/office-selection")
+        </div>
+        <ul class="errors"></ul>
+        <div class="center">
+            <button class='pure-button-primary hidden action half send'>send</button>
+            <button class='pure-button-primary hidden action half recv'>receive</button>
+            <button class='pure-button-default hidden action finalize half affirm green'>finalize</button>
+            <button class='pure-button-default hidden action reject half red'>reject</button>
+            <button class='pure-button-primary hidden action return half '>return</button>
         </div>
     </div>
     <script src='{{asset("js/sub/office-selection.js")}}'></script>

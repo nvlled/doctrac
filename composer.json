@@ -30,6 +30,7 @@
     },
     "autoload": {
         "files": [
+            "app/DoctracAPI.php",
             "app/Config.php",
             "app/Flash.php",
             "app/Helpers.php",

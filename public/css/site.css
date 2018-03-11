@@ -52,8 +52,8 @@ select[disabled] {
     justify-self: center;
     align-self: stretch;
     margin: 10px 50px;
-    max-width: 980px;
-    min-width: 700px;
+    max-width: 780px;
+    min-width: 600px;
 }
 
 table {
@@ -100,6 +100,7 @@ a.action::before { content: "["}
 a.action::after { content: "]"}
 button.action {
     font-size: 20px;
+    height: 60px !important;
 }
 
 .hidden {
@@ -186,7 +187,9 @@ hr {
 
 p.info {
     padding-left: 5px;
-    border-left: 7px solid #dd6;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-left: 7px double #dd6;
 }
 
 a.notifications {
@@ -261,4 +264,35 @@ button.autofill {
 
 .subtext {
     color: gray;
+}
+
+button { font-size: 20px; }
+button.red {
+    color: white;
+    background-color: red !important;
+}
+button.green {
+    color: white;
+    background-color: green !important;
+}
+button.orange {
+    color: white;
+    background-color: orange !important;
+}
+
+.info .doc-state {
+    color: white;
+    padding: 3px;
+    border-radius: 5px;
+}
+.info .doc-state.disapproved {
+    background-color: red;
+}
+
+.info .doc-state.ongoing {
+    background-color: green;
+}
+
+.info .doc-state.completed {
+    background-color: blue;
 }

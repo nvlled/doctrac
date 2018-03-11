@@ -42,3 +42,24 @@ function ngayon() {
     return now(config("app.timezone"));
 }
 
+function newObject(...$keyValues) {
+    $obj = [];
+    for ($i = 0; $i <= count($keyValues)-1; $i+=2) {
+        $k = @$keyValues[$i];
+        $v = @$keyValues[$i+1];
+        $obj[$k] = $v;
+    }
+    return (object) $obj;
+}
+
+function arrayObject($array) {
+    return new \App\ArrayObject($array);
+}
+
+function transactDB($fn) {
+    try {
+        DB::transaction($fn);
+    } catch (\Exception $e) {
+        return ["errors"=>["exception"=>$e->getMessage()]];
+    }
+}

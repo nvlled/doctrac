@@ -8,7 +8,7 @@
     <div class="add-office">
         <ul class='errors'></ul>
         <ul class='msgs'></ul>
-        <input class="campus-name autocomplete" 
+        <input class="campus-name autocomplete"
                data-url='/api/campuses/search'
                data-key='id'
                data-format='{name}'

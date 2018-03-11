@@ -36,6 +36,20 @@ UI.OfficeSelection = function(sel, args) {
 }
 
 UI.OfficeSelection.prototype = {
+    disable: function() {
+        var offices = this.getSelectedOffices();
+        if (offices.length > 0) {
+            var off = offices[0];
+            this.setOffice({
+                officeId: off.id,
+                campusId: off.campus_id,
+            });
+        }
+        this.$campusSel.attr("disabled", true);
+        this.$officeSel.attr("disabled", true);
+        this.$table.hide();
+        this.$btnAdd.hide();
+    },
 
     getOfficeId: function() {
         var off = this.getOffice();

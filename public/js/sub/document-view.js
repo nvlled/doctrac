@@ -2,18 +2,26 @@
 window.addEventListener("load", function() {
     var $container = $("section#document");
     var $viewDoc = $container.find("#view-document");
-    var $sendData = $container.find(".send-data");
-    var $btnAction = $container.find("button.action");
     var $annots = $container.find(".annots");
     var $docAttachment = $container.find(".attachment a");
+
+    var $sendData = $container.find(".send-data");
+    var $btnSend = $container.find("button.send");
+    var $btnRecv = $container.find("button.recv");
+    var $btnReject = $container.find("button.reject");
+    var $btnReturn = $container.find("button.return");
+    var $btnFinalize = $container.find("button.finalize");
+    var $btnActions = $("button.action");
 
     var currentUser = null;
     var currentDoc = null;
     var officeSel = null;
 
+    $btnActions.removeClass("hidden").hide();
     $sendData.removeClass("hidden").hide();
     api.user.self().then(setUser);
     api.user.change(setUser);
+
     setupButtonAction();
 
     function setUser(user) {
@@ -23,13 +31,18 @@ window.addEventListener("load", function() {
             $container.find(".user-name").text("____");
             $container.find(".office-name").text("____");
         } else {
+            if (!currentUser.gateway) {
+                $btnReject.removeClass("hidden").show();
+            } else {
+                $btnFinalize.removeClass("hidden").show();
+            }
             officeSel = new UI.OfficeSelection(
                 $container.find("div.office-selection"),
                 {
                     officeId: currentUser.officeId,
                     campusId: currentUser.campus_id,
                     gateway:  currentUser.gateway,
-                    hideTable: true,
+                    hideTable: !currentUser.gateway,
                 }
             );
 
@@ -49,27 +62,56 @@ window.addEventListener("load", function() {
             routeId: routeId,
         });
 
-        var params = {trackingId: trackingId};
-        util.loadJson(
-            "input#document", 
-            api.doc.get(params)
-        ).then(function(doc) {
-            api.route.next({routeId: routeId})
-               .then(function(route) {
-                   officeSel.setOffice({
-                       officeId: route.officeId,
-                       campusId: route.campus_id,
-                   });
-               });
+        if (currentUser.gateway) {
+            var params = {trackingId: trackingId};
+            util.loadJson(
+                "input#document",
+                api.doc.get(params)
+            ).then(function(doc) {
+                api.doc.unfinishedRoutes({trackingId: trackingId})
+                    .then(function(routes) {
+                        if (!routes) {
+                            return;
+                        }
+                        routes = routes.slice(1);
+                        var offices = routes.map(function(route) {
+                            var names = route.office_name.split(" ");
+                            return {
+                                id: route.officeId,
+                                name: names[0],
+                                campus_name: names[1],
+                                campus_id: route.campus_id,
+                            }
+                        });
+                        officeSel.loadOffices(offices);
+                        viewDocument(doc);
+                        updateButtonAction();
+                    });
+            });
+        } else {
+            var params = {trackingId: trackingId};
+            util.loadJson(
+                "input#document",
+                api.doc.get(params)
+            ).then(function(doc) {
+                api.route.next({routeId: routeId})
+                    .then(function(route) {
+                        officeSel.setOffice({
+                            officeId: route.officeId,
+                            campusId: route.campus_id,
+                        });
+                    });
 
-            viewDocument(doc);
-            updateButtonAction();
-        });
+                viewDocument(doc);
+                updateButtonAction();
+            });
+        }
+
     }
 
     function viewDocument(info) {
         currentDoc = info;
-        $btnAction.hide();
+        //$btnAction.hide();
 
         if (!info) {
             $viewDoc.hide();
@@ -147,61 +189,80 @@ window.addEventListener("load", function() {
             console.warn("no route found");
             return Promise.resolve();
         }
+
+        var officeIds = officeSel.getSelectedIds();
+        var officeId = officeSel.getOfficeId() || officeIds[0];
         var params = {
-            officeId: parseInt(officeSel.getOfficeId()),
+            officeId:  officeId,
+            officeIds: officeIds,
             annotations: $annots.val(),
             routeId: route.id,
         }
-        return api.route.forward(params)
-            .then(function (resp) {
-                if (resp.errors) {
-                    return UI.showErrors($container, resp.errors);
-                }
-                location.reload();
-            });
+        return api.route.forward(params);
     }
 
     function receiveDocument() {
+        return api.doc.receive(createAPIParams());
+    }
+
+    function finalizeDocument() {
+        return api.route.finalize(createAPIParams());
+    }
+
+    function rejectDocument() {
+        return api.doc.reject(createAPIParams());
+    }
+
+    function createAPIParams() {
         var user = currentUser;
         var trackingId = currentDoc.trackingId;
-        var params = {
+        var route = util.parseJSON($("input#document").val()) || {};
+        return {
             userId: user ? user.id : null,
             officeId: parseInt(officeSel.getOfficeId()),
             trackingId: currentDoc.trackingId,
+            routeId: route.id,
         }
-        return api.doc.receive(params)
-            .then(function (resp) {
-                if (resp.errors) {
-                    return UI.showErrors($container, resp.errors);
-                }
-                location.reload();
-            });
     }
 
     function setupButtonAction() {
-        $btnAction.click(function(e) {
-            e.preventDefault();
-            UI.disableButton($btnAction);
-            var action = $btnAction.data("action");
-            UI.clearErrors($container);
-            var promise = null;
-            switch (action) {
-                case "send"  : promise = forwardDocument(); break;
-                case "recv"  : promise = receiveDocument(); break;
-            }
-            if (promise) {
-                promise.then(function() {
-                    UI.enableButton($btnAction);
-                });
-            }
-        });
+        makeHandler($btnSend, forwardDocument);
+        makeHandler($btnRecv, receiveDocument);
+        makeHandler($btnFinalize, finalizeDocument);
+        makeHandler($btnReject, rejectDocument);
+        makeHandler($btnReturn, forwardDocument);
+
+        function makeHandler($btn, onClick) {
+            $btn.click(function(e) {
+                e.preventDefault();
+                UI.disableButton($btn);
+                var action = $btn.data("action");
+                UI.clearErrors($container);
+                var promise = onClick();
+                if (promise) {
+                    promise.then(function(resp) {
+                        if (resp && resp.errors) {
+                            UI.showErrors($container, resp.errors);
+                        } else {
+                            location.reload();
+                        }
+                        UI.enableButton($btn);
+                    });
+                } else {
+                    UI.enableButton($btn);
+                }
+            });
+        }
     }
 
     function updateButtonAction() {
         $sendData.hide();
-        $btnAction.hide();
+        $btnActions.hide();
+        $sendData.hide();
+
         if (!currentUser)
             return;
+
         var route = util.parseJSON($("input#document").val());
         var params = {
             officeId: currentUser.officeId,
@@ -209,16 +270,27 @@ window.addEventListener("load", function() {
         }
         api.office.actionForRoute(params, function(resp) {
             console.log("action for", resp);
-            $btnAction.show();
-            $btnAction.data("action", resp);
             switch(resp) {
                 case "send":
-                    $btnAction.text("send");
                     $sendData.show();
+                    $btnSend.show();
+                    if (currentUser.gateway) {
+                        $btnFinalize.show();
+                    } else {
+                        $btnReject.show();
+                    }
                     break;
-                case "recv": $btnAction.text("receive");break;
-                default:
-                    $btnAction.hide();
+
+                case "return":
+                    officeSel.disable();
+                    $sendData.show();
+                    $annots.hide();
+                    $btnReturn.show();
+                    break;
+
+                case "recv":
+                    $btnRecv.show();
+                    break;
             }
         });
     }

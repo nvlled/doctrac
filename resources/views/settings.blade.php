@@ -82,6 +82,10 @@
             <textarea id="phonenumbers" name="other-phoneno" rows="8"></textarea>
             <span class="pure-form-message-inline"></span>
         </div>
+        <div class='pure-controls subtext'>
+            Note: Numbers must be registered to receive notifications.<br>
+            To register, send INFO to {{env("GLOBE_CODE")}}
+        </div>
 
         <div class="pure-controls">
             <ul class='msgs'></ul>
@@ -110,8 +114,7 @@
         api.office.updateContactInfo(data).then(function(resp) {
             if (resp && resp.errors)
                 UI.showErrors($settingsForm, resp.errors);
-            else
-                UI.showMessages($settingsForm, ["settings saved"]);
+            UI.showMessages($settingsForm, ["settings saved"]);
             console.log(resp);
         });
     });
