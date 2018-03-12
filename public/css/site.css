@@ -296,3 +296,7 @@ button.orange {
 .info .doc-state.completed {
     background-color: blue;
 }
+
+.red { color: red; }
+
+.red:hover { color: #f44; }
