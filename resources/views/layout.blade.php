@@ -88,7 +88,7 @@
     <script src="{{asset('js/combobox.js')}}"></script>
     <script src="{{asset('js/autocomplete.js')}}"></script>
     <script src="{{asset('js/autologout.js')}}"></script>
-    <script src="{{asset('js/filled.js')}}"></script>
+    <!--<script src="{{asset('js/filled.js')}}"></script>-->
     <script src="{{asset('js/localSave.js')}}"></script>
     <script src="//{{ Request::getHost() }}:6001/socket.io/socket.io.js"></script>
     <script src="{{asset('js/echo.js')}}"></script>

@@ -1,6 +1,6 @@
 
 var autologout = {
-    MINUTES_TIMEOUT: 10,
+    MINUTES_TIMEOUT: 20,
     WARN_MESSAGE: "You are about to be logged out in",
 
     lastActive: +new Date(),

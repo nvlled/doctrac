@@ -7,7 +7,8 @@
         {"code": "bin", "name": "Binmaley"},
         {"code": "inf", "name": "Infanta"},
         {"code": "lin", "name": "Lingayen"},
-        {"code": "car", "name": "San carlos"},
+        {"code": "main", "name": "Lingayen-Main"},
+        {"code": "scc", "name": "San carlos"},
         {"code": "sta", "name": "Sta maria"},
         {"code": "urd", "name": "Urdaneta"}
     ],

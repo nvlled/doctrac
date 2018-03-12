@@ -419,6 +419,8 @@ Route
         $user = Auth::user();
         $api = new DoctracAPI();
         $doc = $api->createDocument($user, $req->toArray());
+        $ids = $req->officeIds ?? [];
+        $annotations = $req->annotations ?? "";
         if ($api->hasErrors())
             return $api->getErrors();
 
@@ -426,7 +428,6 @@ Route
             $nextRoute = $doc->nextRoute();
             \Notif::sent($user->office, $nextRoute->office, $nextRoute);
         } else {
-            $routes = $doc->createParallelRoutes($ids, $user, $annotations);
             foreach ($doc->nextRoutes() as $nextRoute) {
                 \Notif::sent($user->office, $nextRoute->office, $nextRoute);
             }
@@ -941,12 +942,24 @@ Route
 ::prefix("globe-sms")
 ->group(function() {
     Route::any('/subscribe', function (Request $req) {
-        \Log::debug("new globe api subscription" .$req->getContent());
+        $unsub = optional(json_decode($req->getContent()))->unsubscribed;
+        if ($unsub) {
+            \Log::debug("globe api unsubscribed: " . $unsub->subscriber_number);
+            $number = \App\SubscribedNumber
+                ::where("subscriberNumber", $unsub->subscriber_number)->first();
+            if ($number)
+                $number->delete();
+            return;
+        }
+
         $subscriberNumber = @$req->subscriber_number;
         $accessToken      = @$req->access_token;
+        \Log::debug("new globe api subscription: $subscriberNumber, $accessToken");
+        \Log::debug("contents: " . $req->getContent());
+        \Log::debug("params: " . var_dump($req->toArray()));
 
         $number = \App\SubscribedNumber
-            ::where("subscriberNumber", $subscriberNumber);
+            ::where("subscriberNumber", $subscriberNumber)->first();
 
         if ( ! $number) {
             $number = new \App\SubscribedNumber();
