@@ -1,5 +1,7 @@
 # doctrac
 
+[![Join the chat at https://gitter.im/doctrac/Lobby](https://badges.gitter.im/doctrac/Lobby.svg)](https://gitter.im/doctrac/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 PSU document tracking system
 
 ## Building and running locally
