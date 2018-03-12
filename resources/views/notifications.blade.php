@@ -43,7 +43,7 @@ api.user.notifications().then(function(notifs) {
         if (notif.unread)
             $div.addClass("unread");
         $div.find(".num").text(i+1);
-        $div.find(".contents").text(notif.message + "!"+notif.routeId);
+        $div.find(".contents").text(notif.message);
         $div.find(".diff").text(notif.diff);
         $div.click(function() {
             api.user.readNotification({

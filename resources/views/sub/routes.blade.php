@@ -53,7 +53,7 @@
             font-size: 13px;
             text-align: center;
         }
-        td.status, td.approvalState {
+        td.approvalState {
             text-align: center;
             font-size: 25px;
         }

@@ -246,7 +246,7 @@ class Office extends Model
         $now = now();
         $num = TrackingCounter::nextId();
         $noise = strtolower(str_random(Config::$randIDLen));
-        return "{$this->campus_code}-{$now->year}-$num-$noise";
+        return "{$this->campus_code}-{$now->year}-$noise";
     }
 
     public function isLinkedTo($office) {

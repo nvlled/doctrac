@@ -46,18 +46,18 @@ window.addEventListener("load", function() {
             "status": function(data, $td) {
                 var text = data.status;
                 switch (data.status) {
-                    case "delivering":
-                        text = "⇊";
-                        break;
-                    case "waiting":
-                        text = "⚃";
-                        break;
-                    case "processing":
-                        text = "♖";
-                        break;
-                    case "done":
-                        text = "✓";
-                        break;
+                    //case "delivering":
+                    //    text = "⇊";
+                    //    break;
+                    //case "waiting":
+                    //    text = "⚃";
+                    //    break;
+                    //case "processing":
+                    //    text = "♖";
+                    //    break;
+                    //case "done":
+                    //    text = "✓";
+                    //    break;
                 }
                 $td.text(text);
             },
@@ -127,6 +127,11 @@ window.addEventListener("load", function() {
         } else {
             loadSerialRoutes(doc);
         }
+    }
+
+    function shiftAnnotations() {
+        $table.find("tr").each(function(i) {
+        });
     }
 
     function loadParallelRoutes(doc) {
@@ -200,7 +205,15 @@ window.addEventListener("load", function() {
             if (officeId && $tr.data("value").officeId == officeId)
                 $tr.addClass("sel");
 
-            addDetails($tr);
+            $tr.find("td.annotations").text("");
+            var nextTr = $tr[0].previousSibling;
+            if (nextTr) {
+                $(nextTr)
+                    .find(".annotations")
+                    .html(UI.truncatedText($tr.data("value").annotations||""));
+            }
+
+            //addDetails($tr);
         });
     }
 
@@ -285,5 +298,6 @@ window.addEventListener("load", function() {
         } else {
             $docAttachment.parent().hide();
         }
+        shiftAnnotations();
     }
 });
