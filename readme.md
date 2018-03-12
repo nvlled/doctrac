@@ -2,6 +2,11 @@
 
 PSU document tracking system
 
+## issues, feedback, and suggestions
+[submit an issue or feature request](https://github.com/nvlled/doctrac/issues)
+
+[developer chat/messaging](https://gitter.im/doctrac/Lobby)
+
 ## Building and running locally
 (instructions apply to Ubuntu and Debian systems, adapt instructions to other OS as needed)
 
