@@ -1,14 +1,10 @@
 
 TODO:
 
-** fix seen notifications
-
+** morning rush tasks
 * add all offices (VP, CED)
-* add close action for records
-* office contact page
 
-* change random suffix ID to 8
-* fix notification time (1 second ago)
+
 
 * I now just remembered something about
   lingayen campus is different from the main
@@ -17,6 +13,8 @@ TODO:
 * add send test button to sms/email
 * change office name format: <CAMPUS> <OFFICE>
 
+* office contact page
+** fix seen notifications
 * export data
 * office to office messaging
 * account management

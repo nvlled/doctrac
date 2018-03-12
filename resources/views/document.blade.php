@@ -74,8 +74,7 @@ TODO
         <div class="send-data hidden">
             <!--TODO-->
             <textarea name="annotation" rows="5" class="full annots"
-                placeholder="comments, notes or annotation" >
-            </textarea>
+                placeholder="comments, notes or annotation" ></textarea>
             <br>
             <strong>Destination</strong>
             @include("sub/office-selection")

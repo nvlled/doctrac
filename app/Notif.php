@@ -53,4 +53,34 @@ class Notif {
             $user->notify($msg);
         }
     }
+
+    public static function rejected($srcOffice, $destOffice, $route) {
+        $msg = new DocumentAction(
+            "rejected",
+            $srcOffice,
+            $destOffice,
+            $route
+        );
+        if ( ! env("DISABLE_SMS_NOTICE"))
+            $destOffice->notifySMS($msg);
+        foreach ($destOffice->getMembers() as $user) {
+            $user->notify($msg);
+        }
+    }
+
+    public static function completed($doc) {
+        foreach ($doc->followTrail() as $route) {
+            $msg = new DocumentAction(
+                "completed",
+                $route->office,
+                $route->office,
+                $route
+            );
+            if ( ! env("DISABLE_SMS_NOTICE"))
+                $route->office->notifySMS($msg);
+            foreach ($route->office->getMembers() as $user) {
+                $user->notify($msg);
+            }
+        }
+    }
 }

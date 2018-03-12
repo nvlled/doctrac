@@ -93,6 +93,9 @@ class DocumentAction extends Notification
     {
         $officeName = "";
         switch ($this->action) {
+        case "rejected":
+            $officeName = $this->srcOffice->complete_name;
+            break;
         case "sent":
             $officeName = $this->srcOffice->complete_name;
             break;
@@ -107,6 +110,11 @@ class DocumentAction extends Notification
         $doc = optional($this->route)->document;
         $message = "{$officeName} has {$this->action} {$doc->title}
                     [$doc->trackingId] on {$this->date}";
+
+        if ($this->action == "completed") {
+            $message = "{$doc->title} [$doc->trackingId] has been finalized on {$this->date}";
+        }
+
         return [
             "date"=>$this->date->toDateTimeString(),
             "action"=>$this->action,

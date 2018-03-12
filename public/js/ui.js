@@ -257,7 +257,7 @@ var UI = {
         if (text.length < limit) {
             $span.text(text);
             $a.hide();
-            return;
+            return $div;
         }
 
         $span.text(util.truncate(text, limit));

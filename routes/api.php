@@ -34,6 +34,7 @@ Route
         $route->final = true;
         $doc->state = "completed";
         $doc->save();
+        Notif::completed($doc);
         $route->save();
     });
 
@@ -355,6 +356,10 @@ Route
             $route->final  = true;
             $route->nextId = null;
             $route->save();
+
+            foreach ($routes as $r) {
+                \Notif::rejected($user->office, $r->office, $route);
+            }
         }
     });
 
@@ -486,7 +491,7 @@ Route
                 continue;
             }
             $data = $notif->data;
-            $data['diff'] = (new \Carbon\Carbon($notif["date"]))->diffForHumans();
+            $data['diff'] = (new \Carbon\Carbon($data["date"]))->diffForHumans();
             $data['url'] = route("view-document", $data["routeId"]);
             $data['id'] = $notif->id;
             $data['unread'] = $notif->read_at == null;

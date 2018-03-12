@@ -13,6 +13,7 @@ class DocumentRoute extends Model
         "document_class",
         "document_type",
         "time_elapsed",
+        "seconds_elapsed",
         "campus_id",
         "attachment_filename",
         "attachment_size",
@@ -110,13 +111,19 @@ class DocumentRoute extends Model
         return null;
     }
 
+    public function getSecondsElapsedAttribute() {
+    }
+
     public function getTimeElapsedAttribute() {
-        if ( ! $this->arrivalTime)
+        if ( ! $this->arrivalTime || $this->final)
             return "";
 
         $d = new Carbon($this->arrivalTime);
-        if ( ! $this->nextRoute || !$this->nextRoute->arrivalTime)
+        if ( ! $this->nextRoute || !$this->nextRoute->arrivalTime) {
+            if ($d->diffInSeconds() < 30)
+                return "just now";
             return $d->diffForHumans(now(), true);
+        }
         return $d->diffForHumans(new Carbon($this->nextRoute->arrivalTime), true);
     }
 
