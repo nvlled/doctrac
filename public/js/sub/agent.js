@@ -3,14 +3,16 @@ window.addEventListener("load", function() {
     var $container = $("section#agent");
     var $viewDoc = $container.find("#view-document");
     var $incomingList = $container.find("ul#incoming");
-    var $heldList = $container.find("ul#held");
-    var $dispatchedList = $container.find("ul#dispatched");
+    var $processingList = $container.find("ul#processing");
+    var $deliveringList = $container.find("ul#delivering");
+    var $forwardedList = $container.find("ul#forwarded");
     var $finalList = $container.find("ul#final");
 
     var currentUser = null;
     var currentDoc = null;
 
     clearList();
+    $("div.list").removeClass("hidden").hide();
     $viewDoc.hide();
 
     api.user.self().then(setUser);
@@ -25,20 +27,18 @@ window.addEventListener("load", function() {
         currentUser = user;
         if (!user) {
             $container.find(".office-id").text("_");
-            $container.find(".user-name").text("____");
             $container.find(".office-name").text("____");
         }
-        $container.find(".user-name").text(user.fullname);
-        $container.find(".office-id").text(user.officeId);
+        $container.find(".office-id").text(user.username);
         $container.find(".office-name").text(user.office_name);
-
 
         var userId = currentUser ? currentUser.id : null;
         api.user.seenRoutes({userId: userId})
            .then(function(seen) {
                loadIncoming(seen);
-               loadHeld(seen);
-               loadDispatched(seen);
+               loadProcessing(seen);
+               loadDelivering(seen);
+               loadForwarded(seen);
                loadFinal(seen);
            });
 
@@ -95,20 +95,22 @@ window.addEventListener("load", function() {
 
     function clearList() {
         $incomingList.html("");
-        $heldList.html("");
-        $heldList.html("");
-        $dispatchedList.html("");
+        $processingList.html("");
+        $deliveringList.html("");
         $finalList.html("");
     }
 
     function loadIncoming(seen) {
         return loadList($incomingList, seen, api.office.incoming);
     }
-    function loadHeld(seen) {
-        return loadList($heldList, seen, api.office.held);
+    function loadProcessing(seen) {
+        return loadList($processingList, seen, api.office.processing);
     }
-    function loadDispatched(seen) {
-        return loadList($dispatchedList, seen, api.office.dispatched);
+    function loadDelivering(seen) {
+        return loadList($deliveringList, seen, api.office.delivering);
+    }
+    function loadForwarded(seen) {
+        return loadList($forwardedList, seen, api.office.forwarded);
     }
     function loadFinal(seen) {
         return loadList($finalList, seen, api.office.final);

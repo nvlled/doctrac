@@ -1,28 +1,50 @@
 
 <section id="agent">
-    <h3 class='center'>(<span class='office-id'>0000</span>)
-        <span class='office-name'>office name</span></h3>
-    <p class='center'><span class='user-name'>user name</span></p>
-    <div>
+    <div class="center">
+        <h3 class=''>
+            <span class='office-name'>office name</span>
+        </h3>
+        <span class="subtext">(<small class='subtext office-id'></small>)</span>
+    </div>
+    <p class="info">
+        <strong>show</strong>
+        <label><input checked type="radio" name="all"> all</label>
+        <label><input type="radio" name="list-type" value="incoming"> incoming</label>
+        <label><input type="radio" name="list-type" value="delivering"> delivering</label>
+        <label><input type="radio" name="list-type" value="processing"> processing</label>
+        <label><input type="radio" name="list-type" value="final"> final</label>
+    </p>
+    <hr>
+
+    <div class="hidden list">
         <h4>Incoming</h4>
         <ul id="incoming">
             <em>(none)</em>
         </ul>
     </div>
-    <div>
+
+    <div class="hidden list">
         <h4>Processing</h4>
-        <ul id="held">
-            <em>(none)</em>
-        </ul>
-    </div>
-    <div>
-        <h4>Delivering</h4>
-        <ul id="dispatched">
+        <ul id="processing">
             <em>(none)</em>
         </ul>
     </div>
 
-    <div>
+    <div class="hidden list">
+        <h4>Delivering</h4>
+        <ul id="delivering">
+            <em>(none)</em>
+        </ul>
+    </div>
+
+    <div class="hidden list">
+        <h4>Forwarded</h4>
+        <ul id="forwarded">
+            <em>(none)</em>
+        </ul>
+    </div>
+
+    <div class="hidden list">
         <h4>Received/Final</h4>
         <ul id="final">
             <em>(none)</em>

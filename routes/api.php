@@ -29,13 +29,15 @@ Route
         $route = \App\DocumentRoute::find($routeId);
         if (!$route)
             return ["errors"=>["doc"=>"invalid route id"]];
-        $doc = $route->document;
 
+        $doc = $route->document;
         $route->final = true;
+        $route->nextId = null;
         $doc->state = "completed";
         $doc->save();
-        Notif::completed($doc);
         $route->save();
+
+        Notif::completed($doc);
     });
 
     Route::any('/origins/{trackingId}', function (Request $req, $trackingId) {
@@ -686,27 +688,43 @@ Route
         $office = App\Office::find($officeId);
         if (!$office)
             return collect();
-        return $office->getReceivingRoutes();
+        return $office->getIncomingRoutes();
     });
 
 
-    Route::any('/{officeId}/held', function (Request $req) {
+    Route::any('/{officeId}/processing', function (Request $req) {
         $officeId = $req->officeId;
         $office = App\Office::find($officeId);
         if (!$office)
             return collect();
-        return $office->getActiveRoutes();
+        return $office->getProcessingRoutes();
     });
 
-    Route::any('/{officeId}/dispatched', function (Request $req) {
+    Route::any('/{officeId}/delivering', function (Request $req) {
         $officeId = $req->officeId;
         $office = App\Office::find($officeId);
         if (!$office)
             return collect();
-        return $office->getDispatchedRoutes();
+        return $office->getDeliveringRoutes();
+    });
+
+    Route::any('/{officeId}/forwarded', function (Request $req) {
+        $officeId = $req->officeId;
+        $office = App\Office::find($officeId);
+        if (!$office)
+            return collect();
+        return $office->getForwardedRoutes();
     });
 
     Route::any('/{officeId}/final', function (Request $req) {
+        $officeId = $req->officeId;
+        $office = App\Office::find($officeId);
+        if (!$office)
+            return collect();
+        return $office->getFinalRoutes();
+    });
+
+    Route::any('/{officeId}/all', function (Request $req) {
         $officeId = $req->officeId;
         $office = App\Office::find($officeId);
         if (!$office)

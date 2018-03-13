@@ -52,8 +52,7 @@ select[disabled] {
     justify-self: center;
     align-self: stretch;
     margin: 10px 50px;
-    max-width: 780px;
-    min-width: 600px;
+    min-width: 700px;
 }
 
 table {

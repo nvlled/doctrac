@@ -233,8 +233,9 @@ var api = {
         },
 
         incoming: makeHandler("/api/offices/{officeId}/incoming"),
-        held: makeHandler("/api/offices/{officeId}/held"),
-        dispatched: makeHandler("/api/offices/{officeId}/dispatched"),
+        processing: makeHandler("/api/offices/{officeId}/processing"),
+        delivering: makeHandler("/api/offices/{officeId}/delivering"),
+        forwarded: makeHandler("/api/offices/{officeId}/forwarded"),
         final: makeHandler("/api/offices/{officeId}/final"),
 
         add: makeHandler("/api/offices/add"),

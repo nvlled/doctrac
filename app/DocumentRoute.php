@@ -349,4 +349,5 @@ class DocumentRoute extends Model
             return [$this, $midRoute, $origin];
         }
     }
+
 }

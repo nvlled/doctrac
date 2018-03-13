@@ -27,6 +27,7 @@ class CreateDocumentRoutesTable extends Migration
             $table->text('annotations')->nullable(); // move to sender
             $table->string('approvalState', 50)->nullable();
             $table->boolean('final')->default(false);
+            $table->boolean('moreNextId')->default(false); // !!
             $table->timestamps();
         });
     }

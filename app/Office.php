@@ -156,44 +156,52 @@ class Office extends Model
         return "";
     }
 
-    public function getReceivingRoutes() {
-        $routes = \App\DocumentRoute::where("officeId", $this->id)->get();
-        $filtered = collect();
-        $routes->each(function($route) use ($filtered) {
-            if ($route->status == "waiting")
-                return $filtered->push($route);
-        });
-        return $filtered;
+    public function getForwardedRoutes() {
+        $routes = \App\DocumentRoute
+            ::where("officeId", $this->id)
+            ->where("prevId", null)
+            ->where("final", 0)
+            ->get();
+        return $routes;
     }
 
-    public function getDispatchedRoutes() {
+    public function getIncomingRoutes() {
         $routes = \App\DocumentRoute::where("officeId", $this->id)->get();
-        $filtered = collect();
-        $routes->each(function($route) use ($filtered) {
-            if ($route->status == "delivering")
-                return $filtered->push($route);
+        return filter($routes, function($route) {
+            return $route->status == "waiting";
         });
-        return $filtered;
+    }
+
+    public function getDeliveringRoutes() {
+        $routes = \App\DocumentRoute::where("officeId", $this->id)->get();
+        return filter($routes, function($route) {
+            return $route->status == "delivering";
+        });
     }
 
     public function getFinalRoutes() {
-        $routes = \App\DocumentRoute::where("officeId", $this->id)->get();
-        $filtered = collect();
-        $routes->each(function($route) use ($filtered) {
-            if ($route->final && $route->status == "done")
-                return $filtered->push($route);
-        });
-        return $filtered;
+        $routes = \App\DocumentRoute
+            ::where("officeId", $this->id)
+            ->where("final",   1)
+            ->where("nextId",   null)
+            ->get();
+        $startRoutes = \App\DocumentRoute
+            ::where("officeId", $this->id)
+            ->where("prevId",   null)
+            ->get();
+        $startRoutes = filter($startRoutes, function($route) {
+            return $route->document->isDone();
+        })->sortByDesc("created_at");
+
+        return unique($routes->merge($startRoutes));
     }
 
-    public function getActiveRoutes() {
+    public function getProcessingRoutes() {
         $routes = \App\DocumentRoute::where("officeId", $this->id)->get();
-        $filtered = collect();
-        $routes->each(function($route) use ($filtered) {
-            if ($route->status == "processing")
-                return $filtered->push($route);
+
+        return filter($routes, function($route) {
+            return $route->status == "processing";
         });
-        return $filtered;
     }
 
     public function isFinal($doc) {

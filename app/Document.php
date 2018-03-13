@@ -274,4 +274,9 @@ class Document extends Model
     public function isParallel() {
         return $this->type == "parallel";
     }
+
+    public function isDone() {
+        $state = $this->state;
+        return $state == "completed";
+    }
 }

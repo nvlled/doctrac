@@ -63,3 +63,19 @@ function transactDB($fn) {
         return ["errors"=>["exception"=>$e->getMessage()]];
     }
 }
+
+function filter($collection, $pred) {
+    $filtered = collect();
+    $collection->each(function($x) use ($filtered, $pred) {
+        if ($pred($x))
+            $filtered->push($x);
+    });
+    return $filtered;
+}
+
+function uniqueBy($key, $collection) {
+    $collection_ = collect();
+    foreach ($collection as $item)
+        $collection_->put($item->{$key}, $item);
+    return $collection_->values();
+}
