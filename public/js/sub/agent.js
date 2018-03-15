@@ -20,8 +20,6 @@ window.addEventListener("load", function() {
     }
 
     api.user.self().then(setUser);
-    api.user.change(setUser);
-
     setupRadios();
 
     function setupRadios() {
@@ -41,6 +39,14 @@ window.addEventListener("load", function() {
     }
 
     function loadMainList(name) {
+        name = name || $radios.filter(function(i, radio) {
+            return radio.checked;
+        }).val();
+        if ( ! name) {
+            $(".radios input[value=all]")[0].checked = true;
+            name = "all";
+        }
+
         var loader = loaders[name];
         if (!loader) {
             console.warn("loader not found:", name);
@@ -49,12 +55,21 @@ window.addEventListener("load", function() {
         loadList($mainList, {}, loader);
     }
 
+    function listenEvents() {
+        var channel = 'App.User.' + currentUser.id;
+        UI.listenEvents(channel, function(notification) {
+            console.log("reloading list");
+            loadMainList();
+        });
+    }
+
     function setUser(user) {
         currentUser = user;
         if (!user) {
             $container.find(".office-id").text("_");
             $container.find(".office-name").text("____");
         }
+        listenEvents();
         $container.find(".office-id").text(user.username);
         $container.find(".office-name").text(user.office_name);
 
@@ -64,13 +79,7 @@ window.addEventListener("load", function() {
                //loadIncoming(seen); TODO
            });
 
-        var listName = $(".radios input[type=radio][checked]").val();
-        if ( ! listName) {
-            $(".radios input[value=all]")[0].checked = true;
-            loadMainList("all");
-        } else {
-            loadMainList(listName);
-        }
+        loadMainList();
 
         viewDocument(null);
     }
@@ -164,11 +173,11 @@ window.addEventListener("load", function() {
                 var routeId = info.id;
                 $a.attr("href", util.interpolate(url, {id: routeId}));
 
-                if ((!seen[routeId]
-                    || !util.arrayContains(seen[routeId], info.status))
-                   ) {
-                    $li.addClass("new");
-                }
+                //if ((!seen[routeId]
+                //    || !util.arrayContains(seen[routeId], info.status))
+                //   ) {
+                //    $li.addClass("new");
+                //}
 
                 $ul.append($li);
             });

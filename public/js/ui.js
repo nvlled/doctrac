@@ -300,4 +300,19 @@ var UI = {
         $btn.text("☯ " + text);
         $btn.attr("disabled", true);
     },
+
+    listenEvents: function(channel, fn) {
+        if (!window.io)
+            return;
+        try {
+            var echo = new Echo({
+                broadcaster: 'socket.io',
+                host: window.location.hostname + ':6001'
+            });
+            echo.private(channel)
+                .notification(fn);
+        } catch (e) {
+            console.log(e);
+        }
+    },
 }

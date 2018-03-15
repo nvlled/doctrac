@@ -150,4 +150,11 @@ var util = {
             return line.trim();
         }).filter(function(line) { return !! line });
     },
+
+    currentUser: function() {
+        var json =  $("body").find("input#current-user").val();
+        if (json)
+            return JSON.parse(json);
+        return null;
+    },
 }

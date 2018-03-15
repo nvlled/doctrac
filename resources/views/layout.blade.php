@@ -96,23 +96,13 @@
     <script src="{{asset('js/echo.js')}}"></script>
     <script>
     $(function() {
-        if (!window.io)
-            return;
-        try {
-            var echo = new Echo({
-                broadcaster: 'socket.io',
-                host: window.location.hostname + ':6001'
-            });
-            var channel = 'App.User.' + '{{Auth::id()}}';
-            echo.private(channel)
-                .notification((notification) => {
-                    console.log("**notification", notification);
-                    UI.addNotification(notification);
-                });
-        } catch (e) {
-            console.log(e);
-        }
+        var channel = 'App.User.' + '{{Auth::id()}}';
+        UI.listenEvents(channel, function(notification) {
+            console.log("**notification", notification);
+            UI.addNotification(notification);
+        });
     });
     </script>
+    <input id="current-user" type="hidden" value="{{optional(Auth::user())->toJson() ?? ''}}">
 </body>
 </html>
