@@ -2,26 +2,52 @@
 window.addEventListener("load", function() {
     var $container = $("section#agent");
     var $viewDoc = $container.find("#view-document");
-    var $incomingList = $container.find("ul#incoming");
-    var $processingList = $container.find("ul#processing");
-    var $deliveringList = $container.find("ul#delivering");
-    var $forwardedList = $container.find("ul#forwarded");
-    var $finalList = $container.find("ul#final");
+    var $radios = $container.find(".radios input[type=radio]");
+    var $mainList = $container.find("div.main.list");
 
     var currentUser = null;
     var currentDoc = null;
 
-    clearList();
     $("div.list").removeClass("hidden").hide();
     $viewDoc.hide();
 
+    var loaders = {
+        all: api.office.allRoutes,
+        incoming: api.office.incoming,
+        delivering: api.office.delivering,
+        processing: api.office.processing,
+        final: api.office.final,
+    }
+
     api.user.self().then(setUser);
     api.user.change(setUser);
-    api.doc.change(function() {
-        setTimeout(function() {
-            setUser(currentUser);
+
+    setupRadios();
+
+    function setupRadios() {
+        $radios.click(function() {
+            var $r = $(this);
+            $r.change(function() {
+                uncheck();
+                $r[0].checked = true;
+                loadMainList(this.value);
+            });
         });
-    });
+    }
+    function uncheck() {
+        $radios.each(function() {
+            this.checked = false;
+        });
+    }
+
+    function loadMainList(name) {
+        var loader = loaders[name];
+        if (!loader) {
+            console.warn("loader not found:", name);
+            return;
+        }
+        loadList($mainList, {}, loader);
+    }
 
     function setUser(user) {
         currentUser = user;
@@ -35,12 +61,16 @@ window.addEventListener("load", function() {
         var userId = currentUser ? currentUser.id : null;
         api.user.seenRoutes({userId: userId})
            .then(function(seen) {
-               loadIncoming(seen);
-               loadProcessing(seen);
-               loadDelivering(seen);
-               loadForwarded(seen);
-               loadFinal(seen);
+               //loadIncoming(seen); TODO
            });
+
+        var listName = $(".radios input[type=radio][checked]").val();
+        if ( ! listName) {
+            $(".radios input[value=all]")[0].checked = true;
+            loadMainList("all");
+        } else {
+            loadMainList(listName);
+        }
 
         viewDocument(null);
     }
@@ -93,48 +123,31 @@ window.addEventListener("load", function() {
         }
     }
 
-    function clearList() {
-        $incomingList.html("");
-        $processingList.html("");
-        $deliveringList.html("");
-        $finalList.html("");
-    }
-
-    function loadIncoming(seen) {
-        return loadList($incomingList, seen, api.office.incoming);
-    }
-    function loadProcessing(seen) {
-        return loadList($processingList, seen, api.office.processing);
-    }
-    function loadDelivering(seen) {
-        return loadList($deliveringList, seen, api.office.delivering);
-    }
-    function loadForwarded(seen) {
-        return loadList($forwardedList, seen, api.office.forwarded);
-    }
-    function loadFinal(seen) {
-        return loadList($finalList, seen, api.office.final);
-    }
-
     function loadList($list, seen, loader) {
         if (!currentUser)
             return;
-        $list.html("");
+
+        var $ul = $list.find("ul");
+
+        $ul.html("");
+        $list.find(".none").addClass("hidden");
+        $list.find(".loading").removeClass("hidden");
+        $list.show();
 
         Promise.all([
             loader({officeId: currentUser.officeId}),
         ]).then(function(values) {
+            $ul.html("");
+            $list.find(".loading").addClass("hidden");
             var data = values[0];
 
-            $list.html("");
-            $list.parent().hide();
             if (!data || data.errors)
                 return;
             if (data.length == 0) {
-                $list.html("<em>(none)</em>");
+                $list.find(".none").removeClass("hidden");
                 return;
             }
-            $list.parent().show();
+
             var url = "/document/{id}";
             data.forEach(function(info) {
                 var $li = $("<li><a href='#view-document'></a></li>");
@@ -157,8 +170,8 @@ window.addEventListener("load", function() {
                     $li.addClass("new");
                 }
 
-                $list.append($li);
+                $ul.append($li);
             });
-           });
+        });
     }
 });

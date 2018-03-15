@@ -708,14 +708,6 @@ Route
         return $office->getDeliveringRoutes();
     });
 
-    Route::any('/{officeId}/forwarded', function (Request $req) {
-        $officeId = $req->officeId;
-        $office = App\Office::find($officeId);
-        if (!$office)
-            return collect();
-        return $office->getForwardedRoutes();
-    });
-
     Route::any('/{officeId}/final', function (Request $req) {
         $officeId = $req->officeId;
         $office = App\Office::find($officeId);
@@ -724,12 +716,12 @@ Route
         return $office->getFinalRoutes();
     });
 
-    Route::any('/{officeId}/all', function (Request $req) {
+    Route::any('/{officeId}/all-routes', function (Request $req) {
         $officeId = $req->officeId;
         $office = App\Office::find($officeId);
         if (!$office)
             return collect();
-        return $office->getFinalRoutes();
+        return $office->getAllRoutes();
     });
 
     Route::any('/search', function (Request $req) {

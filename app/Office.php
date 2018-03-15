@@ -193,7 +193,7 @@ class Office extends Model
             return $route->document->isDone();
         })->sortByDesc("created_at");
 
-        return unique($routes->merge($startRoutes));
+        return uniqueBy("trackingId", $routes->merge($startRoutes));
     }
 
     public function getProcessingRoutes() {
@@ -202,6 +202,14 @@ class Office extends Model
         return filter($routes, function($route) {
             return $route->status == "processing";
         });
+    }
+
+    public function getAllRoutes() {
+        $routes = \App\DocumentRoute
+            ::where("officeId", $this->id)
+            ->orderByDesc("created_at")
+            ->get();
+        return uniqueBy("trackingId", $routes);
     }
 
     public function isFinal($doc) {
