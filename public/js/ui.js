@@ -301,16 +301,34 @@ var UI = {
         $btn.attr("disabled", true);
     },
 
-    listenEvents: function(channel, fn) {
-        if (!window.io)
+    createChannel: function(name) {
+        if (!window.io) {
+            console.warn("echo server is not running");
             return;
+        }
         try {
             var echo = new Echo({
                 broadcaster: 'socket.io',
                 host: window.location.hostname + ':6001'
             });
-            echo.private(channel)
-                .notification(fn);
+            return  echo.channel(name);
+        } catch (e) {
+            console.log(e);
+        }
+    },
+
+    listenEvents: function(channelName, fn) {
+        if (!window.io) {
+            console.warn("echo server is not running");
+            return;
+        }
+        try {
+            var echo = new Echo({
+                broadcaster: 'socket.io',
+                host: window.location.hostname + ':6001'
+            });
+            return echo.private(channelName)
+                    .notification(fn);
         } catch (e) {
             console.log(e);
         }

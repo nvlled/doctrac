@@ -36,6 +36,7 @@ Route
         $doc->state = "completed";
         $doc->save();
         $route->save();
+        broadcast(new \App\Events\DocUpdate($doc));
 
         Notif::completed($doc);
     });
@@ -145,6 +146,7 @@ Route
             });
 
             $nextRoute = $route->nextRoute;
+            broadcast(new \App\Events\DocUpdate($doc));
             \Notif::sent($user->office, $nextRoute->office, $nextRoute);
             \Flash::add("document forwarded: {$doc->trackingId}");
             return null;
@@ -222,6 +224,7 @@ Route
                     $nextRoute->save();
             }
         }
+        broadcast(new \App\Events\DocUpdate($doc));
         \Flash::add("document forwarded: {$route->trackingId}");
         \Notif::sent($office, $nextOffice, $nextRoute);
     });
@@ -360,8 +363,10 @@ Route
             $route->save();
 
             foreach ($routes as $r) {
+                \Flash::add("document rejected: {$doc->trackingId}");
                 \Notif::rejected($user->office, $r->office, $route);
             }
+            broadcast(new \App\Events\DocUpdate($doc));
         }
     });
 
@@ -376,6 +381,7 @@ Route
             $prevRoute = $route->prevRoute;
             Notif::received($prevRoute->office, $route->office, $prevRoute);
         }
+        broadcast(new \App\Events\DocUpdate($doc));
         \Flash::add("document received: {$doc->trackingId}");
         return $doc;
     });
@@ -434,6 +440,7 @@ Route
                 \Notif::sent($user->office, $nextRoute->office, $nextRoute);
             }
         }
+        broadcast(new \App\Events\DocUpdate($doc));
         \Flash::add("document sent: {$doc->trackingId}");
         return $doc;
     });

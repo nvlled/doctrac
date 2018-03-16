@@ -90,13 +90,25 @@ window.addEventListener("load", function() {
            var doc = JSON.parse(json);
            if (doc)
                showDocument(doc);
+
+           if (currentUser) {
+               listenEvents(doc);
+           }
        });
 
     $input.on("complete", loadDocument);
-    api.user.change(function(user) {
-        currentUser = user;
-        loadDocument();
-    });
+
+    function listenEvents(doc) {
+        var channel = UI.createChannel("doc."+doc.trackingId);
+        channel.listen("DocUpdate", function(e) {
+            console.log("document update");
+            if (doc.type == "parallel") {
+                loadParallelRoutes(doc);
+            } else {
+                loadSerialRoutes(doc);
+            }
+        });
+    }
 
     function loadDocument() {
         var id = $input.data("value");
