@@ -333,4 +333,49 @@ var UI = {
             console.log(e);
         }
     },
+
+    removeFlash: function($flash, $container) {
+        if ( ! $container) {
+            $container = $("div.flash-success");
+        }
+        $flash.remove();
+        if ( ! $container.children().length)
+            $container.addClass("hidden");
+    },
+
+    flashMessage: function(msg, id) {
+        var $flashContainer = $("div.flash-success");
+        var $flash = UI._templates.$flash.clone();
+
+        if (id) {
+            $flashContainer.find("#"+id).remove();
+            $flash.attr("id", id);
+        }
+        $flash.find(".msg").text(msg);
+        $flash.find(".close").click(function() {
+            UI.removeFlash($flash, $flashContainer);
+        });
+        $flashContainer.append($flash);
+        $flashContainer.removeClass("hidden");
+    },
+
+    init: function() {
+        var $flashContainer = $("div.flash-success");
+        var $flashTempl = $flashContainer.find(".templ")
+            .detach()
+            .removeClass("hidden");
+        UI._templates.$flash = $flashTempl;
+
+        $flashContainer.find("div").each(function() {
+            var $flash = $(this);
+            $flash.find(".close").click(function() {
+                UI.removeFlash($flash, $flashContainer);
+            });
+        });
+    },
 }
+UI._templates = {
+    $flash: null,
+}
+
+window.addEventListener("load", UI.init);

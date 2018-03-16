@@ -27,7 +27,7 @@ class Flash {
     }
 
     static function getAll() {
-        return \Session::remove(self::KEY_OKAY);
+        return \Session::remove(self::KEY_OKAY) ?? [];
     }
 
     static function addError($msg) {
@@ -39,6 +39,6 @@ class Flash {
     }
 
     static function errorAll() {
-        return \Session::remove(self::KEY_ERR);
+        return \Session::remove(self::KEY_ERR) ?? [];
     }
 }

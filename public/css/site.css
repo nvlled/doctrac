@@ -1,5 +1,6 @@
 
 html, body {
+    font-family: 'Roboto', sans-serif;
     height: 100%;
 }
 
@@ -299,3 +300,15 @@ button.orange {
 .red { color: red; }
 
 .red:hover { color: #f44; }
+
+.float-right { float: right; }
+.float-left { float: left; }
+
+.float-clear::after {
+    clear:  both;
+}
+
+.flex-lr {
+    display: flex;
+    justify-content: space-between;
+}

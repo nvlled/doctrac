@@ -57,23 +57,51 @@
             </ul>
         </nav>
 
-        @if (\Flash::has())
-        <div class='flash-success'>
+        <div class='flash-success {{\Flash::has() ? "" : "hidden"}}'>
             @foreach (\Flash::getAll() as $msg)
-                <span class="icon">♫</span>
-                <span class="msg">{{$msg}}</span><br>
+            <div class="flex-lr">
+                <span>
+                    <span class="icon">♫</span>
+                    <span class="msg">{{$msg}}</span><br>
+                </span>
+                <span>
+                    <a href="#" class="close">[x]</a>
+                </span>
+            </div>
             @endforeach
+            <div class="templ hidden flex-lr">
+                <span>
+                    <span class="icon">♫</span>
+                    <span class="msg"></span><br>
+                </span>
+                <span>
+                    <a href="#" class="close">[x]</a>
+                </span>
+            </div>
         </div>
-        @endif
 
-        @if (\Flash::hasError())
-        <div class='flash-error'>
+        <div class='flash-error {{\Flash::hasError() ? "" : "hidden"}}'>
             @foreach (\Flash::errorAll() as $msg)
-                <span class="icon">✗</span>
-                <span class="msg">{{$msg}}</span><br>
+            <div class="flex-lr">
+                <span>
+                    <span class="icon">✗</span>
+                    <span class="msg">{{$msg}}</span><br>
+                </span>
+                <span>
+                    <a href="#" class="close">[x]</a>
+                </span>
+            </div>
             @endforeach
+            <div class="templ hidden flex-lr">
+                <span>
+                    <span class="icon">✗</span>
+                    <span class="msg"></span><br>
+                </span>
+                <span>
+                    <a href="#" class="close">[x]</a>
+                </span>
+            </div>
         </div>
-        @endif
 
         <div class='site-contents'>
         @yield("contents")
