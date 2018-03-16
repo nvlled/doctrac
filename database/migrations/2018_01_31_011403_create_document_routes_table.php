@@ -15,7 +15,7 @@ class CreateDocumentRoutesTable extends Migration
     {
         Schema::create('document_routes', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer("pathId");
+            //$table->integer("pathId");
             $table->string('trackingId', 512);
             $table->integer('officeId');
             $table->integer('receiverId')->nullable();
@@ -27,7 +27,7 @@ class CreateDocumentRoutesTable extends Migration
             $table->text('annotations')->nullable(); // move to sender
             $table->string('approvalState', 50)->nullable();
             $table->boolean('final')->default(false);
-            $table->boolean('moreNextId')->default(false); // !!
+            $table->integer('moreNextId')->default(0);
             $table->timestamps();
         });
     }

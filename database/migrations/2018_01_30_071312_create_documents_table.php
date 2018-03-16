@@ -19,7 +19,7 @@ class CreateDocumentsTable extends Migration
             $table->integer('userId');
             $table->string('state')->default("ongoing");
             $table->string('classification')->default("open");
-            $table->string('type', 64)->default("serial");
+            //$table->string('type', 64)->default("serial");
             $table->text('details')->nullable();
             $table->char('trackingId', 180)->unique();
             $table->integer('attachmentId')->nullable();

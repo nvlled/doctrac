@@ -73,6 +73,12 @@ function filter($collection, $pred) {
     return $filtered;
 }
 
+function rejectNull($collection) {
+    return filter($collection, function($x) {
+        return !!$x;
+    });
+}
+
 function uniqueBy($key, $collection) {
     $collection_ = collect();
     foreach ($collection as $item)

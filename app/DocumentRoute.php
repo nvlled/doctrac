@@ -55,6 +55,15 @@ class DocumentRoute extends Model
         return $this->hasOne("App\DocumentRoute", "id", "nextId");
     }
 
+    public function moreNextRoutes() {
+        if ( ! $this->moreNextId)
+            return;
+        \App\NextRoute
+            ::where("moreNextId", $this->moreNextId)
+            ->where("routeId", $this->id)
+            ->get();
+    }
+
     public function getDocumentTitleAttribute() {
         return optional($this->document)->title;
     }

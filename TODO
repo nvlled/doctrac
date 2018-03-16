@@ -1,9 +1,11 @@
 
 TODO:
 
+* re-upload forgotten attachment
+* bug on reject return path, not sure how to reproduce
+
 * changed campus code to scc of san carlos
 * finalized document lists for sender
-* re-upload forgotten attachment
 * fix parallel routes, parallel routes
   are for notifications only (MAIN -> alaminos -> local offices)
 * page loading indicator
