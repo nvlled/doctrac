@@ -20,7 +20,12 @@ window.addEventListener("load", function() {
         },
         colMap: {
             "office_name": function(data, $td) {
-                var $link = $("<a>"+data.office_name+"</a>");
+                if (!data.status || data.status == "*") {
+                    $td.append("<span>"+data.office_name+"</span>");
+                    return;
+                }
+                var $link = $("<a>");
+                $link.text(data.office_name);
                 $link.attr("href", data.link);
                 $td.append($link);
             },
@@ -102,6 +107,7 @@ window.addEventListener("load", function() {
         var channel = UI.createChannel("doc."+doc.trackingId);
         channel.listen("DocUpdate", function(e) {
             console.log("document update");
+            UI.flashMessage("document updated", "doc-update");
             if (doc.type == "parallel") {
                 loadParallelRoutes(doc);
             } else {
