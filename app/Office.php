@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Validator;
 
 class Office extends Model
 {
+    protected $guarded = [];
+
     protected $appends = [
         "campus_name", "campus_code",
         "primary_email", "primary_phone_number",
@@ -300,8 +302,14 @@ class Office extends Model
     }
 
 
-    public static function withUserName($username) {
+    public static function withUserName(string $username) {
         return optional(\App\User::where("username", $username)->first())->office;
+    }
+
+    public static function withUsernames(array $usernames) {
+        return collect($usernames)->map(function($username) {
+            return self::withUserName($username);
+        });
     }
 
     public function notifySMS(\App\Notifications\DocumentAction $action) {

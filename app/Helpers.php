@@ -1,22 +1,14 @@
 <?php
 
-// TODO: fold should be used, but I don't have any documentation
-function mapFilter($coll, $fn) {
-    $coll = collect($coll);
-    $coll = $coll->map($fn);
-    $coll = $coll->filter(function($x) {
-        return $x != null;
-    });
-    return $coll;
-}
+use Illuminate\Support\Collection;
 
-function generateId() {
+function generateId() : int {
     $gen = new App\IdGen();
     $gen->save();
     return $gen->id;
 }
 
-function textIndent($text) {
+function textIndent(string $text) {
     $lines = [];
     foreach (explode("\n", $text) as $line) {
         $lines[] = preg_replace('/^\s*\|/', '', $line);
@@ -24,7 +16,7 @@ function textIndent($text) {
     return trim(implode($lines, "\n"));
 }
 
-function joinLines($text) {
+function joinLines(string $text) {
     $text = preg_replace('/\n/', ' ', $text);
     $text = preg_replace('/\s+/', ' ', $text);
     return $text;
@@ -52,11 +44,11 @@ function newObject(...$keyValues) {
     return (object) $obj;
 }
 
-function arrayObject($array) {
+function arrayObject(array $array) {
     return new \App\ArrayObject($array);
 }
 
-function transactDB($fn) {
+function transactDB(callable $fn) {
     try {
         DB::transaction($fn);
     } catch (\Exception $e) {
@@ -64,24 +56,36 @@ function transactDB($fn) {
     }
 }
 
-function filter($collection, $pred) {
+function filter(array $coll, callable $pred) : Collection {
+    $coll = collect($coll);
     $filtered = collect();
-    $collection->each(function($x) use ($filtered, $pred) {
+    $coll->each(function($x) use ($filtered, $pred) {
         if ($pred($x))
             $filtered->push($x);
     });
     return $filtered;
 }
 
-function rejectNull($collection) {
-    return filter($collection, function($x) {
+function rejectNull(array $coll) : Collection {
+    return filter($coll, function($x) {
         return !!$x;
     });
 }
 
-function uniqueBy($key, $collection) {
-    $collection_ = collect();
-    foreach ($collection as $item)
-        $collection_->put($item->{$key}, $item);
-    return $collection_->values();
+// TODO: fold should be used, but I don't have any documentation
+function mapFilter(array $coll, callable $fn) : Collection {
+    $coll = collect($coll);
+    return rejectNull($coll->map($fn)->toArray());
+}
+
+function uniqueBy(string $key, array $coll) : Collection {
+    $coll = collect($coll);
+    $coll_ = collect();
+    foreach ($coll as $item)
+        $coll_->put($item->{$key}, $item);
+    return $coll_->values();
+}
+
+function printDump($var) {
+    fwrite(STDERR, print_r($var, TRUE)."\n");
 }

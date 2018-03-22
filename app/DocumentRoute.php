@@ -55,13 +55,51 @@ class DocumentRoute extends Model
         return $this->hasOne("App\DocumentRoute", "id", "nextId");
     }
 
+    public function allNextRoutes() {
+        $nextRoutes = $this->moreNextRoutes();
+        if (!$this->nextRoute)
+            return $nextRoutes;
+        return collect($this->nextRoute)->concat($nextRoutes);
+    }
+
+    public function moreNextRouteIds() {
+        return $this->hasMany("App\NextRoute", "moreNextId", "moreNextId");
+    }
+
     public function moreNextRoutes() {
-        if ( ! $this->moreNextId)
-            return;
-        \App\NextRoute
-            ::where("moreNextId", $this->moreNextId)
-            ->where("routeId", $this->id)
-            ->get();
+        return $this->moreNextRouteIds->map(function($nr) {
+            return $nr->route;
+        });
+    }
+
+    public static function createNextRoute($routeIds, $moreNextId = null) {
+        if (! $moreNextId)
+            $moreNextId = generateId();
+        return $routeIds->map(function($id) {
+            return (new \App\NextRoute())->fill(["moreNextId"=>$moreNextId, "routeId"=>$id]);
+        });
+    }
+
+    public function isDelivering() {
+        return $this->status == "delivering";
+    }
+
+    public function isWaiting() {
+        return $this->status == "waiting";
+    }
+
+    public function isProcessing() {
+        return $this->status == "processing";
+    }
+
+    public function isCurrent() {
+        $status = $this->status;
+        return $status == "processing"
+            || $status == "delivering";
+    }
+
+    public function isDone() {
+        return $this->status == "done";
     }
 
     public function getDocumentTitleAttribute() {
@@ -138,8 +176,10 @@ class DocumentRoute extends Model
 
     public function getStatusAttribute() {
         if ($this->arrivalTime) {
-            $nextRoute = $this->nextRoute;
-            if (!$nextRoute) {
+            $nextRoute  = $this->nextRoute;
+            $nextRoutes = $this->allNextRoutes();
+
+            if ($nextRoutes->isEmpty()) {
                 if ($this->final)
                     return "done";
                 return "processing";
@@ -148,12 +188,14 @@ class DocumentRoute extends Model
             if (!$this->senderId)
                 return "processing";
 
-            if (!$nextRoute->arrivalTime) {
-                //if ($this->document->state == "disapproved")
-                //    return "returning";
-                return "delivering";
-            }
-            return "done";
+            $allDone = $nextRoutes->all(function($route) {
+                return !!$route->arrivalTime;
+            });
+
+            if ($allDone)
+                return "done";
+
+            return "delivering";
         } else {
             $prevRoute = $this->prevRoute;
             if (!$prevRoute)

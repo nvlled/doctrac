@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Validator;
 
 class Campus extends Model
 {
+    protected $guarded = [];
+
     public function validate() {
         return Validator::make($this->toArray(), [
             'code'     => 'required',
