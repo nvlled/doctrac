@@ -47,10 +47,11 @@ class DoctracAPI {
         $officeIds      = @$args["officeIds"];
         $route          = @$args["route"];
         $annotations    = @$args["annotations"] ?? "";
+        $type           = @$args["type"] ?? "";
 
         $route = $this->getRoute($route);
         if ($route) {
-            return $this->serialForwardDocument($route, $officeIds);
+            return $this->forwardRoute($route, $type, $officeIds);
         }
 
         $doc = $this->getDocument($trackingId);
@@ -64,42 +65,41 @@ class DoctracAPI {
             return $this->appendError("user has no valid office", "user");
 
         $office = $user->office;
-
-        foreach ($this->allProcessingRoutes($doc) as $route) {
-            if ($office->id != $route->officeId)
-                continue;
-            $this->serialForwardDocument($route, $officeIds);
-        }
+        $route = $this->findProcessingRoute($doc, $type, $office);
     }
 
-    public function receiveDocument($office, $trackingId) {
+    public function forwardRoute($route, $type, $officeIds) {
+        if ($type == "parallel")
+            $this->parallelForwardDocument($route, $officeIds);
+        else
+            $this->serialForwardDocument($user, $route, $officeIds);
+
+    }
+
+    /**
+     * @param $src Office|Route
+     */
+    public function receiveDocument($src, $trackingId) {
+        if ($src instanceof \App\DocumentRoute) {
+            return $this->setReceiver($src, $src->office->user);
+        }
+
         $doc = $this->getDocument($trackingId);
+        $office = $this->getOffice($src);
 
         if (!$doc)
             return $this->appendError("invalid tracking id", "doc");
 
-        $office = $this->getOffice($office);
-
         if (!$office)
             return $this->appendError("office is invalid", "office");
 
-        $recvRoute = null;
-        foreach ($this->allWaitingRoutes($doc) as $route) {
-            if ($office->id != $route->officeId)
-                continue;
-
-            $prevRoute = $route->prevRoute;
-            if (!$prevRoute)
-                continue;
-
-            $recvRoute = $this->setReceiver($route, $office->user);
+        $route = $this->findWaitingRoute($doc, $office);
+        if (!$route) {
+            return $this->appendError("no route to receive document", "doc");
         }
 
-        if (!$recvRoute) {
-            return $this->appendError("cannot receive document", "doc");
-        }
-
-        return $recvRoute;
+        $route = $this->setReceiver($route, $office->user);
+        return $route;
     }
 
     public function dispatchDocument($user, $docData) {
@@ -171,14 +171,18 @@ class DoctracAPI {
             return $obj->office;
         if (is_integer($obj))
             return \App\Office::find($obj);
+        if (is_string($obj))
+            return optional(\App\User::where("username", $obj)->first())->office;
         return null;
     }
 
     public function getDocument($docId) {
         if ($docId instanceof \App\Document)
             return $docId;
-        if (is_string($docId))
+        if (is_integer($docId))
             return \App\Document::find($docId);
+        if (is_string($docId))
+            return \App\Document::where("trackingId", $docId)->first();
         return null;
     }
 
@@ -252,6 +256,15 @@ class DoctracAPI {
             function($route) {
                 return $route->isWaiting();
             });
+    }
+
+    public function findWaitingRoute($trackingId, $office) {
+        $office = $this->getOffice($office);
+        foreach ($this->allWaitingRoutes($trackingId) as $route) {
+            if ($route->officeId == $office->id)
+                return $route;
+        }
+        return null;
     }
 
     public function allDeliveringRoutes($trackingId) {
@@ -411,9 +424,7 @@ class DoctracAPI {
 
         connectRoutes($route, $nextRoutes);
 
-        return $nextRoutes->map(function($route) {
-            return $route->id;
-        });
+        return $nextRoutes;
     }
 
     public function canSend($route) {
@@ -457,11 +468,12 @@ class DoctracAPI {
         $prevRoute = $route->prevRoute;
         if ( ! $this->canReceive($route))
             return null;
+
         $status = $prevRoute->status;
-        if ($prevRoute->status != "delivering")
+        if ($status != "delivering")
             return $this->appendError("cannot receive to route, previous route is `$status`");
 
-        $route->receiverId = 9999;
+        $route->receiverId = $user->id;
         $route->arrivalTime = ngayon();
         $route->save();
         dump("setReceive userid", $user->id, $route->id, $route->receiverId, "***");
@@ -517,20 +529,12 @@ class DoctracAPI {
     }
 
     public function serialDispatchDocument($user, $doc, $officeIds) {
-        if ( ! $this->checkDestinationIds($user, $officeIds))
-            return;
-
         $origin = $this->createOriginRoute($user, $doc);
-        $routes = $this->serialConnect($origin, $officeIds);
-        if ($routes && $routes->count() > 0) {
-            $this->setSender($routes[1], $user);
-            return $routes;
-        }
-        return null;
+        return $this->serialForwardDocument($user, $origin, $officeIds);
     }
 
-    public function serialForwardDocument($route, $officeIds) {
-        if ( ! $this->checkDestinationIds($route->user, $officeIds))
+    public function serialForwardDocument($user, $route, $officeIds) {
+        if ( ! $this->checkDestinationIds($user, $officeIds))
             return;
 
         $routes = $this->serialConnect($route, $officeIds);
@@ -543,7 +547,14 @@ class DoctracAPI {
 
     public function parallelDispatchDocument($user, $doc, $officeIds) {
         $origin = $this->createOriginRoute($user, $doc);
-        $routeIds = $this->parallelConnect($origin, $officeIds);
+        $routes = $this->parallelConnect($origin, $officeIds);
+        if ($routes && $routes->count() > 0) {
+            $origin->senderId = $user->id;
+            $origin->forwardTime = ngayon();
+            // TODO: handle annotations
+            return $routes;
+        }
+        return null;
     }
 
     public function createOriginRoute($user, $doc) {
