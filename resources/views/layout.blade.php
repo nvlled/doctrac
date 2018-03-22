@@ -4,8 +4,18 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <title>doctrac</title>
+
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
     <link rel="stylesheet" href="{{asset('css/pure-min.css')}}">
     <link rel="stylesheet" href="{{asset('css/site.css')}}">
+
     <script src="{{asset('js/jquery.min.js')}}"></script>
     <script src="{{asset('js/events.js')}}"></script>
     <script src="{{asset('js/util.js')}}"></script>
@@ -115,6 +125,7 @@
     </footer>
 
     @yield("scripts")
+    <script src="{{asset('material/js/materialize.min.js')}}"></script>
     <script src="{{asset('js/combobox.js')}}"></script>
     <script src="{{asset('js/autocomplete.js')}}"></script>
     <script src="{{asset('js/autologout.js')}}"></script>

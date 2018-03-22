@@ -44,7 +44,9 @@ function newObject(...$keyValues) {
     return (object) $obj;
 }
 
-function arrayObject(array $array) {
+function arrayObject($array) {
+    if ($array instanceof \App\ArrayObject)
+        return $array;
     return new \App\ArrayObject($array);
 }
 
@@ -56,7 +58,7 @@ function transactDB(callable $fn) {
     }
 }
 
-function filter(array $coll, callable $pred) : Collection {
+function filter($coll, callable $pred) : Collection {
     $coll = collect($coll);
     $filtered = collect();
     $coll->each(function($x) use ($filtered, $pred) {
@@ -66,19 +68,19 @@ function filter(array $coll, callable $pred) : Collection {
     return $filtered;
 }
 
-function rejectNull(array $coll) : Collection {
+function rejectNull($coll) : Collection {
     return filter($coll, function($x) {
         return !!$x;
     });
 }
 
 // TODO: fold should be used, but I don't have any documentation
-function mapFilter(array $coll, callable $fn) : Collection {
+function mapFilter($coll, callable $fn) : Collection {
     $coll = collect($coll);
     return rejectNull($coll->map($fn)->toArray());
 }
 
-function uniqueBy(string $key, array $coll) : Collection {
+function uniqueBy(string $key, $coll) : Collection {
     $coll = collect($coll);
     $coll_ = collect();
     foreach ($coll as $item)
@@ -88,4 +90,12 @@ function uniqueBy(string $key, array $coll) : Collection {
 
 function printDump($var) {
     fwrite(STDERR, print_r($var, TRUE)."\n");
+}
+
+function is_empty($coll) {
+    if (!$coll)
+        return true;
+    if (count($coll) == 0)
+        return true;
+    return false;
 }

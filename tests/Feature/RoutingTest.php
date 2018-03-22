@@ -3,8 +3,8 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+//use Illuminate\Foundation\Testing\WithFaker;
+//use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use App\User;
 use App\Office;
@@ -57,14 +57,30 @@ class RoutingTest extends TestCase
         $this->assertEquals($origin->officeId, $rec->id);
         dump($origin->toArray());
         dump($api->followRoute($origin)->map(function($route) {
-            return [$route->officeId, $route->office_name];
+            return [$route->officeId, $route->office_name, $route->id];
         }));
 
         $this->assertNotNull($origin->nextRoute);
         $this->assertEquals($origin->nextRoute->officeId, $dests[0]->id);
 
-        $this->assertEquals($origin->status, "delivering");
-        $this->assertEquals($origin->nextRoute->status, "waiting");
+        $this->assertEquals("delivering", $origin->status);
+        $this->assertEquals("waiting", $origin->nextRoute->status);
+
+        //$api->receiveDocument($origin->nextRoute->office, $doc);
+        $api->setReceiver($origin->nextRoute, $origin->nextRoute->office->user);
+        $nextRoute = $origin->nextRoute;
+
+        dump("X", $nextRoute->office->user->toArray(), "X");
+        dump("X", $nextRoute->office->toArray(), "X");
+        dump($api->getErrors());
+        dump($origin->toArray());
+        dump($nextRoute->toArray());
+        dump($api->followRoute($origin)->map(function($route) {
+            return [$route->officeId, $route->office_name, $route->id, $route->status, $route->receiverId];
+        }));
+        //eval (\Psy\sh());
+        $this->assertEquals("done", $origin->status);
+        $this->assertEquals("processing", $origin->nextRoute->status);
     }
 
     public function testAbb() {
@@ -84,8 +100,8 @@ class RoutingTest extends TestCase
             $gateway = true;
             foreach (["A", "B", "C"] as $name) {
                 $office = \App\Office::firstOrNew([
-                    "id"=>$id++, 
-                    "name"=>$name, 
+                    "id"=>$id++,
+                    "name"=>$name,
                     "campusId"=>$campus->id,
                     "gateway"=>$gateway,
                 ]);

@@ -59,7 +59,7 @@ class DocumentRoute extends Model
         $nextRoutes = $this->moreNextRoutes();
         if (!$this->nextRoute)
             return $nextRoutes;
-        return collect($this->nextRoute)->concat($nextRoutes);
+        return collect([$this->nextRoute])->concat($nextRoutes);
     }
 
     public function moreNextRouteIds() {
@@ -188,7 +188,7 @@ class DocumentRoute extends Model
             if (!$this->senderId)
                 return "processing";
 
-            $allDone = $nextRoutes->all(function($route) {
+            $allDone = $nextRoutes->every(function($route) {
                 return !!$route->arrivalTime;
             });
 
@@ -205,10 +205,6 @@ class DocumentRoute extends Model
         }
 
         return "*";
-    }
-
-    public function isDone() {
-        return $this->status == "done";
     }
 
     public function getActivitiesAttribute() {
