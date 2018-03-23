@@ -5,8 +5,11 @@ namespace App;
 class DoctracAPI {
 
     public $errors = null;
+    public $user = null;
+    public $debug = false;
 
-    public function __construct() {
+    public function __construct(\App\User $user) {
+        $this->user = $user;
         $this->errors = collect();
     }
 
@@ -40,9 +43,7 @@ class DoctracAPI {
     public function rejectDocument($user, $trackingId) {
     }
 
-    //public function forwardDocument($user, $trackingId, $officeIds) {
     public function forwardDocument(array $args) {
-        $user           = @$args["user"];
         $trackingId     = @$args["trackingId"];
         $officeIds      = @$args["officeIds"];
         $route          = @$args["route"];
@@ -58,11 +59,6 @@ class DoctracAPI {
 
         if (!$doc)
             return $this->appendError("invalid tracking id", "doc");
-        if (!$user)
-            return $this->appendError("invalid user", "user");
-
-        if (!$user->office)
-            return $this->appendError("user has no valid office", "user");
 
         $office = $user->office;
         $route = $this->findProcessingRoute($doc, $type, $office);
@@ -72,16 +68,16 @@ class DoctracAPI {
         if ($type == "parallel")
             $this->parallelForwardDocument($route, $officeIds);
         else
-            $this->serialForwardDocument($user, $route, $officeIds);
+            $this->serialForwardDocument($route, $officeIds);
 
     }
 
     /**
      * @param $src Office|Route
      */
-    public function receiveDocument($src, $trackingId) {
+    public function receiveDocument($src, $trackingId = null) {
         if ($src instanceof \App\DocumentRoute) {
-            return $this->setReceiver($src, $src->office->user);
+            return $this->setReceiver($src);
         }
 
         $doc = $this->getDocument($trackingId);
@@ -98,23 +94,14 @@ class DoctracAPI {
             return $this->appendError("no route to receive document", "doc");
         }
 
-        $route = $this->setReceiver($route, $office->user);
+        $route = $this->setReceiver($route);
         return $route;
     }
 
-    public function dispatchDocument($user, $docData) {
+    public function dispatchDocument($docData) {
         $docData = arrayObject($docData);
-        if (is_string($user)) {
-            $user = User::where("username", $user)->first();
-        }
 
-        if (!$user) {
-            return $this->appendError("user id is invalid", "userId");
-        }
-
-        if (!$user->office) {
-            return $this->appendError("user does not have an office", "office");
-        }
+        $user = $this->user;
 
         if (!$user->isKeeper()) {
             return $this->appendError("user does belong to records office", "office");
@@ -136,15 +123,12 @@ class DoctracAPI {
 
         // at least one destination must be given
         $ids = $docData->officeIds;
-        if (!$user->office) {
-            return $this->appendError("user has no office", "officeId");
-        }
 
         $doc->save();
         if ($docData == "parallel") {
-            $this->parallelDispatchDocument($user, $doc, $ids);
+            $this->parallelDispatchDocument($doc, $ids);
         } else {
-            $this->serialDispatchDocument($user, $doc, $ids);
+            $this->serialDispatchDocument($doc, $ids);
         }
 
         if ($this->hasErrors())
@@ -158,10 +142,31 @@ class DoctracAPI {
     //   3
     //     5
     //   4
-    public function getTree($routeOrId) {
-        $route = $this->getRoute($routeId);
+    public function getTree($routeOrId, $formatter = null) {
+        $formatter = $formatter ?? function($route) {
+            return "({$route->id}) {$route->office_name} {$route->status}";
+        };
+
+        $route = null;
+        if ($routeOrId instanceof \App\Document)
+            $route = $this->origin($routeOrId);
+        else
+            $route = $this->getRoute($routeOrId);
+
         if ( ! $route)
-            return [];
+            return null;
+
+        $next = $route->allNextRoutes()->map(
+            function($route) use ($formatter) {
+                return $this->getTree($route, $formatter);
+            }
+        );
+
+        return [
+            "val"  => $formatter($route),
+            "prevId" => $route->prevId,
+            "next" => $next->toArray(),
+        ];
     }
 
     public function getOffice($obj) {
@@ -370,7 +375,10 @@ class DoctracAPI {
         }
 
         $offices = collect($officeIds)->map(function($id) {
-            return \App\Office::find($id);
+            $office = \App\Office::find($id);
+            if (!$office)
+                $this->appendError("invalid office id: $id");
+            return $office;
         });
         $offices = rejectNull($offices);
         if ($offices->count() == 0) {
@@ -391,7 +399,6 @@ class DoctracAPI {
                 $route     = $routes[$i];
                 $nextRoute = $routes[$i+1];
                 $okay = $this->connectRoute($route, $nextRoute);
-                dump("***", $route->id, $nextRoute->id, $okay);
                 if (!$okay)
                     return false;
             }
@@ -415,14 +422,16 @@ class DoctracAPI {
             return \App\Office::find($id);
         });
         $offices = rejectNull($offices);
-        $nextRoutes = $offices->map(function($office) use ($doc) {
-             $route = new \App\Route();
-             $route->officeId   = $office->id;
-             $route->trackingId = $doc->trackingId;
-             return $route;
+        $nextRoutes = $offices->map(function($office) use ($doc, $route) {
+             $nextRoute = new \App\DocumentRoute();
+             $nextRoute->officeId   = $office->id;
+             $nextRoute->trackingId = $doc->trackingId;
+             $nextRoute->prevId = $route->id;
+             $nextRoute->save();
+             return $nextRoute;
         });
 
-        connectRoutes($route, $nextRoutes);
+        $this->connectRoutes($route, $nextRoutes);
 
         return $nextRoutes;
     }
@@ -451,7 +460,8 @@ class DoctracAPI {
         return true;
     }
 
-    public function setSender($route, $user, $annotations=null) {
+    public function setSender($route, $annotations = null) {
+        $user = $this->user;
         $prevRoute = $route->prevRoute;
         $status = $prevRoute->status;
         if ($prevRoute->status != "processing")
@@ -464,7 +474,8 @@ class DoctracAPI {
         $route->save();
     }
 
-    public function setReceiver($route, $user) {
+    public function setReceiver($route) {
+        $user = $this->user;
         $prevRoute = $route->prevRoute;
         if ( ! $this->canReceive($route))
             return null;
@@ -476,7 +487,6 @@ class DoctracAPI {
         $route->receiverId = $user->id;
         $route->arrivalTime = ngayon();
         $route->save();
-        dump("setReceive userid", $user->id, $route->id, $route->receiverId, "***");
         return $route;
     }
 
@@ -491,7 +501,6 @@ class DoctracAPI {
         \DB::transaction(function() use ($srcRoute, $dstRoute) {
             $srcRoute->nextId = $dstRoute->id;
             $dstRoute->prevId = $srcRoute->id;
-            dump("*****next prev", $srcRoute->nextId, $dstRoute->prevId, "****");
             $srcRoute->save();
             $dstRoute->save();
         });
@@ -512,13 +521,13 @@ class DoctracAPI {
         });
     }
 
-    public function checkDestinationIds($user, $officeIds) {
+    public function checkDestinationIds($officeIds) {
         if (is_empty($officeIds)) {
             $this->appendError("select at least one destination", "officeIds");
             return false;
         }
 
-        if (!$user->gateway && count($officeIds) > 1) {
+        if (!$this->user->gateway && count($officeIds) > 1) {
             return $this->appendError(
                 "non-records office can only forward to one destination",
                 "officeIds"
@@ -528,40 +537,51 @@ class DoctracAPI {
         return true;
     }
 
-    public function serialDispatchDocument($user, $doc, $officeIds) {
-        $origin = $this->createOriginRoute($user, $doc);
-        return $this->serialForwardDocument($user, $origin, $officeIds);
+    public function serialDispatchDocument($doc, $officeIds) {
+        $origin = $this->createOriginRoute($doc);
+        return $this->serialForwardDocument($origin, $officeIds);
     }
 
-    public function serialForwardDocument($user, $route, $officeIds) {
-        if ( ! $this->checkDestinationIds($user, $officeIds))
+    public function serialForwardDocument($route, $officeIds) {
+        $nextRoute = $route->nextRoute;
+        if (is_empty($officeIds) && $nextRoute) {
+            $this->setSender($nextRoute);
+            return;
+        }
+
+        if ( ! $this->checkDestinationIds($officeIds))
             return;
 
         $routes = $this->serialConnect($route, $officeIds);
         if ($routes && $routes->count() > 0) {
-            $this->setSender($routes[1], $user);
+            $this->setSender($routes[1]);
             return $routes;
         }
         return null;
     }
 
-    public function parallelDispatchDocument($user, $doc, $officeIds) {
-        $origin = $this->createOriginRoute($user, $doc);
-        $routes = $this->parallelConnect($origin, $officeIds);
+    public function parallelDispatchDocument($doc, $officeIds) {
+        $origin = $this->createOriginRoute($doc);
+        return $this->parallelForwardDocument($origin, $officeIds);
+    }
+
+    public function parallelForwardDocument($route, $officeIds) {
+        $routes = $this->parallelConnect($route, $officeIds);
         if ($routes && $routes->count() > 0) {
-            $origin->senderId = $user->id;
-            $origin->forwardTime = ngayon();
+            $route->senderId = $this->user->id;
+            $route->forwardTime = ngayon();
+            $route->save();
             // TODO: handle annotations
             return $routes;
         }
         return null;
     }
 
-    public function createOriginRoute($user, $doc) {
+    public function createOriginRoute($doc) {
         $route = new \App\DocumentRoute();
         $route->trackingId  = $doc->trackingId;
-        $route->officeId    = $user->officeId;
-        $route->receiverId  = $user->id;
+        $route->officeId    = $this->user->officeId;
+        $route->receiverId  = $this->user->id;
         $route->approvalState = "accepted";
         $route->arrivalTime = now();
         $route->save();
@@ -636,7 +656,21 @@ class DoctracAPI {
         else if (is_string($err))
             $this->errors[$name] = collect($err);
 
+        if ($this->debug) {
+            $bt = debug_backtrace();
+            $caller = array_shift($bt);
+            $filename = basename($caller["file"]);
+            $lineno   = $caller["line"];
+            $msg = "[$filename@$lineno] $msg";
+        }
         $this->errors[$name]->push($msg);
         return null;
+    }
+
+    public function dumpErrors() {
+        if ($this->hasErrors())
+            dump($this->getErrors());
+        else
+            dump("*no errors*");
     }
 }

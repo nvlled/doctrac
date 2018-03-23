@@ -35,30 +35,26 @@ class RoutingTest extends TestCase
 
         dump($officeIds->toArray());
 
-        $api = new DoctracAPI();
-        $api->dispatchDocument($rec->user, new ArrayObject([
+        $api = new DoctracAPI($rec->user);
+        $api->debug = true;
+
+        $api->dispatchDocument(new ArrayObject([
             "title"=>str_random(),
         ]));
         $this->assertTrue($api->hasErrors());
 
         $api->clearErrors();
-        $doc = $api->dispatchDocument($rec->user, new ArrayObject([
+        $doc = $api->dispatchDocument(new ArrayObject([
             "title"=>str_random(),
             "officeIds"=>$officeIds,
             "type"=>"serial",
         ]));
-        dump($api->getErrors());
         $this->assertFalse($api->hasErrors());
         $this->assertNotNull($doc);
-        dump($doc->toArray());
 
         $origin = $api->origin($doc);
         $this->assertNotNull($origin);
         $this->assertEquals($origin->officeId, $rec->id);
-        dump($origin->toArray());
-        dump($api->followRoute($origin)->map(function($route) {
-            return [$route->officeId, $route->office_name, $route->id];
-        }));
 
         $this->assertNotNull($origin->nextRoute);
         $this->assertEquals($origin->nextRoute->officeId, $dests[0]->id);
@@ -69,20 +65,129 @@ class RoutingTest extends TestCase
         $waitingRoute = $api->findWaitingRoute($doc, $origin->nextRoute->office);
         $this->assertEquals($origin->nextRoute->id, optional($waitingRoute)->id);
 
+        $api->clearErrors();
         $wroute = $api->receiveDocument($origin->nextRoute->office, $doc);
         $this->assertEquals($waitingRoute->id, $wroute->id);
         //$api->setReceiver($origin->nextRoute, $origin->nextRoute->office->user);
         $nextRoute = $origin->nextRoute;
         $origin = $api->origin($doc); // get recent changes
 
-        //eval (\Psy\sh());
         $this->assertEquals("done", $origin->status);
         $this->assertEquals("processing", $origin->nextRoute->status);
 
-        //$this->forwardDocument([
-        //    "route" => $origin->nextRoute,
-        //    $officeIds => [],
-        //]);
+
+        $api->clearErrors();
+        $api->forwardDocument([
+            "route" => $origin->nextRoute,
+            "officeIds" => [],
+        ]);
+        $origin = $api->origin($doc);
+
+        dump($api->followRoute($origin)->map(function($route) {
+            return [$route->officeId, $route->office_name, $route->nextId, $route->senderId, $route->status];
+        }));
+        $this->assertEquals("done", $origin->status);
+        $this->assertEquals("delivering", $origin->nextRoute->status);
+
+        $api->forwardDocument([
+            "route" => $origin,
+            "officeIds" => [],
+        ]);
+        // cannot send since origin does not have the document
+        $this->assertTrue($api->hasErrors());
+
+        $api->clearErrors();
+        $api->forwardDocument([
+            "route" => $origin->nextRoute,
+            "officeIds" => [],
+        ]);
+        // cannot send since origin does not have the document
+        $this->assertTrue($api->hasErrors());
+        $api->clearErrors();
+
+        $wroute = $api->receiveDocument($origin->nextRoute->nextRoute, $doc);
+        dump($api->getErrors());
+        $this->assertEquals("done", $origin->status);
+        $this->assertEquals("done", $origin->nextRoute->status);
+        $this->assertEquals("processing", $origin->nextRoute->nextRoute->status);
+
+        $api->clearErrors();
+        $api->forwardDocument([
+            "route" => $origin->nextRoute->nextRoute,
+            "officeIds" => [],
+        ]);
+        // has error since no officeIds is empty and
+        // there is no pre-given route
+        $this->assertTrue($api->hasErrors());
+
+        $api->clearErrors();
+        $api->forwardDocument([
+            "route" => $origin->nextRoute->nextRoute,
+            "officeIds" => [$origin->id],
+        ]);
+
+        $rec_ = Office::withUserName("Y-A");
+
+        $api->clearErrors();
+        $api->forwardDocument([
+            "route" => $origin->nextRoute->nextRoute,
+            "officeIds" => [$rec_->id],
+        ]);
+        // cannot forward directly to non-local offices
+        $this->assertTrue($api->hasErrors());
+
+        $api->clearErrors();
+        $api->forwardDocument([
+            "route" => $origin->nextRoute->nextRoute,
+            "officeIds" => [$origin->officeId],
+        ]);
+        $api->dumpErrors();
+        $this->assertFalse($api->hasErrors());
+        $origin = $api->origin($doc);
+
+        $route = $origin->nextRoute->nextRoute;
+        $this->assertNotNull($route->nextRoute);
+        $this->assertEquals("delivering", $route->status);
+        $this->assertEquals("waiting", $route->nextRoute->status);
+        $this->assertEquals($origin->officeId, $route->nextRoute->officeId);
+
+
+        $api->clearErrors();
+        $api->receiveDocument($route->nextRoute);
+        $api->dumpErrors();
+        $this->assertFalse($api->hasErrors());
+        $this->assertEquals("done", $route->status);
+        $this->assertEquals("processing", $route->nextRoute->status);
+
+
+        $route = $route->nextRoute;
+        $api->clearErrors();
+        $api->forwardDocument([
+            "route"     => $route,
+            "officeIds" => [$rec_->id],
+        ]);
+        $route = $api->getRoute($route->id);
+        $this->assertFalse($api->hasErrors());
+        $this->assertEquals("delivering", $route->status);
+        $this->assertEquals("waiting", $route->nextRoute->status);
+        $this->assertEquals($rec_->id, $route->nextRoute->officeId);
+
+        $api->receiveDocument($route->nextRoute);
+        $route = $api->getRoute($route->id);
+        $this->assertFalse($api->hasErrors());
+        $this->assertEquals("done", $route->status);
+        $this->assertEquals("processing", $route->nextRoute->status);
+
+
+        $route = $api->getRoute($route->nextRoute->id);
+        $dests = Office::withUserNames(["Y-B", "Y-C", "Y-D"]);
+        $api->forwardDocument([
+            "route"     => $route,
+            "officeIds" => $dests->map(function($off) { return $off->id; }),
+            "type"      => "parallel",
+        ]);
+
+        dump($api->getTree($doc));
     }
 
     public function testGetters() {
@@ -128,7 +233,6 @@ class RoutingTest extends TestCase
         $officeA = new \App\Office();
 
         $this->assertTrue(true);
-        dump ("blah");
         fwrite(STDERR, print_r(self::createCampuses()->toArray(), TRUE));
     }
 
@@ -139,7 +243,7 @@ class RoutingTest extends TestCase
         $id = 90000;
         foreach ($campuses as $campus) {
             $gateway = true;
-            foreach (["A", "B", "C"] as $name) {
+            foreach (["A", "B", "C", "D", "E"] as $name) {
                 $office = \App\Office::firstOrNew([
                     "id"=>$id++,
                     "name"=>$name,
