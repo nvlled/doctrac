@@ -102,6 +102,25 @@ class DocumentRoute extends Model
         return $this->status == "done";
     }
 
+    public function isNext($route) {
+        if ( ! $route)
+            return false;
+        foreach ($this->allNextRoutes() as $nextRoute) {
+            if ($nextRoute->id == $route->id)
+                return true;
+        }
+        return false;
+    }
+
+    public function getRecordsOffice() {
+        if ($this->office->gateway)
+            return $this;
+        return \App\Office
+            ::where("campusId", $this->office->campusId)
+            ->where("gateway", 1)
+            ->first();
+    }
+
     public function getDocumentTitleAttribute() {
         return optional($this->document)->title;
     }

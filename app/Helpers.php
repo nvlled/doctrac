@@ -99,3 +99,9 @@ function is_empty($coll) {
         return true;
     return false;
 }
+
+function crap($obj) {
+    if (method_exists($obj, "toArray"))
+        return dump($obj->toArray());
+    return dump($obj);
+}
