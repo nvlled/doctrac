@@ -100,8 +100,10 @@ function is_empty($coll) {
     return false;
 }
 
-function crap($obj) {
-    if (method_exists($obj, "toArray"))
-        return dump($obj->toArray());
-    return dump($obj);
+function crap(...$objs) {
+    foreach ($objs as $obj) {
+        if (method_exists($obj, "toArray"))
+            return dump($obj->toArray());
+        dump($obj);
+    }
 }

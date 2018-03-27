@@ -10,11 +10,12 @@ class Office extends Model
     protected $guarded = [];
 
     protected $appends = [
+        "complete_name",
         "campus_name", "campus_code",
         "primary_email", "primary_phone_number",
         "other_emails", "other_phone_numbers"
     ];
-    protected $hidden = ["campus"];
+    protected $hidden = ["campus", "user"];
 
     function campus() {
         return $this->hasOne("App\Campus", "id", "campusId");

@@ -52,6 +52,7 @@ class RoutingTest extends TestCase
             ],
             "type"=>"parallel",
         ]);
+        dump("testing {$doc->trackingId}");
 
         $this->assertEquals("delivering", $api->routeStatus($doc, "X-A"));
         $this->assertEquals("waiting", $api->routeStatus($doc, "Y-A"));
@@ -77,6 +78,7 @@ class RoutingTest extends TestCase
             "type"=>"parallel",
         ]);
         $this->assertFalse($api->hasErrors());
+        dump("testing {$doc->trackingId}");
 
         $api->setUser("Y-A")->receiveFromOffice($doc, "Y-A");
         $api->dumpErrors();
@@ -172,6 +174,7 @@ class RoutingTest extends TestCase
             "officeIds"=>[$officeXB->id, $officeXC->id],
             "type"=>"serial",
         ]);
+        dump("testing {$doc->trackingId}");
         $api->setUser("X-B")->receiveFromOffice($doc, "X-B");
         $this->assertFalse($api->hasErrors());
         $api->setUser("X-B")->forwardToOffice($doc, "X-C");
@@ -220,6 +223,7 @@ class RoutingTest extends TestCase
             "officeIds"=>[$officeXB->id, $officeXC->id],
             "type"=>"serial",
         ]);
+        dump("testing {$doc->trackingId}");
         $this->assertFalse($api->hasErrors());
         $routeXB = $api->followMainRoute($doc)[1];
 
@@ -300,6 +304,7 @@ class RoutingTest extends TestCase
             "officeIds"=>[$officeYA->id, $officeYB->id, $officeYA->id],
             "type"=>"serial",
         ]);
+        dump("testing {$doc->trackingId}");
         $this->assertFalse($api->hasErrors());
         $this->assertEquals("delivering", $api->routeStatus($doc, "X-A"));
         $this->assertEquals("waiting", $api->routeStatus($doc, "Y-A"));
@@ -403,6 +408,7 @@ class RoutingTest extends TestCase
             ],
             "type"=>"serial",
         ]);
+        dump("testing {$doc->trackingId}");
 
         $this->assertFalse($api->hasErrors());
         $this->assertEquals("delivering", $api->routeStatus($doc, "X-A"));
