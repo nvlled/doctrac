@@ -310,12 +310,14 @@ class DoctracAPI {
         dump($this->getTree($routeOrId, $formatter));
     }
 
-    public function getTree($routeOrId, $formatter = null) {
-        $formatter = $formatter ?? function($route) {
+    public function mapTree($routeOrId, $fn = null) {
+        $fn = $fn ?? function($route) {
             return "({$route->id}) {$route->office_name} {$route->status}";
         };
 
         $route = null;
+        if (is_string($routeOrId))
+            $routeOrId = $this->getDocument($routeOrId);
         if ($routeOrId instanceof \App\Document)
             $route = $this->origin($routeOrId);
         else
@@ -325,22 +327,61 @@ class DoctracAPI {
             return null;
 
         $next = $route->allNextRoutes()->map(
-            function($route) use ($formatter) {
-                return $this->getTree($route, $formatter);
+            function($route) use ($fn) {
+                return $this->mapTree($route, $fn);
             }
         );
 
-        $result = [
-            "val"  => $formatter($route),
-            "prevId" => $route->prevId,
+        $node = [
+            "val" => $route,
+            "next" => $next,
         ];
-        if ($route->approvalState) {
-            $result["approval"] = $route->approvalState;
-            $result["next"] = $next->toArray();
-        } else {
-            $result["next"] = $next->toArray();
+        $fn($route, $next, $node);
+        return $node;
+    }
+
+    public function getTree($routeOrId, $formatter = null) {
+        $formatter = $formatter ?? function($route) {
+            return "({$route->id}) {$route->office_name} {$route->status}";
+        };
+
+        return $this->mapTree($routeOrId, function($route, $next, &$node) use ($formatter) {
+            $next = $node["next"];
+            unset($node["next"]); // for key ordering purposes
+
+            $node["val"] = $formatter($route);
+            $node["prevId"] = $route->prevId;
+            if ($route->approvalState) {
+                $node["approval"] = $route->approvalState;
+            }
+            $node["next"] = $next->toArray();
+        });
+    }
+
+    public function getRoutingData($doc) {
+        $doc = $this->getDocument($doc);
+        if ( ! $doc) {
+            return $this->appendError("document not found");
         }
-        return $result;
+
+        $routes = collect();
+        $nexts = collect();
+        $this->mapTree($doc, function($route, $next, $node) use ($routes, $nexts) {
+            $routes->push($route);
+            dump($next);
+            $nexts[$route->id] = $next->map(function($r) {
+                return $r["val"]->id;
+            })->toArray();
+        });
+        $mainPath = $this->followMainRoute($doc)->map(function($r) {
+            return $r->id;
+        });;
+        return [
+            "document"=>$doc->toArray(),
+            "routes" => $routes,
+            "tree"  => $nexts,
+            "mainPath"  => $mainPath,
+        ];
     }
 
     public function getOffice($obj) {
@@ -891,9 +932,16 @@ class DoctracAPI {
 
     public function authorize($route) {
         $route = $this->getRoute($route);
-        if ($route->officeId != $this->user->officeId) {
+        if ( ! $this->user || $route->officeId != $this->user->officeId) {
             return $this->appendError("unauthorized access") ?? false;
         }
         return true;
+    }
+
+    public function getOfficeGraph() {
+        return collect([
+            \App\Office::all(),
+            \App\Campus::all(),
+        ]);
     }
 }

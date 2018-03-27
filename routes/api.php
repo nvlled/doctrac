@@ -30,15 +30,24 @@ Route
         if (!$route)
             return ["errors"=>["doc"=>"invalid route id"]];
 
-        $doc = $route->document;
-        $route->final = true;
-        $route->nextId = null;
-        $doc->state = "completed";
-        $doc->save();
-        $route->save();
-        broadcast(new \App\Events\DocUpdate($doc));
+        $api = DoctracAPI::new();
+        $api->finalize($route);
+        if ($api->hasErrors()) {
+            return $api->getErrors();
+        }
 
+        broadcast(new \App\Events\DocUpdate($doc));
         Notif::completed($doc);
+    });
+
+    Route::any('/tree/{trackingId}', function (Request $req, $trackingId) {
+        $api = DoctracAPI::new();
+        $doc = $api->getDocument($trackingId);
+        if ($api->hasErrors()) {
+            return $api->getErrors();
+        }
+        $docRdata = $api->getDocumentRouteData();
+        return $docRdata;
     });
 
     Route::any('/origins/{trackingId}', function (Request $req, $trackingId) {
@@ -677,6 +686,10 @@ Route
     Route::any('/self', function (Request $req) {
         if (Auth::user())
             return Auth::user()->office;
+    });
+
+    Route::any('/graph', function (Request $req, $officeId) {
+        return DoctracApi::new()->getOfficeGraph();
     });
 
     Route::any('/{officeId}/update-contact-info', function (Request $req, $officeId) {
