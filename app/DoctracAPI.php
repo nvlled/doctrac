@@ -28,6 +28,25 @@ class DoctracAPI {
         return null;
     }
 
+    public static function new() {
+        return new DoctracAPI(\Auth::user());
+    }
+
+    public function setUser($obj) {
+        if ($obj instanceof \App\User) {
+            $this->user = $obj;
+        } else if ($obj instanceof \App\Office) {
+            $this->user = $obj->user;
+        } else if (is_string($obj)) {
+            $user = \App\User::where("username", $obj)->first();
+            if ($user)
+                $this->user = $user;
+        } else {
+            return null;
+        }
+        return $this;
+    }
+
     public function hasErrors() {
         return $this->errors && $this->errors->count() > 0;
     }
@@ -73,6 +92,9 @@ class DoctracAPI {
                 "non-records office cannot finalize document"
             );
         }
+        if ( ! $this->authorize($route))
+            return null;
+
         $doc = $route->document;
         $route->final = true;
         $route->nextId = null;
@@ -100,6 +122,8 @@ class DoctracAPI {
                 "document is already rejected"
             );
         }
+        if ( ! $this->authorize($route))
+            return null;
 
         $route = $this->getRoute($route);
         $routes = $route->traceOriginPath();
@@ -107,7 +131,7 @@ class DoctracAPI {
             return $r->officeId;
         });
 
-        $routes = $this->serialForwardDocument($route, $officeIds);
+        $routes = $this->serialForwardDocument($route, $officeIds, false);
 
         $route->senderId    = $this->user->id;
         $route->forwardTime = ngayon();
@@ -158,6 +182,8 @@ class DoctracAPI {
                     "cannot detour rejected documents"
                 );
         }
+        if ( ! $this->authorize($route))
+            return null;
 
         if ($type == "parallel")
             $this->parallelForwardDocument($route, $officeIds);
@@ -219,7 +245,7 @@ class DoctracAPI {
         $route = $this->getRoute($route);
         $user = $this->user;
         $prevRoute = $route->prevRoute;
-        if ( ! $this->canReceive($route))
+        if ( ! $this->canReceive($route) || !$this->authorize($route))
             return null;
 
         $status = $prevRoute->status;
@@ -711,19 +737,6 @@ class DoctracAPI {
     }
 
     public function checkDestinationIds($officeIds) {
-        if (is_empty($officeIds)) {
-            $this->appendError("select at least one destination", "officeIds");
-            return false;
-        }
-
-        if (!$this->user->gateway && count($officeIds) > 1) {
-            return $this->appendError(
-                "non-records office can only forward to one destination",
-                "officeIds"
-            );
-            return false;
-        }
-        return true;
     }
 
     public function serialDispatchDocument($doc, $officeIds) {
@@ -731,15 +744,23 @@ class DoctracAPI {
         return $this->serialForwardDocument($origin, $officeIds);
     }
 
-    public function serialForwardDocument($route, $officeIds) {
+    public function serialForwardDocument($route, $officeIds, $limitIds=true) {
         $nextRoute = $route->nextRoute;
         if (is_empty($officeIds) && $nextRoute) {
             $this->setSender($nextRoute);
             return;
         }
 
-        if ( ! $this->checkDestinationIds($officeIds))
-            return;
+        if (is_empty($officeIds)) {
+            return $this->appendError("select at least one destination", "officeIds");
+        }
+
+        if ($limitIds && !$this->user->gateway && count($officeIds) > 1) {
+            return $this->appendError(
+                "non-records office can only forward to one destination",
+                "officeIds"
+            );
+        }
 
         $routes = $this->serialConnect($route, $officeIds);
         if ($this->hasErrors())
@@ -866,5 +887,13 @@ class DoctracAPI {
             dump($this->getErrors());
         else
             dump("*no errors*");
+    }
+
+    public function authorize($route) {
+        $route = $this->getRoute($route);
+        if ($route->officeId != $this->user->officeId) {
+            return $this->appendError("unauthorized access") ?? false;
+        }
+        return true;
     }
 }
