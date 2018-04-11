@@ -69,7 +69,9 @@ function OfficeGraph(data /*: CtorData */) {
 
 OfficeGraph.fetch = function() {
     return api.office.graph().then(function(data) {
-        return new OfficeGraph(data);
+        if (data)
+            return new OfficeGraph(data);
+        return null;
     });
 }
 
