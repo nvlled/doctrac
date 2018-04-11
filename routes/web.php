@@ -148,3 +148,7 @@ Route::get('/logout', function () {
     Auth::logout();
     return redirect()->route("login");
 })->name("logout");
+
+Route::get('/scratch', function () {
+    return view("scratch");
+});
