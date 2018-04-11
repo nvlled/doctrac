@@ -688,7 +688,7 @@ Route
             return Auth::user()->office;
     });
 
-    Route::any('/graph', function (Request $req, $officeId) {
+    Route::any('/graph', function (Request $req) {
         return DoctracApi::new()->getOfficeGraph();
     });
 
