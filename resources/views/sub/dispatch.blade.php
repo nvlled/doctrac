@@ -42,6 +42,7 @@
     serial: documents are passed from one office to another<br>
     parallel: documents are passed to all the offices at the same time
     </p>
+    <script src='{{asset("js/office-graph.js")}}'></script>
     <script src='{{asset("js/sub/office-selection.js")}}'></script>
     <script src="{{asset('js/sub/dispatch.js')}}"></script>
 </section>

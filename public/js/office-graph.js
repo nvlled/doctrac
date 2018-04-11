@@ -67,6 +67,14 @@ function OfficeGraph(data /*: CtorData */) {
     });
 }
 
+OfficeGraph.fetch = function() {
+    return api.office.graph().then(function(data) {
+        if (data)
+            return new OfficeGraph(data);
+        return null;
+    });
+}
+
 OfficeGraph.prototype.getCampuses = function() /*: Array<Campus> */ {
     return this.campuses;
 }

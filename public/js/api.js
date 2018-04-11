@@ -107,7 +107,7 @@ var api = {
         parallel:   makeHandler("/api/routes/parallel/{trackingId}"),
         origins:    makeHandler("/api/routes/origins/{trackingId}"),
         next:       makeHandler("/api/routes/next/{routeId}"),
-        nextOffices makeHandler("/api/routes/next-offices/{trackingId}"),
+        nextOffices:makeHandler("/api/routes/next-offices/{trackingId}"),
         forward:    makeHandler("/api/routes/{routeId}/forward"),
         finalize:   makeHandler("/api/routes/finalize/{routeId}"),
         tree:       makeHandler("/api/routes/tree/{trackingId}"),
@@ -257,7 +257,7 @@ var api = {
 
         updateContactInfo: makeHandler("/api/offices/{officeId}/update-contact-info"),
 
-        graph: makeHandler("/api/offices/{officeId}/graph"),
+        graph: makeHandler("/api/offices/graph"),
     },
 
     util: {

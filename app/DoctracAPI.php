@@ -940,8 +940,8 @@ class DoctracAPI {
 
     public function getOfficeGraph() {
         return collect([
-            \App\Office::all(),
-            \App\Campus::all(),
+            "offices"=>\App\Office::all(),
+            "campuses"=>\App\Campus::all(),
         ]);
     }
 }
