@@ -96,9 +96,6 @@ OfficeGraph.prototype.getCampus = function(id) /*: Campus */{
     return this.campusIds[id];
 }
 
-OfficeGraph.prototype.getCampuses = function() /*: Array<Campus> */{
-    return this.campuses;
-}
 OfficeGraph.prototype.getOffices = function() /*: Array<Office> */{
     return this.offices;
 }

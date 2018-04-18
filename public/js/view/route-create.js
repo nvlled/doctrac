@@ -8,13 +8,42 @@
 // -------------------------------------------
 // | A | X | [add]
 
+// TODO:
+// hideTable option
+// load existing route
+// add some styles
 
 function RouteCreate(graph, args) {
+    var util = {
+        defbool: function(b, p) {
+            if (typeof b == "boolean") {
+                return b;
+            }
+            return p;
+        },
+    }
+
     args = args || {};
+    var rows = args.rows || [];
+
+    var currentOffice = args.currentOffice;
+    if ( ! currentOffice) {
+        throw "currentOffice is required";
+    }
+
+    // TODO:
+    // disable campus when parallel and not main
+    //  then select campus of currentOffice
+    // disable office when parallel and main
+    //  then select records
+
     var self =  {
+        currentOffice: currentOffice,
+        showTable: util.defbool(args.showTable, true),
+        showType:  util.defbool(args.showType,  currentOffice.level > 1),
         vm: null,
         graph: graph,
-        rows: [],
+        rows: rows,
         type: args.type || "serial",
         officeIndex: args.officeIndex || 0,
         campusIndex: args.campusIndex || 0,
@@ -53,7 +82,6 @@ function RouteCreate(graph, args) {
             if (self.type == "serial") {
                 if (lastOffice && office.id == lastOffice.id) {
                     self.message = "cannot add office in succession";
-                    console.log("**", self.message);
                 } else {
                     self.rows.push(office);
                 }
@@ -239,9 +267,9 @@ function RouteCreateView(vm, api) {
         ]);
     }
 
-    return function() {
+    function renderTable() {
         var rows = api.getRows();
-        var table = el("table.route-create", [
+        return el("table.route-create", [
             el("thead", [
                 el("tr", [
                     el("th", "id"),
@@ -269,15 +297,13 @@ function RouteCreateView(vm, api) {
                     ]);
                 })
             ),
-        ]);
+        ])
+    }
 
+    return function() {
+        var table = api.showTable ? renderTable() : null;
         var disabledCampuses = api.getDisabledCampuses();
         var disabledOffices = api.getDisabledOffices();
-
-        var lastOffice = api.getLastOffice();
-        var isCampusSelectedDisabled =
-            api.getType() == "serial"
-            && lastOffice && !lastOffice.gateway;
 
         var panel = el("div.panel", [
             el("div", api.message),
@@ -285,7 +311,7 @@ function RouteCreateView(vm, api) {
                 "select.campuses[name=campuses]",
                 {
                     _ref: "campuses",
-                    disabled: isCampusSelectedDisabled,
+                    disabled: api.isCampusDisabled(),
                     onchange: [api.changeCampus]
                 },
                 api.getCampuses().map(function(obj, idx) {
@@ -310,7 +336,7 @@ function RouteCreateView(vm, api) {
                 })
             ),
             el("button", {onclick: api.insertRow}, "add"),
-            el("div", [
+            api.showType && el("div", [
                 createRadio("serial"),
                 el("span", " "),
                 createRadio("parallel"),

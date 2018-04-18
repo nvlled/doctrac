@@ -5,80 +5,58 @@
 
 
 <div class="mag10">
+    <table class="route">
+        <thead>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
     <div>
-        <label><input type="radio" name="rtype" 
+        <label><input type="radio" name="rtype"
                       value="serial" checked> serial</label>
-        <label><input type="radio" name="rtype" 
+        <label><input type="radio" name="rtype"
                       value="parallel"> parallel</label>
     </div>
 
     <select name="campuses"></select>
     <select name="offices"></select>
-    <button>add</button>
-
+    <button name="add">add</button>
 </div>
+
+<hr>
+<div class="dom"></div>
+<script src='{{asset("js/view/route-create.js")}}'></script>
+<style>
+</style>
 
 <script src='{{asset("js/office-graph.js")}}'></script>
 
 <script>
-function loadList(node, data) {
-    var $node = $(node);
-    $node.html("");
-    (data||[]).forEach(function(c) {
-        var $opt = $("<option>"); 
-        $opt.attr("value", c.id);
-        $opt.text(c.name);
-        $node.append($opt);
-    });
-}
-
-function RouteCreate(args) {
-    this.type = "serial";
-    this.offices = [];
-    this.graph = args.graph;
-    this.cmbCampuses = args.cmbCampuses;
-    this.cmbOffices = args.cmbOffices;
-
-    this.cmbCampuses.change(function() {
-        var $option = this.cmbCampuses.find("option:checked");
-        if ($option.length == 0)
-            return;
-        var campusId = $option.val();
-        this.changeCampus(campusId);
-    }.bind(this));
-
-    loadList(this.cmbCampuses, this.graph.getCampuses());
-    this.cmbCampuses.change();
-}
-
-RouteCreate.prototype = Object.assign(RouteCreate.prototype, {
-    changeCampus: function(campusId) {
-        loadList(this.cmbOffices, this.graph.getLocalOffices(campusId));
-    },
-    changeOffice: function(campusId) {
-    },
-
-    setCampus: function(id) {
-    },
-    setOffice: function(id) {
-    },
-
-    push: function(officeId) {
-    },
-    pop: function() {
-    },
-});
-
+var officeGraph;
+var routeCreate;
 function load() {
-    OfficeGraph.fetch().then(function(graph) {
-        var $cmbCampuses = $("select[name=campuses]");
-        var $cmbOffices = $("select[name=offices]");
 
-        var routeCreate = new RouteCreate({
-            graph: graph,
-            cmbCampuses: $cmbCampuses,
-            cmbOffices: $cmbOffices,
+    OfficeGraph.fetch().then(function(graph) {
+        officeGraph = graph;
+
+        var offices = graph.getOffices();
+        var api = routeCreate = RouteCreate(graph, {
+            showTable: true,
+            showType: true,
+            rows: [
+                offices[0],
+                offices[3],
+                offices[7],
+                offices[2],
+                offices[1],
+            ],
         });
+        var vm = api.vm;
+        vm.mount(document.querySelector("div.dom"));
+
+    }).fail(function(error) {
+        throw error;
     });
 }
 window.addEventListener("load", load);

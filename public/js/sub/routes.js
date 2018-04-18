@@ -5,6 +5,7 @@ window.addEventListener("load", function() {
     var $docTitle = $container.find(".title > .contents");
     var $docType = $container.find(".type");
     var $docDetails = $container.find(".details");
+    var $docAction = $container.find(".action");
     var $docAttachment = $container.find(".attachment a");
     var $docClass = $container.find(".classification");
     var $selOffices = $container.find("select.offices");
@@ -141,6 +142,26 @@ window.addEventListener("load", function() {
         }
         updateDocInfo(doc);
         $docTitle.parent().show()
+        api.office.actionFor({
+            officeId: currentUser.officeId,
+            trackingId: doc.trackingId,
+        }).then(function(resp) {
+            if (!resp) {
+                $docAction.parent().hide();
+                return;
+            }
+            api.util.urlFor({
+                routeName: "view-document",
+                id: resp.routeId,
+            }).then(function(urlResp) {
+                var action = resp.action;
+                switch (resp.action) {
+                    case "recv": action = "receive"; break;
+                    case "send": action = "send"; break;
+                }
+                $docAction.text(action).attr("href", urlResp.url);
+            });
+        });
 
         if (doc.type == "parallel") {
             loadParallelRoutes(doc);
