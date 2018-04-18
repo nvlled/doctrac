@@ -339,7 +339,7 @@ Route
             if ($office->id != $route->officeId)
                 continue;
 
-            $routes = $route->traceOriginPath();
+            $routes = DoctracAPI::new()->traceOriginPath($route);
             $offices = collect($routes)->slice(1)->map(function($r) {
                 return $r->office;
             });

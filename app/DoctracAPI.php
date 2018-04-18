@@ -103,6 +103,28 @@ class DoctracAPI {
         $route->save();
     }
 
+    public function traceOriginPath($route) {
+        $origin = $this->startRoute($route);
+        if (!$origin)
+            return [];
+
+        // [a, _, a] == [a]
+        if ($route->id == $origin->id)
+            return [$route];
+
+        // [a, a, b] == [a, b]
+        $midRoute = $route->previousRecordsRoute();
+        if ($route->id == $midRoute->id)
+            return [$midRoute, $origin];
+
+        // [a, b, b] = [a, b]
+        if ($midRoute->id == $origin->id)
+            return [$route, $midRoute];
+
+        // [a, b, c] == [a, b, c]
+        return [$route, $midRoute, $origin];
+    }
+
     public function rejectByOffice($doc, $office) {
         $doc = $this->getDocument($doc);
         $office = $this->getOffice($office);
@@ -126,7 +148,8 @@ class DoctracAPI {
             return null;
 
         $route = $this->getRoute($route);
-        $routes = $route->traceOriginPath();
+        $routes = $this->traceOriginPath($route);
+
         $officeIds = collect($routes)->slice(1)->map(function($r) {
             return $r->officeId;
         });

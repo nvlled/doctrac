@@ -393,27 +393,7 @@ class DocumentRoute extends Model
     }
 
     public function traceOriginPath() {
-        foreach ($this->document->startingRoutes() as $origin) {
-
-            if ($this->pathId != $origin->pathId)
-                continue;
-
-            // [a, _, a] == [a]
-            if ($this->id == $origin->id)
-                return [$this];
-
-            // [a, a, b] == [a, b]
-            $midRoute = $this->previousRecordsRoute();
-            if ($this->id == $midRoute->id)
-                return [$midRoute, $origin];
-
-            // [a, b, b] = [a, b]
-            if ($midRoute->id == $origin->id)
-                return [$this, $midRoute];
-
-            // [a, b, c] == [a, b, c]
-            return [$this, $midRoute, $origin];
-        }
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
     }
 
 }
