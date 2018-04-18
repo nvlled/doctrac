@@ -1,4 +1,3 @@
-
 const process = require("process");
 const {
     navigation,

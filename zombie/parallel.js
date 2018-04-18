@@ -3,6 +3,7 @@ const process = require("process");
 const {
     navigation,
     dispatch,
+    dispatchParallel,
     dispatchInput,
     logout,
     login,
@@ -10,6 +11,7 @@ const {
     selectMenu,
     receive,
     send,
+    clickElem,
 }= require("./common");
 
 module.exports = async function({browser, getPage}) {
@@ -21,15 +23,19 @@ module.exports = async function({browser, getPage}) {
         await login(page, "urd-records", "x");
     }
 
-    await page.goto("http://doctrac.local/dispatch");
-    let trackingId = await dispatchInput(page);
-    await page.click("input[value=parallel]");
-    await selectMenu(page, "select.offices", "registrar");
-    await page.click("button.add");
-    await selectMenu(page, "select.offices", "accounting");
-    await page.click("button.add");
-    await selectMenu(page, "select.offices", "mis");
-    await page.click("button.add");
+
+    let trackingId = await dispatchParallel(page, [
+        "registrar", "accounting", "mis",
+    ]);
+
+    await logout(page);
+    await login(page, "urd-mis");
+    await receive(page, trackingId);
+
+    await logout(page);
+    await login(page, "urd-registrar");
+    await receive(page, trackingId);
+    page.goto(`http://doctrac.local/${trackingId}/routes`);
 
     //actionLink = await page.$("a.action");
     //await navigation(page, _=> actionLink.click());

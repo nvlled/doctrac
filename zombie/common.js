@@ -71,7 +71,7 @@ let common = {
         let details = await page.$("textarea.details");
         let annotations = await page.$("textarea.annotations");
         if (title)
-            await title.type("document title " + Math.random().toString(36).slice(2));
+            await title.type(Math.random().toString(36).slice(2));
         if (details)
             await details.type(Math.random().toString(36).slice(2));
         if (annotations)
@@ -85,6 +85,32 @@ let common = {
         let btnAdd = await page.$("button.add");
         for (let i = 0; i < nroutes; i++)
             await clickElem(btnAdd);
+
+        let btnSend = await page.$("button.send");
+        await navigation(page, _=> clickElem(btnSend));
+
+        let trackingId = await page.evaluate(
+            () => {
+                let elem = document.body.querySelector(".trackingId");
+                return elem ? elem.textContent : "";
+            }
+        );
+        trackingId = trackingId.trim();
+        console.log("trackingId", trackingId, page.url());
+        return trackingId;
+    },
+
+    async dispatchParallel(page, offices) {
+        await page.goto("http://doctrac.local/dispatch");
+        await common.dispatchInput(page);
+
+        let btnAdd = await page.$("button.add");
+
+        await page.click("input[value=parallel]");
+        for (let off of offices) {
+            await common.selectMenu(page, "select.offices", off);
+            await clickElem(btnAdd);
+        }
 
         let btnSend = await page.$("button.send");
         await navigation(page, _=> clickElem(btnSend));
@@ -126,6 +152,13 @@ let common = {
         }
         await navigation(page, _=> clickElem(actionLink));
 
+        let annotations = await page.$("textarea[name=annotation]");
+        if (annotations) {
+            await annotations.type(Math.random().toString(36).slice(2));
+        } else {
+            console.warn("no annotations found");
+        }
+
         await common.selectMenu(page, "select.offices",office);
         let sendBtn = await page.$("button.send.action");
         if (sendBtn)
@@ -133,7 +166,6 @@ let common = {
         else
             console.log("action not available: send");
     },
-
 
     // TODO: move to zombieteer code
     async selectMenu(page, selector, text) {
