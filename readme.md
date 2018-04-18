@@ -14,7 +14,7 @@ PSU document tracking system
 
 0. Install php7, php composer, mysql, git
 
-1. Install package dependencies listed on `package-dependencies.txt`, e.g.
+1. Install package dependencies listed on `apt-dependencies.sh`, e.g.
 ```
 sudo apt install php-domstring php-xml php-mysql
 ```

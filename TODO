@@ -2,6 +2,12 @@
 TODO:
 
 * add interface for setting offices
+* use the annotations on the new api
+* use the new route selection component
+* fix notifications
+
+-------------------
+
 * re-upload forgotten attachment
 * bug on reject return path, not sure how to reproduce
 
