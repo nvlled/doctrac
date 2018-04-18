@@ -143,6 +143,13 @@
         });
     });
     </script>
-    <input id="current-user" type="hidden" value="{{optional(Auth::user())->toJson() ?? ''}}">
+    @php
+        $currentUser = optional(Auth::user());
+        $currentOffice = optional($currentUser->office);
+    @endphp
+    <input id="current-user" type="hidden"
+           value="{{$currentUser->toJson() ?? ''}}">
+    <input id="current-office" type="hidden"
+           value="{{$currentOffice->toJson() ?? ''}}">
 </body>
 </html>

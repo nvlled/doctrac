@@ -6,46 +6,45 @@ var dispatch = {
         var $userName = $container.find(".user-name");
         var $userOffice = $container.find(".user-office");
 
-        var officeSel = null;
-
         var currentUser = null;
         api.user.change(setCurrentUser);
-        api.user.self()
-            .then(setCurrentUser);
+        api.user.self().then(setCurrentUser);
 
         setupSendButton();
-        setupTypeRadio();
+        setupOfficeSel();
+
+        var officeGraph;
+        var officeSel;
+
+        function setupOfficeSel() {
+            Promise.all([
+                OfficeGraph.fetch(),
+                api.office.self(),
+            ]).then(function(values) {
+                var graph = values[0];
+                var currentOffice = values[1];
+                officeGraph = graph;
+                var offices = graph.getOffices();
+
+                console.log("current office", currentOffice);
+                officeSel = RouteCreate(graph, {
+                    showTable: true,
+                    currentOffice:  currentOffice,
+                });
+                var vm = officeSel.vm;
+                vm.mount(document.querySelector("div.dom"));
+            });
+        }
 
         function setCurrentUser(user) {
             currentUser = user;
             if (user) {
                 $userName.text(user.firstname + " " + user.lastname);
                 $userOffice.text(user.office_name);
-
-                officeSel = new UI.OfficeSelection(
-                    $container.find("div.office-selection"),
-                    {
-                        officeId: currentUser.officeId,
-                        campusId: currentUser.campus_id,
-                        gateway:  currentUser.gateway,
-                    }
-                );
             } else {
                 $userName.text("");
                 $userOffice.text("");
             }
-        }
-
-        function getDispatchType() {
-            return $("input[name=dispatch-type][checked]").val();
-        }
-
-        function setupTypeRadio() {
-            $container.find("input[name=dispatch-type]")
-                .change(function() {
-                    officeSel.type = getDispatchType();
-                    officeSel.clear();
-                });
         }
 
         function setupSendButton() {
@@ -54,7 +53,8 @@ var dispatch = {
                 $message.text("");
                 UI.clearErrors($container);
 
-                var officeIds = officeSel.getSelectedIds();
+                var officeIds = officeSel.getRowIds();
+                var type = officeSel.getType();
 
                 var doc = {
                     userId: currentUser ? currentUser.id : null,
@@ -77,7 +77,6 @@ var dispatch = {
                         var file = fileInput.files[0];
                         uploadFile(trackingId, file).then(function() {
                             $message.text("document sent: " + trackingId);
-                            officeSel.clear();
                             $container.find("form")[0].reset();
                             $btnSend.text("Send");
                             $btnSend.attr("disabled", false);

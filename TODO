@@ -2,9 +2,11 @@
 TODO:
 
 * add interface for setting offices
+* make pages mostly static
 * use the annotations on the new api
 * use the new route selection component
 * fix notifications
+* fix sms registration
 
 -------------------
 

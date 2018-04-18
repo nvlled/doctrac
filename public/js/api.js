@@ -225,7 +225,12 @@ var api = {
     },
 
     office: {
-        self: makeHandler("/api/offices/self"),
+        self: function() {
+            var json =  $("body").find("input#current-office").val();
+            if (json)
+                return Promise.resolve(JSON.parse(json));
+            return api.req.get("/api/offices/self");
+        },
 
         search: makeHandler("/api/offices/search"),
         actionFor: makeHandler("/api/offices/{officeId}/action-for/{trackingId}"),

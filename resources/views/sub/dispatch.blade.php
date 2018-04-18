@@ -26,17 +26,35 @@
     </p>
 
     <h3>Office destinations</h3>
-    @include("sub/office-selection")
+
+    <div class="dom"></div>
+    <script src='{{asset("js/view/route-create.js")}}'></script>
+    <style>
+    table.route-create td {
+        border-bottom: 1px solid gray;
+        padding: 10px;
+    }
+    </style>
+
+    <script src='{{asset("js/office-graph.js")}}'></script>
+
+    <script>
+    </script>
+
+    <!--@include("sub/office-selection")-->
 
     <br>
         <ul class="errors"></ul>
     <div class="center">
+        <!--
         <label><input name="dispatch-type" value="serial" type="radio" checked>serial </label>
         <label><input name="dispatch-type" value="parallel" type="radio">parallel </label>
+        -->
         <br>
         <button class="half send action pure-button pure-button-primary">Send</button>
         <p class='message' style='color: #050'><p>
     </div>
+
     <p style="font-size: 15px; color: gray">
     *note: <br>
     serial: documents are passed from one office to another<br>
