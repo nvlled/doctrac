@@ -39,6 +39,7 @@ class Maint {
                 $office->name     = $officeName;
                 $office->campusId = $campus->id;
                 $office->gateway  = strtolower($officeName) == "records";
+                $office->main     = $campus->code == "main" && $office->gateway;
                 try {
                     $office->save();
                 } catch (\Exception $e) {

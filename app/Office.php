@@ -13,7 +13,8 @@ class Office extends Model
         "complete_name",
         "campus_name", "campus_code",
         "primary_email", "primary_phone_number",
-        "other_emails", "other_phone_numbers"
+        "other_emails", "other_phone_numbers",
+        "level",
     ];
     protected $hidden = ["campus", "user"];
 
@@ -116,8 +117,9 @@ class Office extends Model
     }
 
     function holdsDoc($doc) {
-        foreach ($doc->currentOffices() as $office) {
-            if ($this->id == $office->id)
+        $api = DoctracAPI::new();
+        foreach ($api->allCurrentRoutes($doc) as $route) {
+            if ($this->id == optional($route->office)->id)
                 return true;
         }
         return false;
@@ -216,7 +218,8 @@ class Office extends Model
     }
 
     public function isFinal($doc) {
-        foreach ($doc->finalRoutes() as $route) {
+        $api = DoctracAPI::new();
+        foreach ($api->allFinalRoutes($doc) as $route) {
             if ($this->officeId == $route->officeId)
                 return true;
         }
@@ -302,6 +305,13 @@ class Office extends Model
         return User::where("officeId", $this->id)->get();
     }
 
+    public function getLevelAttribute() {
+        if ($this->main)
+            return 3;
+        if ($this->gateway)
+            return 2;
+        return 1;
+    }
 
     public static function withUserName(string $username) {
         return optional(\App\User::where("username", $username)->first())->office;

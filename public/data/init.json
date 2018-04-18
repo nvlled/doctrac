@@ -1,13 +1,13 @@
 
 {
     "campuses": [
+        {"code": "main", "name": "Lingayen-Main"},
         {"code": "ala", "name": "Alaminos"},
         {"code": "asi", "name": "Asingan"},
         {"code": "bay", "name": "Bayambang"},
         {"code": "bin", "name": "Binmaley"},
         {"code": "inf", "name": "Infanta"},
         {"code": "lin", "name": "Lingayen"},
-        {"code": "main", "name": "Lingayen-Main"},
         {"code": "scc", "name": "San carlos"},
         {"code": "sta", "name": "Sta maria"},
         {"code": "urd", "name": "Urdaneta"}
