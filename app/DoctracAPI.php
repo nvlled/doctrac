@@ -172,7 +172,7 @@ class DoctracAPI {
         $doc            = @$args["document"];
         $officeIds      = @$args["officeIds"];
         $route          = @$args["route"];
-        $annotations    = @$args["annotations"] ?? "";//TODO
+        $annotations    = @$args["annotations"] ?? "";
         $type           = @$args["type"] ?? $doc->type ?? "";
 
         $doc = $this->getDocument($doc);
@@ -193,6 +193,7 @@ class DoctracAPI {
         }
         $route = $this->getRoute($route);
         $route->approvalState = "accepted";
+        $route->annotations = $annotations;
         return $this->forwardRoute($route, $type, $officeIds);
     }
 
@@ -292,7 +293,6 @@ class DoctracAPI {
 
     public function dispatchDocument($docData) {
         $docData = arrayObject($docData);
-
         $user = $this->user;
 
         if (!$user->isKeeper()) {
@@ -305,7 +305,6 @@ class DoctracAPI {
         $doc->type           = $docData->type ?? "serial";
         $doc->details        = $docData->details;
         $doc->trackingId     = $user->office->generateTrackingID();
-        $annotations    = $docData->annotations;
         $doc->classification = $docData->classification ?? "open";
 
         $v = $doc->validate();
@@ -317,14 +316,20 @@ class DoctracAPI {
         $ids = $docData->officeIds;
 
         $doc->save();
+        $routes = null;
         if ($docData->type == "parallel") {
-            $this->parallelDispatchDocument($doc, $ids);
+            list($origin, $routes) = $this->parallelDispatchDocument($doc, $ids);
         } else {
-            $this->serialDispatchDocument($doc, $ids);
+            list($origin, $routes) = $this->serialDispatchDocument($doc, $ids);
         }
 
         if ($this->hasErrors())
             return null;
+
+        if ($routes && $routes->count() > 0) {
+            $origin->annotations = $docData->annotations ?? "";
+            $origin->save();
+        }
 
         return $doc;
     }
@@ -682,9 +687,6 @@ class DoctracAPI {
             if (!$office)
                 return $this->appendError("invalid office id: $id");
             $offices->push($office);
-            // !!!!!!
-            //if ($office->gateway)
-            //    break;
         }
 
         if ($offices->count() == 0) {
@@ -799,7 +801,6 @@ class DoctracAPI {
 
         $prevRoute->senderId = $user->id;
         $prevRoute->forwardTime = ngayon();
-        $route->annotations = $annotations;
         $prevRoute->save();
         $route->save();
     }
@@ -840,7 +841,7 @@ class DoctracAPI {
 
     public function serialDispatchDocument($doc, $officeIds) {
         $origin = $this->createOriginRoute($doc);
-        return $this->serialForwardDocument($origin, $officeIds);
+        return [$origin, $this->serialForwardDocument($origin, $officeIds)];
     }
 
     public function serialForwardDocument($route, $officeIds, $limitIds=true) {
@@ -861,6 +862,7 @@ class DoctracAPI {
             );
         }
 
+        // note: $routes has $route included
         $routes = $this->serialConnect($route, $officeIds);
         if ($this->hasErrors())
             return null;
@@ -873,7 +875,7 @@ class DoctracAPI {
 
     public function parallelDispatchDocument($doc, $officeIds) {
         $origin = $this->createOriginRoute($doc);
-        return $this->parallelForwardDocument($origin, $officeIds);
+        return [$origin, $this->parallelForwardDocument($origin, $officeIds)];
     }
 
     public function parallelForwardDocument($route, $officeIds) {
@@ -885,7 +887,6 @@ class DoctracAPI {
             $route->senderId = $this->user->id;
             $route->forwardTime = ngayon();
             $route->save();
-            // TODO: handle annotations
             return $routes;
         }
         return null;

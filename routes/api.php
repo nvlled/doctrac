@@ -137,9 +137,10 @@ Route
         $doc = $route->document;
         $api = api();
         $api->forwardDocument([
-            "document"=>  $doc,
-            "office"  =>  $office,
-            "officeIds"=> $officeIds,
+            "annotations"=> $annotations,
+            "document"   => $doc,
+            "office"     => $office,
+            "officeIds"  => $officeIds,
         ]);
         if ($api->hasErrors())
             return $api->getErrors();
@@ -342,9 +343,8 @@ Route
     Route::any('/send', function (Request $req) {
         $user = Auth::user();
         $api = new DoctracAPI($user);
-        $doc = $api->dispatchDocument($req->toArray());
-        $ids = $req->officeIds ?? [];
         $annotations = $req->annotations ?? "";
+        $doc = $api->dispatchDocument($req->toArray());
         if ($api->hasErrors())
             return $api->getErrors();
 
