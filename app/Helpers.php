@@ -107,3 +107,19 @@ function crap(...$objs) {
         dump($obj);
     }
 }
+
+function hiddenIf($cond) {
+    if ($cond)
+        return "hidden";
+    return "";
+}
+
+function logCrap(...$objs) {
+    foreach ($objs as $o) {
+        \Log::info(print_r($o, true));
+    }
+}
+
+function api() {
+    return \App\DoctracAPI::new();
+}
