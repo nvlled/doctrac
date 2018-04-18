@@ -63,13 +63,20 @@ Route
 
     Route::get('/{trackingId}/routes', function($trackingId) {
         $doc = App\Document::where("trackingId", $trackingId)->firstOrFail();
+        $user = Auth::user();
+        $api = api();
+        $actionRes = $api->actionFor($doc, $user->office);
+        $routeGraph = $api->getRouteGraph($doc);
         return view('routes', [
             "doc" => $doc,
+            "office" => optional($user)->office,
+            "action"=> $actionRes["action"] ?? "",
+            "routeLink"=> route("view-document", @$actionRes["routeId"]),
+            "routes"=> @$routeGraph["routes"] ?? [],
+            "tree"=>   @$routeGraph["tree"] ?? [],
         ]);
     })->name("view-routes");
-
 });
-
 
 Route::middleware(['auth'])->group(function() {
     Route::get('/dispatch', function () {

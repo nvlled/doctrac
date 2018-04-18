@@ -4,8 +4,8 @@
     <input id="user" value="{{$user ?? ""}}" type="hidden">
 
     <h2 class="title">
-        <span class='contents'></span>
-        (<small class='type'>*</small>)
+        <span class='contents'>{{$doc->title}}</span>
+        (<small class='type'>{{$doc->type}}</small>)
     </h2>
     <p class="info"><strong>state: </strong>
         <span class="doc-state {{$doc->state}}">
@@ -19,13 +19,23 @@
     </p>
     <p class='info'>
         <strong>classification level:</strong>
-        <span class='classification'></span>
+        <span class='classification'>{{$doc->classification}}</span>
     </p>
     <p class='info'>
         <strong>details:</strong>
-        <span class='details'></span>
+        <span class='details'>{{$doc->details}}</span>
     </p>
-    <p class='info attachment'><strong>attachment</strong>: <a href="#" target="_blank">filename.docx</a></p>
+    <p class='info {{!$action ? "hidden" : ""}}'>
+        <strong>action:</strong>
+        <a href="{{$routeLink}}" class='action'>
+            {{$action}}
+        </a>
+    </p>
+
+    <p class='info attachment {{hiddenIf(!$doc->attachment)}}'>
+        <strong>attachment</strong>:
+        <a href="{{$doc->attachment_url}}" target="_blank">{{$doc->attachment_filename}}</a>
+    </p>
 
     <table class='full'>
         <colgroup>
@@ -37,13 +47,24 @@
         </colgroup>
         <thead>
         <tr>
-            <th>id</th>
-            <th>campus</th>
-            <th>office</th>
+            <th>office name</th>
             <th>status</th>
+            <th>approval</th>
+            <th>time elapsed</th>
+            <th>annotations</th>
         </tr>
         </thead>
         <tbody>
+        @foreach ($routes as $route)
+        <tr>
+            @php $office = optional($route->office) @endphp
+            <td><a href="{{$route->link}}">{{$office->complete_name}}</a></td>
+            <td>{{$route->status}}</td>
+            <td>{{$route->approvalState}}</td>
+            <td>{{$route->time_elapsed}}</td>
+            <td>{{$route->annotations}}</td>
+        </tr>
+        @endforeach
         </tbody>
         <style>
         td {
@@ -59,5 +80,4 @@
         }
         </style>
     </table>
-    <script src="{{asset('js/sub/routes.js')}}"></script>
 </section>
