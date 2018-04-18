@@ -29,7 +29,7 @@ class DocumentRoute extends Model
         "link",
     ];
 
-    public $hidden = ["office", "document", "prevRoute", "nextRoute", "sender", "receiver"];
+    public $hidden = ["office", "document", "prevRoute", "nextRoute", "sender", "receiver", "more_next_route_ids", "moreNextRouteIds"];
 
     public function office() {
         return $this->hasOne("App\Office", "id", "officeId");

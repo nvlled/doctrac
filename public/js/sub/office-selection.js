@@ -84,7 +84,7 @@ UI.OfficeSelection.prototype = {
     },
 
     clearValue: function() {
-        this.$input[0].clear();
+        //this.$input[0].clear();
     },
 
     getSelectedIds: function() {

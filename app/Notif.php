@@ -69,7 +69,8 @@ class Notif {
     }
 
     public static function completed($doc) {
-        foreach ($doc->followTrail() as $route) {
+        $path = \App\DoctracAPI::new()->followMainRoute($doc);
+        foreach ($path as $route) {
             $msg = new DocumentAction(
                 "completed",
                 $route->office,

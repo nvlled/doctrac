@@ -105,6 +105,8 @@ window.addEventListener("load", function() {
 
     function listenEvents(doc) {
         var channel = UI.createChannel("doc."+doc.trackingId);
+        if (!channel)
+            return;
         channel.listen("DocUpdate", function(e) {
             console.log("document update");
             UI.flashMessage("document updated", "doc-update");

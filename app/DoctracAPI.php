@@ -482,7 +482,7 @@ class DoctracAPI {
     }
 
     public function currentRoute($trackingId) {
-        return $this->allCurrentRoutes($trackingId)[0];
+        return $this->allCurrentRoutes($trackingId)[0] ?? null;
     }
 
     public function allCurrentRoutes($trackingId) {

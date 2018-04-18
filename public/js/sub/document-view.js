@@ -190,10 +190,9 @@ window.addEventListener("load", function() {
             return Promise.resolve();
         }
 
-        var officeIds = officeSel.getSelectedIds();
         var officeId = officeSel.getOfficeId() || officeIds[0];
+        var officeIds = [officeId].concat(officeSel.getSelectedIds());
         var params = {
-            officeId:  officeId,
             officeIds: officeIds,
             annotations: $annots.val(),
             routeId: route.id,
@@ -236,7 +235,6 @@ window.addEventListener("load", function() {
             $btn.click(function(e) {
                 e.preventDefault();
                 UI.disableButton($btn);
-                var action = $btn.data("action");
                 UI.clearErrors($container);
                 var promise = onClick();
                 if (promise) {

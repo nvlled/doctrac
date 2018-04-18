@@ -35,7 +35,7 @@ function RouteCreate(graph, args) {
 
         updateOfficeSelection: function() {
             var office = self.getLastOffice();
-            if (self.getType == "serial") {
+            if (self.getType() == "serial") {
                 self.selectOfficeExcept([office.id]);
             } else {
                 self.selectOfficeExcept(self.rows.map(function(o) {
@@ -91,7 +91,7 @@ function RouteCreate(graph, args) {
             if (self.type == "serial") {
                 var offices = self.getOffices();
                 var selOffice = self.getSelectedOffice();
-                self.selectOfficeExcept([row.id]);
+                self.selectOfficeExcept([selOffice.id]);
             }
 
             if (index < 0) {
@@ -118,8 +118,10 @@ function RouteCreate(graph, args) {
                     break;
                 }
             }
-            if (self.officeIndex < 0 || self.officeIndex >= offices.length)
+            if (self.officeIndex < 0 ||
+                self.officeIndex >= offices.length) {
                 self.officeIndex = 0;
+            }
         },
 
         getType: function() {
@@ -128,7 +130,7 @@ function RouteCreate(graph, args) {
 
         changeType: function(name) {
             if (self.rows.length > 0 && self.type != name) {
-                let proceed = confirm(
+                var proceed = confirm(
                     "changing the type will clear all the rows, continue?"
                 );
                 if (!proceed)
@@ -163,21 +165,34 @@ function RouteCreate(graph, args) {
             return self.rows[self.rows.length-1];
         },
 
+        isCampusDisabled() {
+            var lastOffice = self.getLastOffice();
+            var currentOffice = self.currentOffice;
+            if (currentOffice && self.getType() == "parallel") {
+                return !currentOffice.main;
+            }
+            return self.getType() == "serial"
+                && lastOffice && !lastOffice.gateway;
+
+        },
+
         changeCampus: function(e) {
-            self.campusIndex = self.vm.refs.campuses.el.selectedIndex;
+            self.campusIndex =
+                self.vm.refs.campuses.el.selectedIndex;
             self.updateOfficeSelection();
         },
         changeOffice: function(e) {
-            self.officeIndex = self.vm.refs.offices.el.selectedIndex;
+            self.officeIndex =
+                self.vm.refs.offices.el.selectedIndex;
         },
 
         getOffices: function() {
             var lastOffice = self.getLastOffice();
             var campus = self.getSelectedCampus();
-            console.log("campusIndex", self.campusIndex);
             if (campus) {
                 var offices = self.graph.getLocalOffices(campus.id);
-                if (lastOffice && lastOffice.campusId != campus.id) {
+                if (lastOffice &&
+                    lastOffice.campusId != campus.id) {
                     offices = offices.filter(function(off) {
                         return off.gateway;
                     });
