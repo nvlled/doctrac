@@ -23,17 +23,16 @@ function RouteCreate(graph, args) {
         },
     }
 
-    args = args || {};
-    var rows = args.rows || [];
-
     var currentOffice = args.currentOffice;
     if ( ! currentOffice) {
         throw "currentOffice is required";
     }
 
+    args = args || {};
+    var rows = args.rows || [];
+    //rows.unshift(currentOffice);
+
     // TODO:
-    // disable campus when parallel and not main
-    //  then select campus of currentOffice
     // disable office when parallel and main
     //  then select records
 
@@ -43,6 +42,7 @@ function RouteCreate(graph, args) {
         showType:  util.defbool(args.showType,  currentOffice.level > 1),
         vm: null,
         graph: graph,
+        //initialRows: [currentOffice],
         rows: rows,
         type: args.type || "serial",
         officeIndex: args.officeIndex || 0,
@@ -130,6 +130,40 @@ function RouteCreate(graph, args) {
 
         },
 
+        selectCampus: function(id) {
+            var campuses = self.getCampuses();
+            for (var i = 0; i < campuses.length; i++) {
+                if (typeof id == "function" && id(campuses[i])) {
+                    self.campusIndex = i;
+                    break;
+                } else if (campuses[i].id == id) {
+                    self.campusIndex = i;
+                    break;
+                }
+            }
+            if (self.campusIndex < 0 ||
+                self.campusIndex >= campuses.length) {
+                self.campusIndex = 0;
+            }
+        },
+
+        selectOffice: function(id) {
+            var offices = self.getOffices();
+            for (var i = 0; i < offices.length; i++) {
+                if (typeof id == "function" && id(offices[i])) {
+                    self.officeIndex = i;
+                    break;
+                } else if (offices[i].id == id) {
+                    self.officeIndex = i;
+                    break;
+                }
+            }
+            if (self.officeIndex < 0 ||
+                self.officeIndex >= offices.length) {
+                self.officeIndex = 0;
+            }
+        },
+
         selectOfficeExcept: function(ids) {
             var selOffice = self.getSelectedOffice();
             var isFiltered = function(id) {
@@ -165,7 +199,20 @@ function RouteCreate(graph, args) {
                     return;
             }
             self.rows.splice(0);
+            //self.rows = self.rows.concat(self.initialRows);
             self.type = name;
+
+            var lastOffice = self.getLastOffice();
+            var currentOffice = self.currentOffice;
+            if (self.getType() == "parallel") {
+                if (!currentOffice.main) {
+                    self.selectCampus(currentOffice.campusId);
+                } else {
+                    self.selectOffice(function(off) {
+                        return off.records;
+                    });
+                }
+            }
         },
 
         getSelectedCampus: function() {
@@ -233,6 +280,14 @@ function RouteCreate(graph, args) {
             return self.graph.getCampuses();
         },
     }
+    if (args.selectedOffice) {
+        var off = args.selectedOffice;
+        self.selectCampus(off.campusId);
+        self.selectOffice(off.id);
+    } else {
+        self.selectCampus(currentOffice.campusId);
+    }
+
     self.vm = domvm.createView(RouteCreateView, self);
     return self;
 }
@@ -343,6 +398,9 @@ function RouteCreateView(vm, api) {
             ]),
         ]);
         return el("div.route-create", [
+            el("div", [
+                el("em", "("+api.currentOffice.complete_name+")"),
+            ]),
             table,
             panel,
         ]);

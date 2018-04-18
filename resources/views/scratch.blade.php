@@ -20,6 +20,10 @@ domvm.config({
 <div class="dom"></div>
 <script src='{{asset("js/view/route-create.js")}}'></script>
 <style>
+table.route-create td {
+    border: 1px solid gray;
+    padding: 10px;
+}
 </style>
 
 <script src='{{asset("js/office-graph.js")}}'></script>
@@ -39,12 +43,10 @@ function load() {
             showTable: true,
             //showType: true,
             currentOffice:  currentOffice,
+            selectedOffice:  offices[2],
             rows: [
-                offices[0],
-                offices[3],
-                offices[7],
-                offices[2],
-                offices[1],
+                //offices[2],
+                //offices[8],
             ],
         });
         var vm = api.vm;
