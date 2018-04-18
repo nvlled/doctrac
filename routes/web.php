@@ -116,11 +116,15 @@ Route
         $api = api();
         $actionRes = $api->actionFor($doc, $user->office);
         $routeGraph = $api->getRouteGraph($doc);
+        $routeLink = @$actionRes["routeId"]
+            ? $routeLink = route("view-document", @$actionRes["routeId"])
+            : "";
+
         return view('routes', [
             "doc" => $doc,
             "office" => optional($user)->office,
             "action"=> $actionRes["action"] ?? "",
-            "routeLink"=> route("view-document", @$actionRes["routeId"]),
+            "routeLink"=> $routeLink,
             "routes"=> @$routeGraph["routes"] ?? [],
             "tree"=>   @$routeGraph["tree"] ?? [],
         ]);

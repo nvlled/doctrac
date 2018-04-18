@@ -127,7 +127,7 @@
     <footer>
         <a class="red" href="https://github.com/nvlled/doctrac">project repository</a> /
         <a class="red" href="https://gitter.im/doctrac/Lobby">developer chat messaging</a> |
-        <a href="/about">about</a> |
+        <a href="#">about</a> |
         copyright © 2018
     </footer>
 
