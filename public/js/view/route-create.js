@@ -30,11 +30,6 @@ function RouteCreate(graph, args) {
 
     args = args || {};
     var rows = args.rows || [];
-    //rows.unshift(currentOffice);
-
-    // TODO:
-    // disable office when parallel and main
-    //  then select records
 
     var self =  {
         currentOffice: currentOffice,
@@ -42,7 +37,6 @@ function RouteCreate(graph, args) {
         showType:  util.defbool(args.showType,  currentOffice.level > 1),
         vm: null,
         graph: graph,
-        //initialRows: [currentOffice],
         rows: rows,
         type: args.type || "serial",
         officeIndex: args.officeIndex || 0,
@@ -52,8 +46,15 @@ function RouteCreate(graph, args) {
         getCampus: function(row) {
             return self.graph.getCampus(row.campusId);
         },
+
         getRows: function() {
             return self.rows;
+        },
+
+        getRowIds: function() {
+            return self.rows.map(function(row) {
+                return row.id;
+            });
         },
 
         isAdded: function(office) {
@@ -199,7 +200,6 @@ function RouteCreate(graph, args) {
                     return;
             }
             self.rows.splice(0);
-            //self.rows = self.rows.concat(self.initialRows);
             self.type = name;
 
             var lastOffice = self.getLastOffice();
@@ -213,6 +213,7 @@ function RouteCreate(graph, args) {
                     });
                 }
             }
+            self.vm.redraw();
         },
 
         getSelectedCampus: function() {
@@ -226,18 +227,21 @@ function RouteCreate(graph, args) {
         getDisabledCampuses: function() {
             return [];
         },
+
         getDisabledOffices: function() {
-            if (self.type == "serial" && self.rows.length > 0) {
+            let ids = []
+            if (self.type == "serial") {
                 var lastOffice = self.getLastOffice();
-                return [lastOffice.id];
+                ids = [lastOffice.id];
             } else if (self.type == "parallel") {
-                return self.rows.map(function(o) { return o.id});
+                ids = self.rows.map(function(o) { return o.id});
+                ids.push(self.currentOffice.id);
             }
-            return [];
+            return ids;
         },
 
         getLastOffice: function() {
-            return self.rows[self.rows.length-1];
+            return self.rows[self.rows.length-1] || self.currentOffice;
         },
 
         isCampusDisabled() {
@@ -255,19 +259,21 @@ function RouteCreate(graph, args) {
             self.campusIndex =
                 self.vm.refs.campuses.el.selectedIndex;
             self.updateOfficeSelection();
+            self.vm.redraw();
         },
         changeOffice: function(e) {
-            self.officeIndex =
-                self.vm.refs.offices.el.selectedIndex;
+            self.officeIndex = self.vm.refs.offices.el.selectedIndex;
+            self.vm.redraw();
         },
 
         getOffices: function() {
             var lastOffice = self.getLastOffice();
+            var currentOffice = self.currentOffice;
             var campus = self.getSelectedCampus();
             if (campus) {
                 var offices = self.graph.getLocalOffices(campus.id);
-                if (lastOffice &&
-                    lastOffice.campusId != campus.id) {
+                if ((lastOffice && lastOffice.campusId != campus.id) ||
+                    currentOffice.campusId != campus.id) {
                     offices = offices.filter(function(off) {
                         return off.gateway;
                     });
@@ -276,8 +282,15 @@ function RouteCreate(graph, args) {
             }
             return [];
         },
+
         getCampuses: function() {
             return self.graph.getCampuses();
+        },
+
+        isDeadEnd: function() {
+            var lastOffice = self.getLastOffice();
+            return self.getType() == "serial" &&
+                lastOffice.campusId != self.currentOffice.campusId;
         },
     }
     if (args.selectedOffice) {
@@ -286,6 +299,7 @@ function RouteCreate(graph, args) {
         self.selectOffice(off.id);
     } else {
         self.selectCampus(currentOffice.campusId);
+        self.selectOfficeExcept([currentOffice.id]);
     }
 
     self.vm = domvm.createView(RouteCreateView, self);
@@ -327,24 +341,20 @@ function RouteCreateView(vm, api) {
         return el("table.route-create", [
             el("thead", [
                 el("tr", [
-                    el("th", "id"),
                     el("th", "campus"),
                     el("th", "office"),
-                    el("th", "action"),
+                    el("th", ""),
                 ]),
             ]),
             el("tbody", {_key: new Date()},
                 rows.map(function(row, index) {
                     var campus = api.getCampus(row) || {};
-                    var isLast =
-                        index == rows.length - 1 && rows.length != 1;
                     return el("tr", {_key: "off-"+row.id+"-"+(+new Date())}, [
-                        el("td", row.id),
                         el("td", campus.name),
                         el("td", row.name),
                         el("td", [
-                            isLast && el(
-                                "button",
+                            el(
+                                "a",
                                 {onclick: [api.removeRow, row]},
                                 "✗",
                             ) ,
@@ -359,14 +369,15 @@ function RouteCreateView(vm, api) {
         var table = api.showTable ? renderTable() : null;
         var disabledCampuses = api.getDisabledCampuses();
         var disabledOffices = api.getDisabledOffices();
+        var isDeadEnd       = api.isDeadEnd();
 
         var panel = el("div.panel", [
-            el("div", api.message),
+            el("div", [el("em", api.message)]),
             el(
                 "select.campuses[name=campuses]",
                 {
                     _ref: "campuses",
-                    disabled: api.isCampusDisabled(),
+                    disabled: api.isCampusDisabled() || isDeadEnd,
                     onchange: [api.changeCampus]
                 },
                 api.getCampuses().map(function(obj, idx) {
@@ -380,6 +391,7 @@ function RouteCreateView(vm, api) {
                 "select.offices[name=offices]",
                 {
                     _ref: "offices",
+                    disabled: isDeadEnd,
                     onchange: [api.changeOffice]
                 },
                 api.getOffices().map(function(obj, idx) {
@@ -390,7 +402,10 @@ function RouteCreateView(vm, api) {
                     }, obj.name);
                 })
             ),
-            el("button", {onclick: api.insertRow}, "add"),
+            el("button", {
+                onclick: api.insertRow,
+                disabled: isDeadEnd,
+            }, "add"),
             api.showType && el("div", [
                 createRadio("serial"),
                 el("span", " "),
@@ -399,7 +414,7 @@ function RouteCreateView(vm, api) {
         ]);
         return el("div.route-create", [
             el("div", [
-                el("em", "("+api.currentOffice.complete_name+")"),
+                el("small", "(current office: "+api.currentOffice.complete_name+")"),
             ]),
             table,
             panel,
