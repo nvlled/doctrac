@@ -6,9 +6,9 @@
     <title>doctrac</title>
 
     <!--Import Google Icon Font-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
     <!--Import materialize.css-->
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <!--<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">-->
 
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -125,11 +125,11 @@
     </footer>
 
     @yield("scripts")
-    <script src="{{asset('material/js/materialize.min.js')}}"></script>
+    <!--<script src="{{asset('material/js/materialize.min.js')}}"></script>-->
     <script src="{{asset('js/combobox.js')}}"></script>
     <!--<script src="{{asset('js/autocomplete.js')}}"></script>-->
     <script src="{{asset('js/autologout.js')}}"></script>
-    <script src="{{asset('js/filled.js')}}"></script>
+    <!--<script src="{{asset('js/filled.js')}}"></script>-->
     <script src="{{asset('js/localSave.js')}}"></script>
     <script src="//{{ Request::getHost() }}:6001/socket.io/socket.io.js"></script>
     <script src="{{asset('js/echo.js')}}"></script>
