@@ -151,10 +151,22 @@ var util = {
         }).filter(function(line) { return !! line });
     },
 
+    deprecate: function(fn) {
+        return function() {
+            throw "function is deprecated: " , + fn.toString();
+        }
+    },
+
     currentUser: function() {
         var json =  $("body").find("input#current-user").val();
         if (json)
             return JSON.parse(json);
         return null;
+    },
+
+    requireProperty: function(obj, k) {
+        if ( ! obj[k]) {
+            throw new Error(k + " is required on object");
+        }
     },
 }

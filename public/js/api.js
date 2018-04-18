@@ -140,10 +140,21 @@ var api = {
         seenRoutes: makeHandler("/api/users/{userId}/seen-routes"),
         seeRoute: makeHandler("/api/users/{userId}/see-route/{routeId}"),
 
-        self: makeHandler("/api/users/self"),
-        clearSelf: makeHandler("/api/users/self/clear"),
+        self: function() {
+            var json =  $("body").find("input#current-user").val();
+            if (json)
+                return Promise.resolve(JSON.parse(json));
+            return api.req.get("/api/users/self");
+        },
 
-        setSelf: makeHandler("/api/users/self/{userId}"),
+        printSelf: function() {
+            api.user.self().then(u => {
+                console.log("user.self", u);
+            });
+        },
+
+        clearSelf: util.deprecate(makeHandler("/api/users/self/clear")),
+        setSelf: util.deprecate(makeHandler("/api/users/self/{userId}")),
 
         get: makeHandler("/api/users/get/{id}"),
 
