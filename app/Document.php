@@ -36,6 +36,7 @@ class Document extends Model
     }
 
     public function startingRoutes() {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
         return DocumentRoute
             ::where("trackingId", $this->trackingId)
             ->whereNull("prevId")
@@ -43,20 +44,25 @@ class Document extends Model
     }
 
     public function startingRoute() {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
+        return DoctracAPI::new()->origin(this);
         return $this->startingRoutes()->first();
     }
 
     public function finalRoutes() {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
         return DocumentRoute::whereIn("id", $this->finalRouteIds())->get();
     }
 
     public function finalOffices() {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
         return mapFilter($this->finalRoutes(), function($route) {
             return $route->office;
         });
     }
 
     public function followTrail($start=true) {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
         $route = null;
         if ($start)
             $route = $this->startingRoute();
@@ -77,6 +83,7 @@ class Document extends Model
     // for serial routes, there is at most one route id
     // for parallel routes, there may be more than one
     public function currentRouteIds() {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
         $sql = "
             select pathId, max(id) as id
             from `document_routes`
@@ -93,42 +100,50 @@ class Document extends Model
     }
 
     public function currentRoutes() {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
         return DocumentRoute::whereIn("id", $this->currentRouteIds())->get();
     }
 
     public function currentRoute() {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
         return $this->currentRoutes()->first();
     }
 
     public function currentOffices() {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
         return mapFilter($this->currentRoutes(), function($route) {
             return $route->office;
         });
     }
 
     public function nextRoutes() {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
         return mapFilter($this->currentRoutes(), function($route) {
             return $route->nextRoute;
         });
     }
 
     public function nextRoute() {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
         return $this->nextRoutes()->first();
     }
 
     public function nextOffices() {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
         return mapFilter($this->nextRoutes(), function($route) {
             return $route->office;
         });
     }
 
     public function prevRoutes() {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
         return mapFilter($this->currentRoutes(), function($route) {
             return $route->prevRoute;
         });
     }
 
     public function prevOffices() {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
         return mapFilter($this->prevRoutes(), function($route) {
             return $route->office;
         });
