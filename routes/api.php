@@ -30,18 +30,18 @@ Route
         if (!$route)
             return ["errors"=>["doc"=>"invalid route id"]];
 
-        $api = DoctracAPI::new();
-        $api->finalize($route);
+        $api = api();
+        $api->finalizeDocument($route);
         if ($api->hasErrors()) {
             return $api->getErrors();
         }
 
-        broadcast(new \App\Events\DocUpdate($doc));
-        Notif::completed($doc);
+        broadcast(new \App\Events\DocUpdate($route->document));
+        Notif::completed($route->document);
     });
 
     Route::any('/tree/{trackingId}', function (Request $req, $trackingId) {
-        $api = DoctracAPI::new();
+        $api = api();
         $doc = $api->getDocument($trackingId);
         if ($api->hasErrors()) {
             return $api->getErrors();
@@ -51,6 +51,7 @@ Route
     });
 
     Route::any('/origins/{trackingId}', function (Request $req, $trackingId) {
+        $api = api();
         $doc = App\Document::where("trackingId", $trackingId)->first();
         if ($doc) {
             return $doc->startingRoutes();
@@ -84,11 +85,8 @@ Route
             return collect();
 
         $routes = collect();
-        foreach ($doc->startingRoutes() as $startRoute) {
-            $path = $startRoute->followRoutesInPath();
-            foreach ($path as $route)
-                $routes->push($route);
-        }
+        $api = api();
+        $routes = $api->followMainRoute($doc);
         return $routes;
     });
 
@@ -126,116 +124,33 @@ Route
         if (!$user->office)
             return ["errors"=>["user"=>"user has no valid office"]];
 
-        if ( ! $route->canBeSentBy($user->office)) {
-            return ["errors"=>["doc"=>"user cannot send document"]];
-        }
-
         $office = $user->office;
         $annotations = $req->annotations;
 
         if ($route->final) {
             return ["errors"=>["doc"=>
-                "cannot forward document on path={$route->$pathId},
-                route={$route->id}, destination is final"
+                "cannot forward document route={$route->id}, destination is final"
             ]];
         }
+        $officeIds = $req->officeIds ?? [];
+
         $doc = $route->document;
-        if ($doc->state == "ongoing")
-            $route->approvalState = "accepted";
+        $api = api();
+        $api->forwardDocument([
+            "document"=>  $doc,
+            "office"  =>  $office,
+            "officeIds"=> $officeIds,
+        ]);
+        if ($api->hasErrors())
+            return $api->getErrors();
 
-        if ($office->gateway && $doc->state == "ongoing") {
-            $officeIds = $req->officeIds ?? [];
-            if ( ! $officeIds) {
-                return ["errors"=>["officeIds"=>"add at least one destination"]];
-            }
-
-             \DB::transaction(function() use ($doc, $officeIds, $user, $annotations, $route) {
-                $doc->createSerialRoutes($officeIds, $user, $annotations, $route);
-                // TODO: handle parallel
-            });
-
-            $nextRoute = $route->nextRoute;
-            broadcast(new \App\Events\DocUpdate($doc));
-            \Notif::sent($user->office, $nextRoute->office, $nextRoute);
-            \Flash::add("document forwarded: {$doc->trackingId}");
-            return null;
-        }
-
-        $destOfficeId = $req->officeId;
-        if (!$destOfficeId) {
-            return ["errors"=>["doc"=>
-                "no next destination specified"
-            ]];
-        }
-        if ($destOfficeId == $route->officeId) {
-            return ["errors"=>["doc"=>
-                "cannot forward documents to the same place"
-            ]];
-        }
-        $nextOffice = \App\Office::find($destOfficeId);
-        if (!$office->isLinkedTo($nextOffice)) {
-            $nextOfficeName = $nextOffice->complete_name ?? "unknown office";
-            return ["errors"=>["doc"=>
-                "invalid route, cannot forward {$office->complete_name}"
-                ." to {$nextOfficeName}"
-            ]];
-        }
-
-        $route->senderId = $user->id;
-        $route->forwardTime = ngayon();
-
-        $nextRoute = $route->nextRoute;
-        if (!$nextRoute) {
-            $nextRoute = new App\DocumentRoute();
-            $nextRoute->trackingId = $route->trackingId;
-            $nextRoute->officeId = $destOfficeId;
-            $nextRoute->pathId = $route->pathId;
-            $nextRoute->annotations = $annotations;
-            $nextRoute->save();
-            $route->nextId = $nextRoute->id;
-            $nextRoute->prevId = $route->id;
-            $route->save();
-            $nextRoute->save();
-        } else if ($destOfficeId == $nextRoute->officeId) {
-            $nextRoute->annotations = $annotations;
-            $route->save();
-            $nextRoute->save();
-        } else {
-            $shortcut = $route->findNextRoute($destOfficeId);
-            if ($shortcut) {
-                // TODO: delete skipped routes
-
-                // take a shortcut route
-                $route->nextId = $shortcut->id;
-                $shortcut->prevId = $route->id;
-                $shortcut->annotations = $annotations;
-                $route->save();
-                $shortcut->save();
-            } else {
-                // insert a detour route
-                $detour = new App\DocumentRoute();
-                $detour->trackingId = $route->trackingId;
-                $detour->officeId = $destOfficeId;
-                $detour->pathId = $route->pathId;
-                $detour->annotations = $annotations;
-                $detour->save(); // save first to get an ID
-
-                $route->nextId = $detour->id;
-                $detour->prevId = $route->id;
-                if ($nextRoute) {
-                    $detour->nextId = $nextRoute->id;
-                    $nextRoute->prevId = $detour->id;
-                }
-
-                $route->save();
-                $detour->save();
-                if ($nextRoute)
-                    $nextRoute->save();
-            }
-        }
         broadcast(new \App\Events\DocUpdate($doc));
         \Flash::add("document forwarded: {$route->trackingId}");
-        \Notif::sent($office, $nextOffice, $nextRoute);
+        $routes = $route->allNextRoutes();
+        foreach ($routes as $nextRoute) {
+            \Notif::sent($office, $nextRoute->office, $nextRoute);
+        }
+        return $routes;
     });
 });
 
@@ -267,18 +182,6 @@ Route
         return App\Document::where("trackingId", $trackingId)->first();
     });
 
-    Route::any('/next-route/{trackingId}/path/{pathId}',
-        function (Request $req, $trackingId, $pathId) {
-            $doc = App\Document::where("trackingId", $trackingId)->first();
-            if (!$doc)
-                return null;
-            foreach ($doc->nextRoutes() as $route) {
-                if ($pathId == $route->pathId)
-                    return $route;
-            }
-            return null;
-        });
-
     Route::any('/current-routes/{trackingId}/', function (Request $req, $trackingId) {
         $doc = App\Document::where("trackingId", $trackingId)->first();
         if (!$doc)
@@ -297,11 +200,15 @@ Route
         $doc = App\Document::where("trackingId", $trackingId)->first();
         if (!$doc)
             return collect();
-        return $doc->followTrail(false);
+        $api = api();
+        $route = $api->currentRoute($doc);
+        if ($route)
+            return $api->followMainRoute($route);
+        return [];
     });
 
     Route::any('/finalize/{trackingId}', function (Request $req, $trackingId) {
-        throw new Exception("TODO");
+        throw new \Exception("TODO");
         $doc = App\Document::where("trackingId", $trackingId)->first();
 
         // TODO: use a middleware for these common validations
@@ -334,12 +241,13 @@ Route
         $doc->state = "disapproved";
         $doc->save();
 
-        foreach ($doc->currentRoutes() as $route) {
+        $api = api();
+        foreach ($api->allCurrentRoutes($doc) as $route) {
             $office = $user->office;
             if ($office->id != $route->officeId)
                 continue;
 
-            $routes = DoctracAPI::new()->traceOriginPath($route);
+            $routes = api()->traceOriginPath($route);
             $offices = collect($routes)->slice(1)->map(function($r) {
                 return $r->office;
             });
@@ -354,7 +262,6 @@ Route
             foreach ($offices as $office) {
                 $nextRoute = new \App\DocumentRoute();
                 $nextRoute->officeId   = $office->id;
-                $nextRoute->pathId     = $route->pathId;
                 $nextRoute->trackingId = $route->trackingId;
                 $nextRoute->approvalState = "N/A";
                 $nextRoute->save();
@@ -381,22 +288,22 @@ Route
 
     Route::any('/receive/{trackingId}', function (Request $req, $trackingId) {
         $user = Auth::user();
-        $api = new DoctracAPI();
-        $doc = $api->receiveDocument($user, $trackingId);
+        $api = new DoctracAPI($user);
+        $doc = $api->getDocument($trackingId);
+        $route = $api->receiveFromOffice($trackingId, $user->office);
         if ($api->hasErrors())
             return $api->getErrors();
 
-        foreach ($doc->currentRoutes() as $route) {
-            $prevRoute = $route->prevRoute;
-            Notif::received($prevRoute->office, $route->office, $prevRoute);
-        }
+        $prevRoute = $route->prevRoute;
+        Notif::received($prevRoute->office, $route->office, $prevRoute);
+
         broadcast(new \App\Events\DocUpdate($doc));
         \Flash::add("document received: {$doc->trackingId}");
         return $doc;
     });
 
     Route::any('/forward/{trackingId}', function (Request $req, $trackingId) {
-        throw new Exception("deprecated");
+        throw new \Exception("deprecated");
     });
 
     Route::any('/{trackingId}/set-attachment',
@@ -434,18 +341,20 @@ Route
     // TODO: rename to create
     Route::any('/send', function (Request $req) {
         $user = Auth::user();
-        $api = new DoctracAPI();
-        $doc = $api->createDocument($user, $req->toArray());
+        $api = new DoctracAPI($user);
+        $doc = $api->dispatchDocument($req->toArray());
         $ids = $req->officeIds ?? [];
         $annotations = $req->annotations ?? "";
         if ($api->hasErrors())
             return $api->getErrors();
 
         if ($doc->type == "serial") {
-            $nextRoute = $doc->nextRoute();
+            $nextRoute = $api->waitingRoute($doc);
             \Notif::sent($user->office, $nextRoute->office, $nextRoute);
         } else {
-            foreach ($doc->nextRoutes() as $nextRoute) {
+            foreach ($api->allNextRoutes($doc) as $nextRoute) {
+                if (!$nextRoute)
+                    continue;
                 \Notif::sent($user->office, $nextRoute->office, $nextRoute);
             }
         }
@@ -531,7 +440,7 @@ Route
                 $prevRoute = $route->prevRoute;
                 \Notif::seen($prevRoute->office, $route->office, $prevRoute);
                 return "okay";
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 return $e->getMessage();
             }
     });
@@ -764,9 +673,10 @@ Route
         function (Request $req, $officeId, $trackingId) {
             $office = App\Office::find($officeId);
             $doc = App\Document::where("trackingId", $trackingId)->first();
-            if ($office)
-                return $office->actionFor($doc);
-            return "";
+            if ($office) {
+                return api()->actionFor($doc, $office);
+            }
+            return [];
         });
 
     Route::post('/{officeId}/action-for-route/{routeId}',
