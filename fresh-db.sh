@@ -9,9 +9,9 @@ if [[ $env = 'production' ]]; then
     exit
 fi
 
-mysqldump -p doctrac subscribed_numbers > storage/numbers.sql
-mysqldump -p doctrac > storage/backup-`date +"%Y-%m-%d-%H%m%S"`-.sql
+#mysqldump -p doctrac subscribed_numbers > storage/numbers.sql
+#mysqldump -p doctrac > storage/backup-`date +"%Y-%m-%d-%H%m%S"`-.sql
 php artisan migrate:fresh && \
     php artisan maint:initdb
 
-mysql -p doctrac < storage/numbers.sql
+#mysql -p doctrac < storage/numbers.sql

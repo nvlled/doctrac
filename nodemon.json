@@ -1,0 +1,3 @@
+{
+    "ignore": ["vendor", "node_modules", "storage"]
+}
