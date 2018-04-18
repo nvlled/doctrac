@@ -18,7 +18,7 @@ class DoctracAPI {
     public $user = null;
     public $debug = false;
 
-    public function __construct(\App\User $user) {
+    public function __construct($user) {
         $this->user = $user;
         $this->errors = collect();
     }
@@ -173,7 +173,7 @@ class DoctracAPI {
         $officeIds      = @$args["officeIds"];
         $route          = @$args["route"];
         $annotations    = @$args["annotations"] ?? "";//TODO
-        $type           = @$args["type"] ?? "";
+        $type           = @$args["type"] ?? $doc->type ?? "";
 
         $doc = $this->getDocument($doc);
         $office = $this->getOffice($office);
@@ -305,7 +305,7 @@ class DoctracAPI {
         $doc->type           = $docData->type ?? "serial";
         $doc->details        = $docData->details;
         $doc->trackingId     = $user->office->generateTrackingID();
-        $annotations         = $docData->annotations;
+        $annotations    = $docData->annotations;
         $doc->classification = $docData->classification ?? "open";
 
         $v = $doc->validate();
@@ -357,7 +357,7 @@ class DoctracAPI {
 
         $node = [
             "val" => $route,
-            "next" => $next,
+            "next" => $next->toArray(),
         ];
         $fn($route, $next, $node);
         return $node;
@@ -377,7 +377,7 @@ class DoctracAPI {
             if ($route->approvalState) {
                 $node["approval"] = $route->approvalState;
             }
-            $node["next"] = $next->toArray();
+            $node["next"] = $next;
         });
     }
 
@@ -452,6 +452,7 @@ class DoctracAPI {
         $route = $this->getRoute($routeId);
         $path  = $this->traceRoute($routeId);
         $count = $path->count();
+
         if ($count > 0)
             return $path[0];
         return null;
@@ -480,6 +481,10 @@ class DoctracAPI {
             });
     }
 
+    public function currentRoute($trackingId) {
+        return $this->allCurrentRoutes($trackingId)[0];
+    }
+
     public function allCurrentRoutes($trackingId) {
         return $this->searchRoutes($trackingId, true,
             function($route) {
@@ -495,10 +500,14 @@ class DoctracAPI {
     }
 
     public function allWaitingRoutes($trackingId) {
-        return $this->searchRoutes($trackingId, true,
+        return $this->searchRoutes($trackingId, false,
             function($route) {
                 return $route->isWaiting();
             });
+    }
+
+    public function waitingRoute($trackingId) {
+        return $this->allWaitingRoutes($trackingId)->get(0);
     }
 
     public function findSendableRoutes($trackingId, $office) {
@@ -509,12 +518,14 @@ class DoctracAPI {
     }
 
     public function findWaitingRoutes($trackingId, $office) {
-        return filter(
-            $this->allWaitingRoutes($trackingId),
-            function($route) use ($office) {
-                return $route->officeId == $office->id;
-            }
-        );
+        $office = $this->getOffice($office);
+        if (!$office) {
+            return collect();
+        }
+        $routes = $this->allWaitingRoutes($trackingId);
+        return filter($routes, function($route) use ($office) {
+            return $route->officeId == $office->id;
+        });
     }
 
     public function findProcessingRoutes($trackingId, $office) {
@@ -532,11 +543,12 @@ class DoctracAPI {
     }
 
     public function allNextRoutes($trackingId) {
-        $nextRoutes = $this->allCurrentRoutes($trackingId)
-            ->map(function($route) {
-                return $route->nextRoute;
-            });
-        return filter($nextRoutes, rejectNull);
+        $routes = $this->allCurrentRoutes($trackingId);
+        $nextRoutes = collect();
+        foreach ($routes as $route) {
+            $nextRoutes = $nextRoutes->concat($route->allNextRoutes());
+        }
+        return filter($nextRoutes, 'rejectNull');
     }
 
     public function allOfficeRoutes($doc, $office) {
@@ -546,6 +558,21 @@ class DoctracAPI {
             function($route) use ($office) {
                 return $route->officeId == $office->id;
             });
+    }
+
+    public function actionFor($doc, $office) {
+        $office = $this->getOffice($office);
+        $routes = $this->allOfficeRoutes($doc, $office);
+        foreach ($routes as $route) {
+            $action = $office->actionForRoute($route);
+            if ($action) {
+                return [
+                    "action" => $action,
+                    "routeId" => $route->id,
+                ];
+            }
+        }
+        return [];
     }
 
     public function searchRoutes($trackingId, $stopOnMatch, $pred) {
@@ -577,7 +604,7 @@ class DoctracAPI {
     }
 
     public function allFinalRoutes($routeId) {
-        return filter($this->endRoutes($routeId), function($route) {
+        return filter($this->allEndRoutes($routeId), function($route) {
             return $route->final;
         });
     }
@@ -587,12 +614,12 @@ class DoctracAPI {
      */
     public function traceRoute($routeId) {
         $route = $this->getRoute($routeId);
-        $routes = collect();
+        $routes = [];
         while ($route) {
-            $routes->push($route);
+            $routes [] = $route;
             $route = $route->prevRoute;
         }
-        return $routes->reverse();
+        return collect(array_reverse($routes));
     }
 
     public function traceRouteIds($routeId) {
@@ -612,6 +639,14 @@ class DoctracAPI {
             $route = $route->nextRoute;
         }
         return $routes;
+    }
+
+    public function nextRoute($routeId) {
+        $routes = $this->followRoute($routeId);
+        if ($routes->count() > 0) {
+            return $routes[0];
+        }
+        return null;
     }
 
     public function followMainRoute($doc) {
@@ -869,7 +904,7 @@ class DoctracAPI {
 
     /** @deprecated */
     public function createDocument($user, $docData) {
-        throw new Exception("deprecated");
+        throw new \Exception("deprecated");
         /*
         $docData = arrayObject($docData);
         if (is_string($user)) {
@@ -966,5 +1001,23 @@ class DoctracAPI {
             "offices"=>\App\Office::all(),
             "campuses"=>\App\Campus::all(),
         ]);
+    }
+
+    public function getRouteGraph($routeOrId) {
+        $routes = collect();
+        $tree = $this->mapTree($routeOrId,
+            function($route, $next, &$node) use ($routes) {
+                $node["val"] = $route->id;
+                $routes->prepend($route);
+            }
+        );
+        return [
+            "routes"=>$routes,
+            "tree"=>$tree,
+        ];
+    }
+
+    public function getRouteTree($routeOrId) {
+        return $this->mapTree($routeOrId);
     }
 }
