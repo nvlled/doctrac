@@ -15,7 +15,8 @@ window.addEventListener("load", function() {
 
     var currentUser = null;
     var currentDoc = null;
-    var officeSel = null;
+    var officeGraph;
+    var officeSel;
 
     $btnActions.removeClass("hidden").hide();
     $sendData.removeClass("hidden").hide();
@@ -36,21 +37,39 @@ window.addEventListener("load", function() {
             } else {
                 $btnFinalize.removeClass("hidden").show();
             }
-            officeSel = new UI.OfficeSelection(
-                $container.find("div.office-selection"),
-                {
-                    officeId: currentUser.officeId,
-                    campusId: currentUser.campus_id,
-                    gateway:  currentUser.gateway,
-                    hideTable: !currentUser.gateway,
-                }
-            );
-
         }
         $container.find(".user-name").text(user.fullname);
         $container.find(".office-id").text(user.officeId);
         $container.find(".office-name").text(user.office_name);
         loadDocument();
+    }
+
+    function setupOfficeSel(doc) {
+        Promise.all([
+            OfficeGraph.fetch(),
+            api.office.self(),
+        ]).then(function(values) {
+            var graph = values[0];
+            var currentOffice = values[1];
+            officeGraph = graph;
+            var offices = graph.getOffices();
+
+            // TODO: hide if parallel and current office is not records or main
+            //       or better yet, actionFor should be "" when conditions above holds
+            var docType = doc.document_type;
+            var canParallelSend = docType == "parallel" &&
+                !!currentOffice.gateway;
+
+            officeSel = RouteCreate(graph, {
+                showTable: canParallelSend,
+                showType: false,
+                showAddButton: canParallelSend,
+                currentOffice:  currentOffice,
+                type: docType,
+            });
+            var vm = officeSel.vm;
+            vm.mount(document.querySelector("div.dom"));
+        });
     }
 
     function loadDocument() {
@@ -83,8 +102,8 @@ window.addEventListener("load", function() {
                                 campus_id: route.campus_id,
                             }
                         });
-                        officeSel.loadOffices(offices);
                         viewDocument(doc);
+                        setupOfficeSel(doc);
                         updateButtonAction();
                     });
             });
@@ -94,15 +113,8 @@ window.addEventListener("load", function() {
                 "input#document",
                 api.doc.get(params)
             ).then(function(doc) {
-                api.route.next({routeId: routeId})
-                    .then(function(route) {
-                        officeSel.setOffice({
-                            officeId: route.officeId,
-                            campusId: route.campus_id,
-                        });
-                    });
-
                 viewDocument(doc);
+                setupOfficeSel(doc);
                 updateButtonAction();
             });
         }
@@ -111,7 +123,6 @@ window.addEventListener("load", function() {
 
     function viewDocument(info) {
         currentDoc = info;
-        //$btnAction.hide();
 
         if (!info) {
             $viewDoc.hide();
@@ -190,8 +201,10 @@ window.addEventListener("load", function() {
             return Promise.resolve();
         }
 
-        var officeId = officeSel.getOfficeId() || officeIds[0];
-        var officeIds = [officeId].concat(officeSel.getSelectedIds());
+        var officeId = officeSel.getSelectedOfficeId();
+        var officeIds = officeSel.getRowIds();
+        if (currentDoc.document_type == "serial")
+            var officeIds = [officeId].concat(officeIds);
         var params = {
             officeIds: officeIds,
             annotations: $annots.val(),
@@ -218,9 +231,10 @@ window.addEventListener("load", function() {
         var route = util.parseJSON($("input#document").val()) || {};
         return {
             userId: user ? user.id : null,
-            officeId: parseInt(officeSel.getOfficeId()),
+            officeId: parseInt(officeSel.getSelectedOfficeId()),
             trackingId: currentDoc.trackingId,
             routeId: route.id,
+            annotations: $annots.val(),
         }
     }
 
@@ -272,15 +286,16 @@ window.addEventListener("load", function() {
                 case "send":
                     $sendData.show();
                     $btnSend.show();
-                    if (currentUser.gateway) {
-                        $btnFinalize.show();
-                    } else {
-                        $btnReject.show();
+                    if (currentDoc.document_type == "serial") {
+                        if (currentUser.gateway) {
+                            $btnFinalize.show();
+                        } else {
+                            $btnReject.show();
+                        }
                     }
                     break;
 
                 case "return":
-                    officeSel.disable();
                     $sendData.show();
                     $annots.hide();
                     $btnReturn.show();
