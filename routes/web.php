@@ -159,3 +159,7 @@ Route::get('/logout', function () {
 Route::get('/scratch', function () {
     return view("scratch");
 });
+
+Route::get('/office-list', function () {
+    return view('office-list', \App\Office::all());
+});

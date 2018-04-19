@@ -734,22 +734,41 @@ Route
         $office->gateway = $req->gateway ?? 0;
         $office->campusId = $req->campusId;
 
-        if ($req->campus_code && !$office->campusId) {
-            $campus = \App\Campus::where("code", $req->campus_code)->first();
-            if ($campus)
-                $office->campusId = $campus->id;
+        $campus = \App\Campus::where("name", $req->campus)->orWhere("name", $req->campus)->first();
+        if (!$campus) {
+            $campus = new \App\Campus();
+            $campus->name = $req->campus;
+            $campus->code = substr($req->campus, 0, 3);
+            $v = $campus->validate();
+            if ($v->fails())
+                return ["errors"=>$v->errors()];
+            $campus->save();
         }
 
+        $office = new \App\Office();
+        $office->name = $req->office;
+        $office->campusId = $campus->id;
+        $office->gateway = !!$req->records;
         $v = $office->validate();
         if ($v->fails())
             return ["errors"=>$v->errors()];
-
         $office->save();
-        return $office;
+
+        $user = new \App\User();
+        $user->username = $campus->code . "-" . strtolower($office->name);
+        $user->firstname = $office->name;
+        $user->lastname  = $campus->name;
+        $user->password = bcrypt("x");
+        $user->privilegeId = 0;
+        $user->positionId  = 0;
+        $user->officeId    = $office->id;
+        $user->save();
+
+        return \App\Office::find($office->id);
     });
 
     Route::get('/list', function (Request $req) {
-        return App\Office::all();
+        return \App\Office::orderBy("created_at")->get();
     });
 
 });
@@ -805,6 +824,13 @@ Route
 ::prefix("dev")
 ->middleware([\App\Http\Middleware\LocalEnv::class])
 ->group(function() {
+    Route::any('/reset-offices', function (Request $req) {
+        foreach (\App\Campus::all() as $camp)
+            $camp->delete();
+        foreach (\App\Office::all() as $off)
+            $off->delete();
+        \App\Maint::initializeDB();
+    });
     Route::any('/create-dev-user', function (Request $req) {
         $username = "ronald";
         $user = \App\User::where("username", $username)->first();

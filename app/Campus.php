@@ -11,8 +11,8 @@ class Campus extends Model
 
     public function validate() {
         return Validator::make($this->toArray(), [
-            'code'     => 'required',
-            'name' => 'required',
+            'code'     => 'required|unique:campuses,code',
+            'name' => 'required|unique:campuses,name',
         ]);
     }
 }

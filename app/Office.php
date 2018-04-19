@@ -15,6 +15,7 @@ class Office extends Model
         "primary_email", "primary_phone_number",
         "other_emails", "other_phone_numbers",
         "level",
+        "username",
     ];
     protected $hidden = ["campus", "user"];
 
@@ -36,11 +37,15 @@ class Office extends Model
     }
 
     function getPrimaryEmailAttribute() {
-        return $this->user->email;
+        return optional($this->user)->email;
+    }
+
+    function getUsernameAttribute() {
+        return optional($this->user)->username;
     }
 
     function getPrimaryPhoneNumberAttribute() {
-        return $this->user->phone_number;
+        return optional($this->user)->phone_number;
     }
 
     function getOtherEmailsAttribute() {
@@ -257,7 +262,7 @@ class Office extends Model
 
     public function validate() {
         return Validator::make($this->toArray(), [
-            'name'     => 'required',
+            'name'     => 'required|unique:offices,name',
             'campusId' => 'required',
         ]);
     }

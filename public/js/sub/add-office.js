@@ -12,19 +12,29 @@ window.addEventListener("load", function() {
             e.preventDefault();
             UI.clearErrors($container);
             UI.clearMessages($container);
-            var office = {
-                name:   $container.find(".office-name").val(),
-                campusId: $container.find(".campus-name").data("value"),
+            var data = {
+                office:   $container.find(".office-name").val(),
+                campus:   $container.find(".campus-name").val(),
             };
-            api.office.add(office, function(resp) {
+            console.log(data);
+            api.office.add(data, function(resp) {
                 if (resp.errors)
                     UI.showErrors($container, resp.errors);
                 else {
-                    UI.showMessages($container, "new office added: " + office.name);
+                    UI.showMessages($container, "new office added: " + resp.complete_name);
                     addOfficeRow(resp);
                     clearInputs();
                 }
             });
+        });
+        var $btnReset = $container.find("button.reset");
+        $btnReset.click(function() {
+            if (confirm("Reset all office data?"))
+                $btnReset.text("resetting data...");
+                $btnReset.attr("disabled", true);
+                api.dev.resetOffices().then(function() {
+                    location.reload();
+                });
         });
     }
 
@@ -38,14 +48,15 @@ window.addEventListener("load", function() {
             "<tr>",
             " <td class='campus'></td>",
             " <td class='name'></td>",
+            " <td class='username'></td>",
             " <td class='action'>",
             "   <a href='#' class='del'>X</a>",
             "</td>",
             "</tr>",
         ]);
-        $tr.find(".id").text(office.id);
-        $tr.find(".name").text(office.name);
         $tr.find(".campus").text(office.campus_name);
+        $tr.find(".name").text(office.name);
+        $tr.find(".username").text(office.username);
         $tr.find(".del").click(function(e) {
             e.preventDefault();
             var proceed = confirm("delete office: "
@@ -54,7 +65,7 @@ window.addEventListener("load", function() {
                 return;
             deleteRow(office, $tr);
         });
-        $officeRows.append($tr);
+        $officeRows.prepend($tr);
     }
 
     function deleteRow(office, $tr) {

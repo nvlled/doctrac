@@ -38,6 +38,7 @@
                 <li><a href='/login'>◐</a></li>
                 @elseif (Auth::user()->privilegeId == 0)
                 <li><a href='/settings'>☺</a></li>
+                <li><a href='/admin'>#</a></li>
                 <li class="hidden"><a href='/admin'>#</a></li>
                 @endif
             </ul>
