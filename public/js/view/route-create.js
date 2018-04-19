@@ -192,13 +192,15 @@ function RouteCreate(graph, args) {
             return self.type;
         },
 
-        changeType: function(name) {
+        changeType: function(name, type) {
             if (self.rows.length > 0 && self.type != name) {
                 var proceed = confirm(
                     "changing the type will clear all the rows, continue?"
                 );
-                if (!proceed)
+                if (!proceed) {
+                    self.type = type;
                     return;
+                }
             }
             self.rows.splice(0);
             self.type = name;
@@ -334,7 +336,7 @@ function RouteCreateView(vm, api) {
                     name: "type",
                     value: name,
                     type: "radio",
-                    onclick: [api.changeType, name],
+                    onclick: [api.changeType, name, api.type],
                     checked: api.getType() == name,
                 }),
             name,
@@ -354,11 +356,13 @@ function RouteCreateView(vm, api) {
             el("tbody", {_key: new Date()},
                 rows.map(function(row, index) {
                     var campus = api.getCampus(row) || {};
+                    var showX = api.type == "parallel" ||
+                        (api.type == "serial" && index == rows.length-1);
                     return el("tr", {_key: "off-"+row.id+"-"+(+new Date())}, [
                         el("td", campus.name),
                         el("td", row.name),
                         el("td", [
-                            el(
+                            showX && el(
                                 "a",
                                 {onclick: [api.removeRow, row]},
                                 "✗",
