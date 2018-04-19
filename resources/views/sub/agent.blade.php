@@ -21,7 +21,7 @@
     <hr>
 
     <div class="main list">
-        <em class="loading">loading...</em>
+        @include("sub.loading")
         <em class="none hidden">(none)</em>
         <ul id="main">
         </ul>

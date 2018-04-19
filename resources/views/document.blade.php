@@ -69,6 +69,8 @@ TODO
             <ul class='activities'></ul>
         </p>
 
+        @include("sub.loading")
+
         <div class="send-data hidden">
             <!--TODO-->
             <textarea name="annotation" rows="5" class="full annots"

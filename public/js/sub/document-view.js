@@ -24,6 +24,7 @@ window.addEventListener("load", function() {
     api.user.change(setUser);
 
     setupButtonAction();
+    UI.hideLoadingMeow();
 
     function setUser(user) {
         currentUser = user;
@@ -31,12 +32,6 @@ window.addEventListener("load", function() {
             $container.find(".office-id").text("_");
             $container.find(".user-name").text("____");
             $container.find(".office-name").text("____");
-        } else {
-            if (!currentUser.gateway) {
-                $btnReject.removeClass("hidden").show();
-            } else {
-                $btnFinalize.removeClass("hidden").show();
-            }
         }
         $container.find(".user-name").text(user.fullname);
         $container.find(".office-id").text(user.officeId);
@@ -251,6 +246,7 @@ window.addEventListener("load", function() {
             $btn.click(function(e) {
                 e.preventDefault();
                 UI.disableButton($btn);
+                UI.showLoadingMeow();
                 UI.clearErrors($container);
                 var promise = onClick();
                 if (promise) {
@@ -261,9 +257,11 @@ window.addEventListener("load", function() {
                             location.reload();
                         }
                         UI.enableButton($btn);
+                        UI.hideLoadingMeow();
                     });
                 } else {
                     UI.enableButton($btn);
+                    UI.hideLoadingMeow();
                 }
             });
         }

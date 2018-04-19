@@ -359,6 +359,9 @@ var UI = {
         $flashContainer.removeClass("hidden");
     },
 
+    hideLoadingMeow: function() { $("img.loading-meow").hide() },
+    showLoadingMeow: function() { $("img.loading-meow").show() },
+
     init: function() {
         var $flashContainer = $("div.flash-success");
         var $flashTempl = $flashContainer.find(".templ")

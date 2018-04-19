@@ -33,6 +33,7 @@ var dispatch = {
                 });
                 var vm = officeSel.vm;
                 vm.mount(document.querySelector("div.dom"));
+                UI.hideLoadingMeow();
             });
         }
 
@@ -52,6 +53,7 @@ var dispatch = {
                 $btnSend.attr("disabled", true);
                 $message.text("");
                 UI.clearErrors($container);
+                UI.showLoadingMeow();
 
                 var officeIds = officeSel.getRowIds();
                 var type = officeSel.getType();
@@ -67,6 +69,7 @@ var dispatch = {
                 }
                 $btnSend.text("sending...");
                 api.doc.send(doc, function(resp) {
+                    UI.hideLoadingMeow();
                     if (resp.errors) {
                         $btnSend.text("Send");
                         $btnSend.attr("disabled", false);

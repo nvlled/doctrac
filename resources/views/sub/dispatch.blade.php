@@ -28,28 +28,10 @@
     <h3>Office destinations</h3>
 
     <div class="dom"></div>
-    <style>
-    table.route-create td {
-        border-bottom: 1px solid gray;
-        padding: 10px;
-    }
-    </style>
 
-    <script src='{{asset("js/office-graph.js")}}'></script>
-
-    <script>
-    </script>
-
-    <!--@include("sub/office-selection")-->
-
-    <br>
-        <ul class="errors"></ul>
+    <ul class="errors"></ul>
+    @include("sub.loading")
     <div class="center">
-        <!--
-        <label><input name="dispatch-type" value="serial" type="radio" checked>serial </label>
-        <label><input name="dispatch-type" value="parallel" type="radio">parallel </label>
-        -->
-        <br>
         <button class="half send action pure-button pure-button-primary">Send</button>
         <p class='message' style='color: #050'><p>
     </div>

@@ -140,14 +140,14 @@ window.addEventListener("load", function() {
 
         $ul.html("");
         $list.find(".none").addClass("hidden");
-        $list.find(".loading").removeClass("hidden");
+        UI.showLoadingMeow();
         $list.show();
 
         Promise.all([
             loader({officeId: currentUser.officeId}),
         ]).then(function(values) {
             $ul.html("");
-            $list.find(".loading").addClass("hidden");
+            UI.hideLoadingMeow();
             var data = values[0];
 
             if (!data || data.errors)
