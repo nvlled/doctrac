@@ -60,12 +60,14 @@ window.addEventListener("load", function() {
             var canParallelSend = docType == "parallel" &&
                 !!currentOffice.gateway;
 
+            var nextOffice = graph.getOffice(doc.next_office_id);
             officeSel = RouteCreate(graph, {
                 showTable: canParallelSend,
                 showType: false,
                 showAddButton: canParallelSend,
                 currentOffice:  currentOffice,
                 type: docType,
+                selectedOffice: (docType == "serial") && nextOffice ? nextOffice : null,
             });
             var vm = officeSel.vm;
             vm.mount(document.querySelector("div.dom"));
