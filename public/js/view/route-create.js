@@ -35,6 +35,7 @@ function RouteCreate(graph, args) {
         currentOffice: currentOffice,
         showTable: util.defbool(args.showTable, true),
         showType:  util.defbool(args.showType,  currentOffice.level > 1),
+        showAddButton:  util.defbool(args.showAddButton,  true),
         vm: null,
         graph: graph,
         rows: rows,
@@ -224,6 +225,10 @@ function RouteCreate(graph, args) {
             return self.getOffices()[self.officeIndex];
         },
 
+        getSelectedOfficeId: function() {
+            return (self.getSelectedOffice()||{}).id;
+        },
+
         getDisabledCampuses: function() {
             return [];
         },
@@ -402,7 +407,7 @@ function RouteCreateView(vm, api) {
                     }, obj.name);
                 })
             ),
-            el("button", {
+            api.showAddButton && el("button.add", {
                 onclick: api.insertRow,
                 disabled: isDeadEnd,
             }, "add"),
