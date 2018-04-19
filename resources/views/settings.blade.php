@@ -65,26 +65,27 @@
             <span class="pure-form-message-inline"></span>
         </div>
 
-        <div class="pure-control-group">
+        <div class="pure-control-group hidden">
             <label for="name">Other emails</label>
             <textarea id="emails" name="emails" rows="8"></textarea>
             <span class="pure-form-message-inline"></span>
         </div>
 
         <hr>
-        <div class="pure-control-group">
+        <div class="pure-control-group hidden">
             <label for="phoneno">Primary Mobile</label>
             <input id="phoneno" name="phoneno" placeholder="090XXXXXXX">
             <span class="pure-form-message-inline"></span>
         </div>
         <div class="pure-control-group">
-            <label for="name">Other mobile numbers</label>
+            <label for="name">Mobile numbers</label>
             <textarea id="phonenumbers" name="other-phoneno" rows="8"></textarea>
             <span class="pure-form-message-inline"></span>
         </div>
         <div class='pure-controls subtext'>
             Note: Numbers must be registered to receive notifications.<br>
-            To register, send INFO to {{env("GLOBE_CODE")}}
+            To register, send INFO to {{env("GLOBE_CODE")}}.
+            To unregister, send STOP.
         </div>
 
         <div class="pure-controls">
