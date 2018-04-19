@@ -147,7 +147,7 @@ Route
 
         broadcast(new \App\Events\DocUpdate($doc));
         \Flash::add("document forwarded: {$route->trackingId}");
-        // TODO: notification not sent
+        $route = $api->getRoute($route->id); // reflect changes
         $routes = $route->allNextRoutes();
         foreach ($routes as $nextRoute) {
             \Notif::sent($office, $nextRoute->office, $nextRoute);

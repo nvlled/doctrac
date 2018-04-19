@@ -672,9 +672,16 @@ class DoctracAPI {
         });
     }
 
+    public function deleteFollowingRoutes($route) {
+        $oldRoutes = $this->followRoute($route);
+        $oldRoutes->slice(1)->each(function($r) {
+            $r->delete();
+        });
+    }
+
     // Note: not yet sent
     public function serialConnect($route, $officeIds) {
-        // TODO: delete old routes
+        $this->deleteFollowingRoutes($route);
 
         $doc = $route->document;
         if (!$doc) {
