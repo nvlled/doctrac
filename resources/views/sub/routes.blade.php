@@ -49,9 +49,11 @@
         <tr>
             <th>office name</th>
             <th>status</th>
-            <th>approval</th>
             <th>time elapsed</th>
-            <th>annotations</th>
+            @if ($doc->type == "serial")
+                <th>approval</th>
+                <th>annotations</th>
+            @endif
         </tr>
         </thead>
         <tbody>
@@ -60,9 +62,11 @@
             @php $office = optional($route->office) @endphp
             <td><a href="{{$route->link}}">{{$office->complete_name}}</a></td>
             <td>{{$route->status}}</td>
-            <td>{{$route->approvalState}}</td>
             <td>{{$route->time_elapsed}}</td>
-            <td>{{$route->annotations}}</td>
+            @if ($doc->type == "serial")
+                <td>{{$route->approvalState}}</td>
+                <td>{{$route->annotations}}</td>
+            @endif
         </tr>
         @endforeach
         </tbody>

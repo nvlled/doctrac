@@ -48,10 +48,12 @@ TODO
             <strong>details:</strong>
             <span class='details'></span>
         </p>
-        <p class='info'>
+
+        <p class='info {{hiddenIf($document->type == "parallel")}}'>
             <strong>annotations:</strong>
             <span class='annotations'></span>
         </p>
+
         <p class='info attachment'>
             <strong>attachment:</strong>
             <a href="#" target="_blank">filename.docx</a>
