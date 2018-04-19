@@ -312,3 +312,7 @@ button.orange {
     display: flex;
     justify-content: space-between;
 }
+
+table.routes td.indent-3::before { content: ""; red;   padding-left: 10px; }
+table.routes td.indent-2::before { content: ""; blue;  padding-left: 30px; }
+table.routes td.indent-1::before { content: ""; green; padding-left: 50px; }

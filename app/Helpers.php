@@ -114,6 +114,12 @@ function hiddenIf($cond) {
     return "";
 }
 
+function textIf($cond, $text) {
+    if ($cond)
+        return $text;
+    return "";
+}
+
 function logCrap(...$objs) {
     foreach ($objs as $o) {
         \Log::info(print_r($o, true));

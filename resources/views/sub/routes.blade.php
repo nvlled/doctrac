@@ -37,7 +37,7 @@
         <a href="{{$doc->attachment_url}}" target="_blank">{{$doc->attachment_filename}}</a>
     </p>
 
-    <table class='full'>
+    <table class='full routes'>
         <colgroup>
         <col span="1" style="width: inherit">
         <col span="1" style="width: 10px;">
@@ -57,10 +57,20 @@
         </tr>
         </thead>
         <tbody>
+        @php
+        $root = @$routes[0];
+        @endphp
         @foreach ($routes as $route)
         <tr>
-            @php $office = optional($route->office) @endphp
-            <td><a href="{{$route->link}}">{{$office->complete_name}}</a></td>
+            @php
+            $office = optional($route->office);
+            $level  = $office->level;
+            if ($root->campus_id == $office->campusId && !$office->gateway)
+                $level++;
+            @endphp
+            <td class='indent-{{$level}}'>
+                <a href="{{$route->link}}">{{$office->complete_name}}</a>
+            </td>
             <td>{{$route->status}}</td>
             <td>{{$route->time_elapsed}}</td>
             @if ($doc->type == "serial")
