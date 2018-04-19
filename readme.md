@@ -35,6 +35,12 @@ sudo apt install php-domstring php-xml php-mysql
 1. install redis-server and laravel-echo-server
 2. edit ```.env```, set BROADCAST_DRIVER and QUEUE_DRIVER to redis
 3. run the worker: ```php artisan queue:work```
-4. run the echo server: ```laravel-echo-server start```
-
-supervisor can also be used to daemonize the work queue
+   supervisor can also be used to daemonize the work queue
+4. setup and run the echo server: 
+```
+laravel-echo-server init
+laravel-echo-server client:add
+(edit the generated file `laravel-echo-server.json`, e.g. authHost)
+laravel-echo-server start
+```
+similarly, use supervisor to daemonize the echo server
