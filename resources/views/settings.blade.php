@@ -83,9 +83,12 @@
             <span class="pure-form-message-inline"></span>
         </div>
         <div class='pure-controls subtext'>
-            Note: Numbers must be registered to receive notifications.<br>
-            To register, send INFO to {{env("GLOBE_CODE")}}.
-            To unregister, send STOP.
+            <s>To register, send INFO to {{env("GLOBE_CODE")}}.
+                To unregister, send STOP.</s>
+            <br>
+            The globe API balance has unfortunately expired, and<br>
+            will for the mean time be disabled.<br>
+
         </div>
 
         <div class="pure-controls">
