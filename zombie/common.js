@@ -100,17 +100,21 @@ let common = {
         return trackingId;
     },
 
-    async dispatchParallel(page, offices) {
+    async dispatchParallel(page, data) {
         await page.goto("http://doctrac.local/dispatch");
         await common.dispatchInput(page);
 
         let btnAdd = await page.$("button.add");
 
         await page.click("input[value=parallel]");
-        for (let off of offices) {
-            await common.selectMenu(page, "select.offices", off);
-            await clickElem(btnAdd);
-        }
+        Object.keys(data).forEach(async function(campus) {
+            await common.selectMenu(page, "select.campuses", campus);
+            await common.sleep(1500);
+            data[campus].forEach(async function(off) {
+                await common.selectMenu(page, "select.offices", off);
+                await clickElem(btnAdd);
+            });
+        });
 
         let btnSend = await page.$("button.send");
         await navigation(page, _=> clickElem(btnSend));
