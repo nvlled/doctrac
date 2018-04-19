@@ -198,6 +198,12 @@ class DocumentRoute extends Model
             $nextRoute  = $this->nextRoute;
             $nextRoutes = $this->allNextRoutes();
 
+            if ($this->document->type == "parallel") {
+                $off = $this->office;
+                if (!$off->main && !$off->gateway)
+                    return "done";
+            }
+
             if ($nextRoutes->isEmpty()) {
                 if ($this->final)
                     return "done";
