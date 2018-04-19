@@ -38,35 +38,44 @@ TODO
         </p>
         <p class='info'>
             <strong>classification level:</strong>
-            <span class='classification'></span>
+            <span class='classification'>{{$document->classification}}</span>
         </p>
         <p class='info'>
             <strong>status:</strong>
-            <span class='status'>status</span>
+            <span class='status'>{{$route->status}}</span>
         </p>
         <p class='info'>
             <strong>details:</strong>
-            <span class='details'></span>
+            <span class='details'>{{$document->details}}</span>
         </p>
 
-        <p class='info {{hiddenIf($document->type == "parallel")}}'>
+        <p class='info {{hiddenIf($document->type == "parallel" || !$route->annotations)}}'>
             <strong>annotations:</strong>
-            <span class='annotations'></span>
+            <span class='annotations'>{{$route->annotations}}</span>
         </p>
 
-        <p class='info attachment'>
+        <p class='info {{hiddenIf(!$route->attachment)}}'>
             <strong>attachment:</strong>
-            <a href="#" target="_blank">filename.docx</a>
+            <a href="{{$document->attachment_url}}" target="_blank">{{$document->attachment_filename}}</a>
         </p>
-        <p class='info'>
+        @php $seenBy = optional($document->seen_by) @endphp
+        <p class='info {{hiddenIf(!$seenBy->count())}}'>
             <strong>seen by:</strong>
-            <span class='seen-by'></span>
+            <span class='seen-by'>
+            @if ($seenBy->count())
+                {{implode($seenBy, " ") }}
+            @endif
+            </span>
         </p>
 
         <hr>
-        <p class="info">
+        <p class="info ">
             <strong>activity log: </strong>
-            <ul class='activities'></ul>
+            <ul class='activities'>
+            @foreach ($route->activities as $act)
+                <li>{{$act}}</li>
+            @endforeach
+            </ul>
         </p>
 
         @include("sub.loading")
@@ -81,11 +90,11 @@ TODO
         </div>
         <ul class="errors"></ul>
         <div class="center">
-            <button class='pure-button-primary hidden action half send'>send</button>
-            <button class='pure-button-primary hidden action half recv'>receive</button>
-            <button class='pure-button-default hidden action finalize half affirm green'>finalize</button>
-            <button class='pure-button-default hidden action reject half red'>reject</button>
-            <button class='pure-button-primary hidden action return half '>return</button>
+            <button class='hidden pure-button-primary hidden action half send'>send</button>
+            <button class='hidden pure-button-primary hidden action half recv'>receive</button>
+            <button class='hidden pure-button-default hidden action finalize half affirm green'>finalize</button>
+            <button class='hidden pure-button-default hidden action reject half red'>reject</button>
+            <button class='hidden pure-button-primary hidden action return half '>return</button>
         </div>
     </div>
     <script src='{{asset("js/office-graph.js")}}'></script>
