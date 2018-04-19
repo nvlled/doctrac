@@ -54,6 +54,9 @@ class RoutingTest extends TestCase
         ]);
         dump("testing {$doc->trackingId}");
 
+        // TODO:
+        // This expectedly fails since I've set the route
+        // status to done when it's a parallel non-main/records route
         $this->assertEquals("delivering", $api->routeStatus($doc, "X-A"));
         $this->assertEquals("waiting", $api->routeStatus($doc, "Y-A"));
         $this->assertEquals("waiting", $api->routeStatus($doc, "Z-A"));

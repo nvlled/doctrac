@@ -147,6 +147,7 @@ Route
 
         broadcast(new \App\Events\DocUpdate($doc));
         \Flash::add("document forwarded: {$route->trackingId}");
+        // TODO: notification not sent
         $routes = $route->allNextRoutes();
         foreach ($routes as $nextRoute) {
             \Notif::sent($office, $nextRoute->office, $nextRoute);
@@ -256,8 +257,8 @@ Route
             $route->senderId    = $user->id;
             $route->forwardTime = ngayon();
             $route->approvalState = "rejected";
+            $route->annotations = $req->annotations ?? "(none)";
 
-            // TODO: add annotation to $route
             // TODO: delete unused routes in old path
 
             foreach ($offices as $office) {

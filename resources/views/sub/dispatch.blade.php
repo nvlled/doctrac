@@ -28,7 +28,6 @@
     <h3>Office destinations</h3>
 
     <div class="dom"></div>
-    <script src='{{asset("js/view/route-create.js")}}'></script>
     <style>
     table.route-create td {
         border-bottom: 1px solid gray;
@@ -61,6 +60,7 @@
     parallel: documents are passed to all the offices at the same time
     </p>
     <script src='{{asset("js/office-graph.js")}}'></script>
+    <script src='{{asset("js/view/route-create.js")}}'></script>
     <script src='{{asset("js/sub/office-selection.js")}}'></script>
     <script src="{{asset('js/sub/dispatch.js')}}"></script>
 </section>

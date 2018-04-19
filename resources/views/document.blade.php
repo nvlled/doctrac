@@ -69,17 +69,13 @@ TODO
             <ul class='activities'></ul>
         </p>
 
-        <div class="hidden radios">
-            <label><input type="radio" name="action-type" value="forward"> forward</label>
-            <label><input type="radio" name="action-type" value="other"> other</label>
-        </div>
         <div class="send-data hidden">
             <!--TODO-->
             <textarea name="annotation" rows="5" class="full annots"
                 placeholder="comments, notes or annotation" ></textarea>
             <br>
             <strong>Destination</strong>
-            @include("sub/office-selection")
+            <div class="dom"></div>
         </div>
         <ul class="errors"></ul>
         <div class="center">
@@ -90,7 +86,9 @@ TODO
             <button class='pure-button-primary hidden action return half '>return</button>
         </div>
     </div>
-    <script src='{{asset("js/sub/office-selection.js")}}'></script>
+    <script src='{{asset("js/office-graph.js")}}'></script>
+    <script src='{{asset("js/view/route-create.js")}}'></script>
+    <!--<script src='{{asset("js/sub/office-selection.js")}}'></script>-->
     <script src="{{asset('js/sub/document-view.js')}}"></script>
 </section>
 @endsection

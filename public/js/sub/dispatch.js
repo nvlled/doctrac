@@ -63,7 +63,7 @@ var dispatch = {
                     classification: $container.find(".classification").val(),
                     annotations: $container.find(".annotations").val(),
                     officeIds: officeIds,
-                    type: getDispatchType(),
+                    type: type,
                 }
                 $btnSend.text("sending...");
                 api.doc.send(doc, function(resp) {
@@ -106,10 +106,6 @@ var dispatch = {
                 $btnSend.attr("disabled", false);
                 return Promise.resolve();
             }
-        }
-
-        function getDispatchType() {
-            return $container.find("input[name=dispatch-type]:checked").val();
         }
 
     }
