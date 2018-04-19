@@ -28,6 +28,7 @@ window.addEventListener("load", function() {
             });
         });
         var $btnReset = $container.find("button.reset");
+        $btnReset.hide().remove();
         $btnReset.click(function() {
             if (confirm("Reset all office data?"))
                 $btnReset.text("resetting data...");

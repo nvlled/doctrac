@@ -36,3 +36,5 @@ sudo apt install php-domstring php-xml php-mysql
 2. edit ```.env```, set BROADCAST_DRIVER and QUEUE_DRIVER to redis
 3. run the worker: ```php artisan queue:work```
 4. run the echo server: ```laravel-echo-server start```
+
+supervisor can also be used to daemonize the work queue

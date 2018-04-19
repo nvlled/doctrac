@@ -24,8 +24,11 @@ module.exports = async function({browser, getPage}) {
     console.log("receiving from mis");
     await logout(page);
     await login(page, "urd-mis", "x");
-
     await receive(page, trackingId);
+
+    //await logout(page);
+    //await login(page, "urd-records", "x");
+    //await receive(page, trackingId);
 
     //actionLink = await page.$("a.action");
     //await navigation(page, _=> actionLink.click());
