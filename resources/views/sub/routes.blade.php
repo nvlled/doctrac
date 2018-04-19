@@ -68,7 +68,7 @@
             if ($root->campus_id == $office->campusId && !$office->gateway)
                 $level++;
             @endphp
-            <td class='indent-{{$level}}'>
+            <td class='{{textIf($doc->type == "parallel", "indent-$level")}}'>
                 <a href="{{$route->link}}">{{$office->complete_name}}</a>
             </td>
             <td>{{$route->status}}</td>

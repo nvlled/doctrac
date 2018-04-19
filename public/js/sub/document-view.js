@@ -84,6 +84,7 @@ window.addEventListener("load", function() {
                 "input#document",
                 api.doc.get(params)
             ).then(function(doc) {
+                currentDoc = doc;
                 api.doc.unfinishedRoutes({trackingId: trackingId})
                     .then(function(routes) {
                         if (!routes) {
@@ -99,7 +100,6 @@ window.addEventListener("load", function() {
                                 campus_id: route.campus_id,
                             }
                         });
-                        viewDocument(doc);
                         setupOfficeSel(doc);
                         updateButtonAction();
                     });
@@ -110,83 +110,12 @@ window.addEventListener("load", function() {
                 "input#document",
                 api.doc.get(params)
             ).then(function(doc) {
-                viewDocument(doc);
+                currentDoc = doc;
                 setupOfficeSel(doc);
                 updateButtonAction();
             });
         }
 
-    }
-
-    function viewDocument(info) {
-        currentDoc = info;
-
-        if (!info) {
-            $viewDoc.hide();
-            return;
-        }
-        $viewDoc.show();
-
-        var id = info.trackingId
-        if (info.type == "serial" && info.pathId != null)
-            id += "-"+info.pathId;
-
-        $viewDoc.find(".trackingId").text(id);
-        $viewDoc.find(".title").text(info.document_title || "");
-        $viewDoc.find(".status").text(info.status);
-        $viewDoc.find(".classification").text(info.document_class);
-
-        var $details = $viewDoc.find(".details");
-        $details.text(info.document_details);
-        UI.breakLines($details);
-
-        if (info.nextId)
-            $viewDoc.find(".office").text(
-                info.office_name + " ~> " +
-                info.next_office_name
-            );
-        else
-            $viewDoc.find(".office").text(info.office_name);
-
-        if (info.attachment_filename) {
-            $docAttachment.parent().show();
-            $docAttachment.text(info.attachment_filename);
-            $docAttachment.attr("href", info.attachment_url);
-        } else {
-            $docAttachment.parent().hide();
-        }
-
-        var $annotations = $viewDoc.find(".annotations");
-
-        if (info.annotations) {
-            $annotations.parent().show();
-            $annotations.text(info.annotations);
-            UI.breakLines($annotations);
-        } else {
-            $annotations.parent().hide();
-        }
-
-        var $seenBy = $viewDoc.find(".seen-by");
-        var seenBy = info.seen_by || [];
-        if (seenBy.length > 0) {
-            $seenBy.parent().show();
-            $seenBy.text(
-                seenBy.map(function(sr) { return sr.full_name; }).join(", ")
-            );
-        } else {
-            $seenBy.parent().hide();
-        }
-
-        $ul = $viewDoc.find(".activities");
-        $ul.html("");
-        var activities = info.activities;
-        if (activities.length) {
-            activities.forEach(function(act) {
-                var $li = $("<li>");
-                $li.text(act);
-                $ul.append($li);
-            });
-        }
     }
 
     function forwardDocument() {
