@@ -2,11 +2,8 @@
 TODO:
 
 * add interface for setting offices
-* make pages mostly static
 * use the annotations on the new api
 * use the new route selection component
-* fix notifications
-* fix sms registration
 
 -------------------
 
@@ -21,9 +18,6 @@ TODO:
 * psu.edu.ph domain
 * change password, change default password
 
-* add all offices (VP, CED)
-
-
 * I now just remembered something about
   lingayen campus is different from the main
   campus, I'll just have to recheck on this one
@@ -36,7 +30,6 @@ TODO:
 * export data
 * office to office messaging
 * account management
-* handle slow connections
 * dynamic update route table (or simply reload the page)
 * recent/active document list
 * email interface

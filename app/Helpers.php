@@ -129,3 +129,9 @@ function logCrap(...$objs) {
 function api() {
     return \App\DoctracAPI::new();
 }
+
+function isEmpty($arr) {
+    if (!$arr)
+        return true;
+    return count($arr) == 0;
+}

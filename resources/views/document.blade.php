@@ -18,18 +18,14 @@ TODO
         <input id="document" value="{{$doc ?? ""}}" type="hidden">
         <input id="user" value="{{$user ?? ""}}" type="hidden">
         <h2>
-            <span class='title'>doc title</span>
-            <small>@ <span class='office'>office</span></small>
+            <span class='title'>{{$document->title}}</span>
+            <small>@ <span class='office'>{{$route->office->complete_name}}</span></small>
         </h2>
         <p class="info"><strong>tracking ID:</strong>
             <a class="trackingId"
                href="{{route('view-routes', $trackingId)}}">
                 {{$trackingId}}
             </a>
-            @if ($document->type == "parallel")
-            <a href="{{route('view-subroutes', $trackingId)}}"
-               class="action">other routes</a>
-            @endif
         </p>
         <p class="info"><strong>state: </strong>
             <span class="doc-state {{$document->state}}">
@@ -69,12 +65,18 @@ TODO
         </p>
 
         <hr>
-        <p class="info ">
+        <p class="info">
             <strong>activity log: </strong>
             <ul class='activities'>
-            @foreach ($route->activities as $act)
+            @php
+            $activities = $route->activities;
+            @endphp
+            @foreach ($activities as $act)
                 <li>{{$act}}</li>
             @endforeach
+            @if (isEmpty($activities))
+                <em>(none)</em>
+            @endif
             </ul>
         </p>
 
