@@ -14,6 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
     <link rel="stylesheet" href="{{asset('css/pure-min.css')}}">
+    <link rel="stylesheet" href="{{asset('css/util.css')}}">
     <link rel="stylesheet" href="{{asset('css/site.css')}}">
 
     <script src="{{asset('js/jquery.min.js')}}"></script>

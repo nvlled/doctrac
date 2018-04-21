@@ -30,6 +30,15 @@ Route
     Route::get('/lounge', function() {
         return view('lounge');
     })->name("search");
+    Route::get('/lounge/archive', function(Request $req) {
+        $page     = $req->page ?? 1;
+        $pageSize = 25;
+        $messages = \App\ChatMessage::orderByDesc("created_at")->paginate($pageSize);
+        return view('chat-archive', [
+            "page" => $page,
+            "messages" => $messages
+        ]);
+    })->name("search");
 
     Route::get('/search', function() {
         return view('search');

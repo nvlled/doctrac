@@ -53,6 +53,7 @@ select[disabled] {
     justify-self: center;
     align-self: stretch;
     margin: 10px 50px;
+    min-width: 600px;
 }
 
 table {
@@ -318,4 +319,14 @@ table.routes td.indent-1::before { content: ""; green; padding-left: 50px; }
 
 div.loading {
     text-align: center;
+}
+
+div.archive .message {
+    border-bottom: 1px solid gray;
+    padding: 10px;
+}
+div.archive .message .footer {
+    text-align: right;
+    color: gray;
+    font-size: 10px;
 }
