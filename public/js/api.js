@@ -60,6 +60,12 @@ var api = {
         },
     },
 
+    lounge: {
+        messages: makeHandler("/api/lounge/fetch-messages"),
+        sendMessage: makeHandler("/api/lounge/send-message"),
+        deleteMessage: makeHandler("/api/lounge/delete-message"),
+    },
+
     doc: {
         send:          makeHandler("/api/docs/send"),
         get:           makeHandler("/api/docs/get/{trackingId}"),

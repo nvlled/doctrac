@@ -53,7 +53,6 @@ select[disabled] {
     justify-self: center;
     align-self: stretch;
     margin: 10px 50px;
-    min-width: 700px;
 }
 
 table {

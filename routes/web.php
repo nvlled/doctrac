@@ -27,6 +27,10 @@ Route::get('/', function() {
 Route
 ::middleware(["restrict-doc"])
 ->group(function() {
+    Route::get('/lounge', function() {
+        return view('lounge');
+    })->name("search");
+
     Route::get('/search', function() {
         return view('search');
     })->name("search");

@@ -10,19 +10,22 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class DocUpdate implements ShouldBroadcast
+class ChatEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $doc = null;
+
+    // TODO: there seems to be a problem with serialization
+    // some fields randomly gets dropped
+    public $msgData;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($doc)
+    public function __construct($data)
     {
-        $this->doc = $doc;
+        $this->msgData = $data;
     }
 
     /**
@@ -32,6 +35,6 @@ class DocUpdate implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('doc.'.$this->doc->trackingId);
+        return new Channel('lounge');
     }
 }

@@ -901,6 +901,46 @@ Route
     });
 });
 
+Route
+::prefix("lounge")
+->group(function() {
+    Route::any('/delete-message', function (Request $req) {
+        $user = Auth::user();
+        if (!$user)
+            return ["errors"=>["login required"]];
+        $msg = \App\ChatMessage::find($req->id);
+        if (!$msg)
+            return [];
+        if ($user->username != $msg->username)
+            return ["errors"=>["cannot delete other messages"]];
+        $msg->delete();
+        $event = new \App\Events\ChatEvent($msg);
+        broadcast($event)->toOthers();
+        return [];
+    });
+    Route::any('/fetch-messages', function (Request $req) {
+        $pageSize = 25;
+        return \App\ChatMessage::orderByDesc("created_at")
+            ->forPage(1, $pageSize)
+            ->get();
+    });
+
+    Route::any('/send-message', function (Request $req) {
+        $msg = new \App\ChatMessage();
+        $msg->username = $req->username ?? "anonymous";
+        $msg->contents = trim($req->contents);
+        if ( ! $msg->contents) {
+            return [
+                "error" => "message contents is required"
+            ];
+        }
+        $msg->save();
+        $event = new \App\Events\ChatEvent($msg);
+        broadcast($event)->toOthers();
+        return $msg;
+    });
+});
+
 
 // !!!!!!!!
 // TODO:

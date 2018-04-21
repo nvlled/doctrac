@@ -38,6 +38,7 @@
                 <li><a href='/login'>◐</a></li>
                 @elseif (Auth::user()->privilegeId == 0)
                 <li><a href='/settings'>☺</a></li>
+                <li><a href='/lounge'>♞</a></li>
                 <li><a href='/admin'>#</a></li>
                 <li class="hidden"><a href='/admin'>#</a></li>
                 @endif
@@ -127,6 +128,7 @@
     </footer>
 
     @yield("scripts")
+    <script src="{{asset('js/lib/j2c.js')}}"></script>
     <!--<script src="{{asset('material/js/materialize.min.js')}}"></script>-->
     <script src="{{asset('js/combobox.js')}}"></script>
     <!--<script src="{{asset('js/autocomplete.js')}}"></script>-->
