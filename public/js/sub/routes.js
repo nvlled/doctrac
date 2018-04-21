@@ -109,7 +109,6 @@ window.addEventListener("load", function() {
         if (!channel)
             return;
         channel.listen("DocUpdate", function(e) {
-            console.log("document update");
             UI.flashMessage("document updated", "doc-update");
             if (doc.type == "parallel") {
                 loadParallelRoutes(doc);

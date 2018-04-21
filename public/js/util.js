@@ -157,6 +157,12 @@ var util = {
         }
     },
 
+    isDOMElement(obj) {
+        if (window.Element)
+            return obj instanceof Element;
+        return !!obj.tagName;
+    },
+
     currentUser: function() {
         var json =  $("body").find("input#current-user").val();
         if (json)

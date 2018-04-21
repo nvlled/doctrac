@@ -93,5 +93,23 @@
             font-size: 25px;
         }
         </style>
+    <input id="trackingId" type="hidden" value="{{$doc->trackingId}}">
+    <script>
+    window.addEventListener("load", function() {
+        var trackingId = $("input#trackingId").val().trim();
+        var channel = UI.createChannel("doc."+trackingId);
+        if (!channel)
+            return;
+        channel.listen("DocUpdate", function(e) {
+            console.log("document update", e);
+            var msg = $("<a href='#'>document updated, click to reload</a>")[0];
+            msg.onclick = function(e) {
+                e.preventDefault();
+                location.reload();
+            };
+            UI.flashMessage(msg, "doc-update");
+        });
+    });
+    </script>
     </table>
 </section>

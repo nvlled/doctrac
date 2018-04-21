@@ -351,7 +351,12 @@ var UI = {
             $flashContainer.find("#"+id).remove();
             $flash.attr("id", id);
         }
-        $flash.find(".msg").text(msg);
+
+        if (util.isDOMElement(msg))
+            $flash.find(".msg").append(msg);
+        else
+            $flash.find(".msg").text(msg);
+
         $flash.find(".close").click(function() {
             UI.removeFlash($flash, $flashContainer);
         });
