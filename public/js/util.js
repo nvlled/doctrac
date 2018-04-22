@@ -170,6 +170,20 @@ var util = {
         return null;
     },
 
+    arrayRemove(array, elem) {
+        var index = -1;
+        for (var i = 0; i < array.length; i++) {
+            if (array[i] == elem) {
+                index = i;
+                break;
+            }
+        }
+        if (index >= 0) {
+            array.splice(index, 1);
+        }
+        return array;
+    },
+
     requireProperty: function(obj, k) {
         if ( ! obj[k]) {
             throw new Error(k + " is required on object");

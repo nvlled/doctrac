@@ -13,6 +13,7 @@ function ChatLounge(args) {
     var self = {
         username: args.username || "anonymous",
         messages: args.messages || [ /*{username: "asdf", contents: "ajidsfjaisd", loading: false,}*/ ],
+        onlineUsers: [],
 
         _insertMsgIds: ids,
 
@@ -105,6 +106,27 @@ function ChatLounge(args) {
                 self.vm.redraw();
                 console.log("chat event", e);
             });
+            var chan = UI.joinChannel("lounge").here(function(users) {
+                users = users || [];
+                self.onlineUsers = users.map(function(user) {
+                    return user.username;
+                });
+                console.log("users", self.onlineUsers);
+                self.vm.redraw();
+            }).joining(function(user) {
+                if (!user)
+                    return;
+                console.log("user join", user.username);
+                self.onlineUsers.push(user.username);
+                self.vm.redraw();
+            }).leaving(function(user) {
+                if (!user)
+                    return;
+                console.log("user left", user.username);
+                util.arrayRemove(self.onlineUsers, user.username);
+                self.vm.redraw();
+            });
+            console.log("join channel", chan);
         },
 
         isOwn: function(msg) {
@@ -130,6 +152,11 @@ ChatLounge.View = function(vm, api) {
         ".messages": {
             "border": "1px solid #552",
             "border-radius": "5px",
+        },
+        ".online-users": {
+        },
+        ".online-username": {
+            padding: "2px 5px",
         },
         ".deleted": {
             "color": "gray",
@@ -207,8 +234,17 @@ ChatLounge.View = function(vm, api) {
                 ]),
             ]);
         });
-        return el("div.x", { class: cl("chat-lounge") }, [
+        var onlineUsers = api.onlineUsers.map(function(username) {
+            return el("span", {class: cl("online-username")}, [
+                username
+            ]);
+        });
+        return el("div", { class: cl("chat-lounge") }, [
             el("div", { class: cl("messages") }, messages),
+            el("div", {class: cl("online-users")}, [
+                el("span", "online users: "),
+                el("em", onlineUsers),
+            ]),
             el("textarea.message", {
                 _ref: "input-msg",
                 name: "message",

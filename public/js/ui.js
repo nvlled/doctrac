@@ -301,6 +301,25 @@ var UI = {
         $btn.attr("disabled", true);
     },
 
+    joinChannel: function(name) {
+        if (!window.io) {
+            console.warn("echo server is not running");
+            return;
+        }
+        try {
+            var echo = new Echo({
+                broadcaster: 'socket.io',
+                host: window.location.hostname + ':6001'
+            });
+            window.addEventListener("onunload", function() {
+                echo.leave();
+            });
+            return  echo.join(name);
+        } catch (e) {
+            console.log(e);
+        }
+    },
+
     createChannel: function(name) {
         if (!window.io) {
             console.warn("echo server is not running");

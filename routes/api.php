@@ -359,7 +359,7 @@ Route
                 \Notif::sent($user->office, $nextRoute->office, $nextRoute);
             }
         }
-        broadcast(new \App\Events\DocUpdate($doc));
+        broadcast(new \App\Events\DocUpdate($doc))->toOthers();
         \Flash::add("document sent: {$doc->trackingId}");
         return $doc;
     });
