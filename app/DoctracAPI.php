@@ -1058,9 +1058,10 @@ class DoctracAPI {
         return (object) [
             "startNo"=>($page-1)*$pageSize+1,
             "pageNo"=>$page,
-            "pageTotal"=>$numPages,
+            "numPages"=>$numPages,
             "pageSize"=>$pageSize,
             "items"=>$items,
+            "numItems"=>$items->count(),
         ];
     }
 }
