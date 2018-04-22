@@ -7,13 +7,13 @@
     <fieldset>
         <div class="pure-control-group">
             <label for="name">Username</label>
-            <input id="name" name="username" required type="text" placeholder="e.g. urd-records">
+            <input id="name" name="username" required type="text" placeholder="">
             <span class="pure-form-message-inline"></span>
         </div>
 
         <div class="pure-control-group">
             <label for="password">Password</label>
-            <input id="password" name="password" required type="password" placeholder="password is x">
+            <input id="password" name="password" required type="password" placeholder="">
             <span class="pure-form-message-inline"></span>
         </div>
 

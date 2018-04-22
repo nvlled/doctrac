@@ -144,6 +144,8 @@ var api = {
             });
         },
 
+        changePassword: makeHandler("/api/users/change-password"),
+
         seenRoutes: makeHandler("/api/users/{userId}/seen-routes"),
         seeRoute: makeHandler("/api/users/{userId}/see-route/{routeId}"),
 

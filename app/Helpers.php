@@ -126,7 +126,14 @@ function logCrap(...$objs) {
     }
 }
 
-function api() {
+function api($user=null) {
+    if ($user instanceof \App\User)
+        return new \App\DoctracAPI($user);
+    if (is_string($user)) {
+        $user = \App\User::where("username", $user)->first();
+        if ($user)
+            return new \App\DoctracAPI($user);
+    }
     return \App\DoctracAPI::new();
 }
 

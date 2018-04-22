@@ -5,35 +5,11 @@
 <section id="settings">
 <form class="change-pass pure-form pure-form-aligned">
     {{ csrf_field() }}
-    <fieldset class='hidden'>
-        <div class="pure-control-group">
-            <label for="oldpass">Old password</label>
-            <input id="oldpass" name="oldpass" required type="password" placeholder="password">
-            <span class="pure-form-message-inline"></span>
-        </div>
-        <div class="pure-control-group">
-            <label for="newpass1">New password</label>
-            <input id="newpass1" name="newpass1" required type="password" placeholder="password">
-            <span class="pure-form-message-inline"></span>
-        </div>
-        <div class="pure-control-group">
-            <label for="newpass2">Repeat password</label>
-            <input id="newpass2" name="newpass2" required type="password" placeholder="password">
-            <span class="pure-form-message-inline"></span>
-        </div>
-        <div class="pure-controls">
-            <button type="submit" class="pure-button pure-button-default">
-                Submit
-            </button>
-        </div>
-    </fieldset>
     <div class="pure-controls">
-        <button type="submit" class="show-fields pure-button pure-button-default">
-            Change password
-        </button>
         <button type="submit" class="logout pure-button pure-button-secondary">
             Logout
         </button>
+        <a href="/change-password">change password</a>
     </div>
     <script>
     var $changePassForm = $("form.change-pass");

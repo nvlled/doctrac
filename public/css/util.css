@@ -1,10 +1,13 @@
 
 
 
-
 .mag10 { margin: 10px; }
-.center { text-align: center }
-.right { text-align: right }
+.center { text-align: center !important}
+.right { text-align:  right  !important}
+.left { text-align:   left  !important}
 
 .bracket::before { content: "[" }
 .bracket::after  { content: "]" }
+
+.full { width: 98%; }
+.half { width: 50%; }

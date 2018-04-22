@@ -1064,4 +1064,26 @@ class DoctracAPI {
             "numItems"=>$items->count(),
         ];
     }
+
+    public function changeUserPassword($oldpass, $newpass1, $newpass2) {
+        $oldpass  = trim($oldpass);
+        $newpass1 = trim($newpass1);
+        $newpass2 = trim($newpass2);
+        $user = $this->user;
+        if ( ! $user) {
+            return $this->appendError("login required");
+        }
+        if ( ! password_verify($oldpass, $user->password)) {
+            return $this->appendError("old password is incorrect");
+        }
+        if ( ! $newpass1) {
+            return $this->appendError("new password is required");
+        }
+        if ($newpass1 != $newpass2) {
+            return $this->appendError("password does not match");
+        }
+        $user->password = bcrypt($newpass1);
+        $user->save();
+        return $user;
+    }
 }

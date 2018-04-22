@@ -38,6 +38,7 @@
                 @php $user = Auth::user() @endphp
                 @if (!$user)
                 <li><a href='/login'>◐</a></li>
+                <li><a href='/search'>☖</a></li>
                 @else
                 <li><a href='/settings'>☺</a></li>
                 <li><a href='/lounge'>♞</a></li>

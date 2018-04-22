@@ -106,6 +106,24 @@ Route::middleware(['auth'])->group(function() {
         ]);
     });
 
+    Route::get('/change-password', function (Request $req) {
+        return view("change-pass", [
+        ]);
+    });
+    Route::post('/change-password', function (Request $req) {
+        $api = api();
+        $api->changeUserPassword($req->oldpass, $req->newpass1, $req->newpass2);
+        $errors = $api->getErrors();
+        if ($errors) {
+            return view("change-pass", [
+                "data"=>$req->toArray(),
+                "errors"=>$errors,
+            ]);
+        }
+        \Flash::add("password updated");
+        return redirect("/settings");
+    });
+
     Route::get('/admin', function () {
         return view('admin');
     });

@@ -402,6 +402,11 @@ Route
         $user->save();
         return $user;
     });
+    Route::any('/change-password', function(Request $req) {
+        $api = api();
+        $api->changeUserPassword($req->oldpass, $req->newpass1, $req->newpass2);
+        return $api->getErrors();
+    });
 
     Route::any('/read-notification', function(Request $req) {
         $user = Auth::user();
@@ -473,6 +478,7 @@ Route
         if ($user)
             Auth::logout($user);
     });
+
     Route::any('/self/{userId}', function (Request $req, $userId) {
         $user = App\User::find($userId);
         if ($user)
@@ -484,7 +490,7 @@ Route
         $user = App\User::findOrFail($id);
         $user->delete();
         return "okay";
-    });
+    })->middleware("require-admin");
 
     Route::post('/add', function (Request $req) {
         $user = new App\User();
