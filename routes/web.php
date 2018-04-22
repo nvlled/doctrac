@@ -147,17 +147,6 @@ Route::middleware(['auth'])->group(function() {
                 "error" => $error,
             ]);
         })->name("view-document");
-
-        Route::get('/{trackingId}/sub-routes', function ($trackingId) {
-            $doc = App\Document::where("trackingId", $trackingId)->firstOrFail();
-            $routes = $doc->startingRoutes();
-            return view('sub-routes', [
-                "doc" => $doc,
-                "origin" => $routes[0],
-                "routes" => $routes,
-                "user" => optional(Auth::user())->toJson(),
-            ]);
-        })->name("view-subroutes");
     });
 });
 
