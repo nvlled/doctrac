@@ -25,7 +25,7 @@
 <div class="notif-nav">
     @if ($numPages > 1)
         <ul>
-        @foreach(range(1, $pageTotal) as $p)
+        @foreach(range(1, $numPages) as $p)
             <li><a class="{{textIf($p == $pageNo, "bracket")}}"
                     href="?page={{$p}}">{{$p}}</a>
             </li>
