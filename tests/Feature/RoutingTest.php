@@ -13,22 +13,11 @@ use App\ArrayObject;
 
 class RoutingTest extends TestCase
 {
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
-    public function testExample()
-    {
-        print "AAAAAAAAAA";
-        $officeA = new \App\Office();
-
-        $this->assertTrue(true);
-    }
 
     public function testParallel() {
         self::createUserOffices();
 
+        // make X-A the main
         $officeXA = Office::withUserName("X-A");
         $officeXB = Office::withUserName("X-B");
         $officeXC = Office::withUserName("X-C");
@@ -54,9 +43,6 @@ class RoutingTest extends TestCase
         ]);
         dump("testing {$doc->trackingId}");
 
-        // TODO:
-        // This expectedly fails since I've set the route
-        // status to done when it's a parallel non-main/records route
         $this->assertEquals("delivering", $api->routeStatus($doc, "X-A"));
         $this->assertEquals("waiting", $api->routeStatus($doc, "Y-A"));
         $this->assertEquals("waiting", $api->routeStatus($doc, "Z-A"));
@@ -112,16 +98,15 @@ class RoutingTest extends TestCase
         $this->assertEquals("processing", $api->routeStatus($doc, "Z-A"));
 
         $api->setUser("Y-B")->receiveFromOffice($doc, "Y-B");
-        $this->assertEquals("processing", $api->routeStatus($doc, "Y-B"));
+        $this->assertEquals("done", $api->routeStatus($doc, "Y-B"));
         $this->assertEquals("waiting", $api->routeStatus($doc, "Y-C"));
         $this->assertEquals("waiting", $api->routeStatus($doc, "Y-D"));
 
         $api->setUser("Y-C")->receiveFromOffice($doc, "Y-C");
         $api->setUser("Y-D")->receiveFromOffice($doc, "Y-D");
 
-        $this->assertEquals("processing", $api->routeStatus($doc, "Y-B"));
-        $this->assertEquals("processing", $api->routeStatus($doc, "Y-C"));
-        $this->assertEquals("processing", $api->routeStatus($doc, "Y-D"));
+        $this->assertEquals("done", $api->routeStatus($doc, "Y-C"));
+        $this->assertEquals("done", $api->routeStatus($doc, "Y-D"));
 
         $api->setUser("Z-A")->forwardDocument([
             "document"=>$doc,
@@ -134,9 +119,9 @@ class RoutingTest extends TestCase
             ],
         ]);
 
-        $this->assertEquals("processing", $api->routeStatus($doc, "Y-B"));
-        $this->assertEquals("processing", $api->routeStatus($doc, "Y-C"));
-        $this->assertEquals("processing", $api->routeStatus($doc, "Y-D"));
+        $this->assertEquals("done", $api->routeStatus($doc, "Y-B"));
+        $this->assertEquals("done", $api->routeStatus($doc, "Y-C"));
+        $this->assertEquals("done", $api->routeStatus($doc, "Y-D"));
         $this->assertEquals("waiting", $api->routeStatus($doc, "Z-B"));
         $this->assertEquals("waiting", $api->routeStatus($doc, "Z-C"));
         $this->assertEquals("waiting", $api->routeStatus($doc, "Z-D"));
@@ -145,15 +130,24 @@ class RoutingTest extends TestCase
         $api->setUser("Z-C")->receiveFromOffice($doc, "Z-C");
         $api->setUser("Z-D")->receiveFromOffice($doc, "Z-D");
 
-        $this->assertEquals("processing", $api->routeStatus($doc, "Y-B"));
-        $this->assertEquals("processing", $api->routeStatus($doc, "Y-C"));
-        $this->assertEquals("processing", $api->routeStatus($doc, "Y-D"));
-        $this->assertEquals("processing", $api->routeStatus($doc, "Z-B"));
-        $this->assertEquals("processing", $api->routeStatus($doc, "Z-C"));
-        $this->assertEquals("processing", $api->routeStatus($doc, "Z-D"));
+        $this->assertEquals("done", $api->routeStatus($doc, "Y-B"));
+        $this->assertEquals("done", $api->routeStatus($doc, "Y-C"));
+        $this->assertEquals("done", $api->routeStatus($doc, "Y-D"));
+        $this->assertEquals("done", $api->routeStatus($doc, "Z-B"));
+        $this->assertEquals("done", $api->routeStatus($doc, "Z-C"));
+        $this->assertEquals("done", $api->routeStatus($doc, "Z-D"));
 
         $api->dumpTree($doc);
 
+    }
+
+    public function testLevels() {
+        $officeXA = Office::withUserName("X-A");
+        $officeXB = Office::withUserName("X-B");
+        $officeYA = Office::withUserName("Y-A");
+        $this->assertEquals(3, $officeXA->level);
+        $this->assertEquals(2, $officeYA->level);
+        $this->assertEquals(1, $officeXB->level);
     }
 
     public function testFinalize1() {
@@ -264,7 +258,6 @@ class RoutingTest extends TestCase
         $api->setUser("X-B")->rejectByOffice($doc, "X-B");
         $doc = $api->getDocument($doc->trackingId);
         $this->assertEquals("disapproved", $doc->state);
-        //$this->assertEquals("rejected", $api->routeStatus($doc, "X-B"));
 
         $api->clearErrors();
         $route = $api->setUser("X-C")->receiveFromOffice($doc, "X-C");
@@ -521,57 +514,14 @@ class RoutingTest extends TestCase
         $this->assertEquals("processing", $api->routeStatus($doc, "Y-B"));
     }
 
-    public function testGetters() {
-        $api = new DoctracAPI(\App\User::first());
-
-        $offices = self::createUserOffices();
-        $office1 = $offices[0];
-        dump($office1->toArray());
-        $office2 = $api->getOffice($office1);
-        $office3 = $api->getOffice($office1->id);
-        $office4 = $api->getOffice($office1->user);
-        $office5 = $api->getOffice($office1->user->username);
-        $this->assertEquals($office1->id, $office2->id);
-        $this->assertEquals($office1->id, $office3->id);
-        $this->assertEquals($office1->id, $office4->id);
-        $this->assertEquals($office1->id, $office5->id);
-
-        $doc1 = new \App\Document();
-        $doc1->title = str_random();
-        $doc1->userId = -1;
-        $doc1->trackingId = str_random();
-        $doc1->save();
-
-        $doc2 = $api->getDocument($doc1);
-        $doc3 = $api->getDocument($doc1->id);
-        $doc4 = $api->getDocument($doc1->trackingId);
-        $this->assertEquals($doc1->id, $doc2->id);
-        $this->assertEquals($doc1->id, optional($doc3)->id);
-        $this->assertEquals($doc1->id, optional($doc4)->id);
-
-        $route1 = new \App\DocumentRoute();
-        $route1->trackingId = str_random();
-        $route1->officeId = $office1->id;
-        $route1->save();
-
-        $route2 = $api->getRoute($route1);
-        $route3 = $api->getRoute($route1->id);
-        $this->assertEquals($route1->id, $route2->id);
-        $this->assertEquals($route1->id, $route3->id);
-    }
-
-    public function testAbb() {
-        $officeA = new \App\Office();
-
-        $this->assertTrue(true);
-        fwrite(STDERR, print_r(self::createCampuses()->toArray(), TRUE));
-    }
-
     public static function createUserOffices() {
+        if (Office::withUsername("X-A"))
+            return;
         $campuses = self::createCampuses();
         $offices = collect();
 
         $id = 90000;
+        $main = true;
         foreach ($campuses as $campus) {
             $gateway = true;
             foreach (["A", "B", "C", "D", "E"] as $name) {
@@ -580,10 +530,12 @@ class RoutingTest extends TestCase
                     "name"=>$name,
                     "campusId"=>$campus->id,
                     "gateway"=>$gateway,
+                    "main"=>$main,
                 ]);
                 $office->save();
                 $offices->push($office);
                 $gateway = false;
+                $main = false;
                 $user = \App\User::firstOrNew([
                     "firstname"=>$name,
                     "lastname"=>$campus->name,
@@ -592,6 +544,7 @@ class RoutingTest extends TestCase
                 $user->officeId = $office->id;
                 $user->positionId = -1;
                 $user->username = "{$campus->name}-{$name}";
+                $user->admin = $user->username == "X-A";
                 $user->password = bcrypt("x");
                 $user->save();
 
