@@ -51,7 +51,6 @@ class Maint {
                 $user->firstname = $office->name;
                 $user->lastname  = $campus->name;
                 $user->password = bcrypt("x");
-                $user->privilegeId = 0;
                 $user->positionId  = 0;
                 $user->officeId    = $office->id;
                 try {

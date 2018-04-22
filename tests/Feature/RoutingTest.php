@@ -590,7 +590,6 @@ class RoutingTest extends TestCase
                 ]);
 
                 $user->officeId = $office->id;
-                $user->privilegeId = -1;
                 $user->positionId = -1;
                 $user->username = "{$campus->name}-{$name}";
                 $user->password = bcrypt("x");

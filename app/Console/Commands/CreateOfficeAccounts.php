@@ -45,7 +45,6 @@ class CreateOfficeAccounts extends Command
             $user->lastname = "";
             $user->officeId = $off->id;
             $user->positionId = 0;
-            $user->privilegeId = 0;
             $user->password = bcrypt("x");
             $user->save();
         }

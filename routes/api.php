@@ -509,7 +509,6 @@ Route
         $user->lastname = $req->lastname;
         $user->password = bcrypt($req->password);
         $user->positionId = $req->positionId;
-        $user->privilegeId = $req->privilegeId;
         $user->officeId = $req->officeId;
 
         $v = $user->validate();
@@ -845,7 +844,7 @@ Route
         $user->firstname = "ronald";
         $user->lastname = "casili";
         $user->positionId = 0;
-        $user->privilegeId = 0;
+        $user->admin = true;
         $user->officeId = 0;
         $user->save();
         Auth::login($user);
