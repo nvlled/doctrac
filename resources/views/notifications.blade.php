@@ -4,13 +4,31 @@
 @section("contents")
 <section id="notifications">
 <div class="notifs">
-    <div class="notif-msg">
-    <strong class='num'></strong>
-    <span class='contents'></span>
-    (<small class='diff'></small>)
+@php
+    $startNo = $notifications->startNo;
+    $pageNo = $notifications->pageNo;
+    $pageTotal = $notifications->pageTotal;
+@endphp
+@foreach($notifications->items as $notif)
+    <div class="notif-msg {{textIf($notif["unread"], "unread")}}">
+        <strong class='num'>{{$startNo+$loop->index}}</strong>
+        <a href="{{$notif["url"]}}">
+            <span class='contents'>{{$notif["message"]}}</span>
+        </a>
+        (<small class='diff'>{{$notif["diff"]}}</small>)
     </div>
+@endforeach
 </div>
-<div class="loading-msg">loading...</div>
+<div class="notif-nav">
+<ul>
+@foreach(range(1, $pageTotal) as $p)
+    <li><a class="{{textIf($p == $pageNo, "bracket")}}"
+            href="?page={{$p}}">{{$p}}</a>
+    </li>
+@endforeach
+</ul>
+</div>
+<div class="loading-msg hidden">loading...</div>
 <div class='center'>
     <button class='hidden'>clear notifications</button>
 </div>
@@ -23,38 +41,12 @@
 .num {
     padding-right: 10px;
 }
+.notif-nav li {
+    display: inline-block;
+}
+
 </style>
 <script>
-
-api.user.notifications().then(function(notifs) {
-    $(".loading-msg").remove();
-    var $container = $("div.notifs");
-    var $template = $("div.notif-msg").detach();
-    if (!notifs || notifs.length == 0) {
-        $container.append("<h3 class='center'>no notifications</h3>");
-        return;
-    }
-    notifs.forEach(function(notif, i) {
-        // 2018, I still make this mistake......
-        //for (var i = 0; i < notifs.length; i++) {
-        //    var notif = notifs[i];
-
-        var $div = $template.clone();
-        if (notif.unread)
-            $div.addClass("unread");
-        $div.find(".num").text(i+1);
-        $div.find(".contents").text(notif.message);
-        $div.find(".diff").text(notif.diff);
-        $div.click(function() {
-            api.user.readNotification({
-            id: notif.id,
-            }).then(function() {
-                util.redirect(notif.url);
-            });
-        });
-        $container.append($div);
-    });
-});
 
 </script>
 @endsection

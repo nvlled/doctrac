@@ -7,4 +7,6 @@ class Config {
 
     public static $searchRetryLimit = 5;
     public static $searchRetryTime = 10; // minutes
+
+    public static $notifPageSize = 15; // minutes
 }

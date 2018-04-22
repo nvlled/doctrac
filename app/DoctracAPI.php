@@ -1028,4 +1028,39 @@ class DoctracAPI {
     public function getRouteTree($routeOrId) {
         return $this->mapTree($routeOrId);
     }
+
+    public function getNotifications($page=1) {
+        if ($page <= 0)
+            $page = 1;
+        $user = $this->user;
+
+        $notifications = collect();
+        if ( ! $user)
+            return $notifications;
+
+        $pageSize = \App\Config::$notifPageSize;
+        $notifications  = $user->notifications;
+        $total = $notifications->count();
+        $numPages = ceil($total/$pageSize);
+        $notifications = $notifications->forPage($page, $pageSize);
+        $items = collect();
+        foreach ($notifications as $notif) {
+            if ($notif->type != "App\Notifications\DocumentAction") {
+                continue;
+            }
+            $data = $notif->data;
+            $data['diff'] = (new \Carbon\Carbon($data["date"]))->diffForHumans();
+            $data['url'] = route("view-document", $data["routeId"]);
+            $data['id'] = $notif->id;
+            $data['unread'] = $notif->read_at == null;
+            $items->push($data);
+        }
+        return (object) [
+            "startNo"=>($page-1)*$pageSize+1,
+            "pageNo"=>$page,
+            "pageTotal"=>$numPages,
+            "pageSize"=>$pageSize,
+            "items"=>$items,
+        ];
+    }
 }

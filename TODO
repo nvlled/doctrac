@@ -1,26 +1,19 @@
 
 TODO:
 
-* add interface for setting offices
-* use the annotations on the new api
-* use the new route selection component
+* page results
+* create a complete zombie test script
+* re-upload forgotten attachment
+* change password, change default password
 
 -------------------
-
-* re-upload forgotten attachment
 
 * changed campus code to scc of san carlos
 * finalized document lists for sender
 * fix parallel routes, parallel routes
   are for notifications only (MAIN -> alaminos -> local offices)
-* page loading indicator
 * pagination
 * psu.edu.ph domain
-* change password, change default password
-
-* I now just remembered something about
-  lingayen campus is different from the main
-  campus, I'll just have to recheck on this one
 
 * add send test button to sms/email
 * change office name format: <CAMPUS> <OFFICE>

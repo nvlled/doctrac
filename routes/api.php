@@ -411,22 +411,7 @@ Route
     });
 
     Route::any('/doc-notifications', function(Request $req) {
-        $user = Auth::user();
-        if (! $user)
-            return collect();
-        $notifications = collect();
-        foreach ($user->notifications as $notif) {
-            if ($notif->type != "App\Notifications\DocumentAction") {
-                continue;
-            }
-            $data = $notif->data;
-            $data['diff'] = (new \Carbon\Carbon($data["date"]))->diffForHumans();
-            $data['url'] = route("view-document", $data["routeId"]);
-            $data['id'] = $notif->id;
-            $data['unread'] = $notif->read_at == null;
-            $notifications->push($data);
-        }
-        return $notifications;
+        return api()->getNotifications();
     });
 
     Route::any('/{userId}/see-route/{routeId}',

@@ -98,12 +98,11 @@ Route::middleware(['auth'])->group(function() {
             return redirect("/");
         return view('dispatch');
     });
-    Route::get('/notifications', function() {
-        $user = Auth::user();
-        if (!$user)
-            return abort(404);
+    Route::get('/notifications', function(Request $req) {
+        $page = $req->page ?? 1;
+        $notifications = api()->getNotifications($page);
         return view('notifications', [
-            "notifications"=>$user->notifications,
+            "notifications"=>$notifications,
         ]);
     });
 
