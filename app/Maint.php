@@ -51,8 +51,8 @@ class Maint {
                 $user->firstname = $office->name;
                 $user->lastname  = $campus->name;
                 $user->password = bcrypt("x");
-                $user->positionId  = 0;
                 $user->officeId    = $office->id;
+                $user->admin = $user->username == "main-records";
                 try {
                     $user->save();
                 } catch (\Exception $e) {

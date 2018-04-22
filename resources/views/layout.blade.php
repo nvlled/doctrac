@@ -35,13 +35,15 @@
         </h1>
         <nav class='main left'>
             <ul class='lstype-none'>
-                @if (!Auth::user())
+                @php $user = Auth::user() @endphp
+                @if (!$user)
                 <li><a href='/login'>◐</a></li>
-                @elseif (Auth::user()->privilegeId == 0)
+                @else
                 <li><a href='/settings'>☺</a></li>
                 <li><a href='/lounge'>♞</a></li>
-                <li><a href='/admin'>#</a></li>
-                <li class="hidden"><a href='/admin'>#</a></li>
+                    @if ($user->admin)
+                    <li><a href='/admin'>#</a></li>
+                    @endif
                 @endif
             </ul>
         </nav>

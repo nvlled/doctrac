@@ -5,7 +5,7 @@
 @section("contents")
 <section>
     <div class="archive">
-    @foreach ($messages as $msg)
+    @foreach ($messages->reverse() as $msg)
     <div class="message">
         <span>{{$msg->username}}</span>
         <span>:</span>

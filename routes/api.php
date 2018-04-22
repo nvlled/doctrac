@@ -758,13 +758,11 @@ Route
         $user->firstname = $office->name;
         $user->lastname  = $campus->name;
         $user->password = bcrypt("x");
-        $user->privilegeId = 0;
-        $user->positionId  = 0;
         $user->officeId    = $office->id;
         $user->save();
 
         return \App\Office::find($office->id);
-    });
+    })->middleware("require-admin");
 
     Route::get('/list', function (Request $req) {
         return \App\Office::orderBy("created_at")->get();
@@ -794,7 +792,7 @@ Route
             return ["errors"=>$v->errors()];
         $campus->save();
         return $campus;
-    });
+    })->middleware("require-admin");
 
     Route::any('/list', function (Request $req) {
         return \App\Campus::all();
