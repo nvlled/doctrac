@@ -20,9 +20,45 @@ Route::get('/tests', function () {
 
 Route::get('/', function() {
     if (Auth::user())
-        return view('home');
+        return redirect()->route("doc-lists");
     return redirect()->route("search");
 });
+
+Route::get('/lists', function(Request $req) {
+    $listNames = [
+        "all",
+        "recent",
+        "delivering",
+        "waiting",
+        "processing",
+        "finished",
+    ];
+    $name = $req->name ?? "all";
+    $office = optional(optional(Auth::user())->office);
+    $routes = collect();
+
+    switch ($name) {
+    case "all":
+        $routes = $office->getAllRoutes(); break;
+    case "recent":
+        $routes = $office->getRecentRoutes(); break;
+    case "delivering":
+        $routes = $office->getDeliveringRoutes(); break;
+    case "waiting":
+        $routes = $office->getIncomingRoutes(); break;
+    case "processing":
+        $routes = $office->getProcessingRoutes(); break;
+    case "finished":
+        $routes = $office->getFinalRoutes(); break;
+    }
+
+    return view('doc-lists', [
+        "page" => $req->page,
+        "listNames" => $listNames,
+        "currentName" => $name,
+        "docs" => $routes,
+    ]);
+})->name("doc-lists");
 
 Route
 ::middleware(["restrict-doc"])

@@ -142,3 +142,17 @@ function isEmpty($arr) {
         return true;
     return count($arr) == 0;
 }
+
+function paginate($coll, $pageNo) {
+    $pageSize = \App\Config::PAGE_SIZE;
+    $count = $coll->count();
+    $numPages = ceil($count/$pageSize);
+    return (object) [
+        "items"=>$coll->forPage($pageNo, $pageSize),
+        "startNo"=>($pageNo-1)*$pageSize+1,
+        "pageNo"=>$pageNo,
+        "numPages"=>$numPages,
+        "pageSize"=>$pageSize,
+        "numItems"=>$coll->count(),
+    ];
+}
