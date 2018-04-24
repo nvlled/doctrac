@@ -172,21 +172,21 @@ class Office extends Model
             ->where("prevId", null)
             ->where("final", 0)
             ->get();
-        return $routes;
+        return uniqueBy("trackingId", $routes);
     }
 
     public function getIncomingRoutes() {
         $routes = \App\DocumentRoute::where("officeId", $this->id)->get();
-        return filter($routes, function($route) {
+        return uniqueBy("trackingId", filter($routes, function($route) {
             return $route->status == "waiting";
-        });
+        }));
     }
 
     public function getDeliveringRoutes() {
         $routes = \App\DocumentRoute::where("officeId", $this->id)->get();
-        return filter($routes, function($route) {
+        return uniqueBy("trackingId", filter($routes, function($route) {
             return $route->status == "delivering";
-        });
+        }));
     }
 
     public function getFinalRoutes() {
@@ -207,9 +207,9 @@ class Office extends Model
     public function getProcessingRoutes() {
         $routes = \App\DocumentRoute::where("officeId", $this->id)->get();
 
-        return filter($routes, function($route) {
+        return uniqueBy("trackingId", filter($routes, function($route) {
             return $route->status == "processing";
-        });
+        }));
     }
 
     public function getRecentRoutes() {
