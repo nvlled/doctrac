@@ -25,7 +25,6 @@ class DocumentRoute extends Model
         "sender_name", "receiver_name",
         "detailed_info",
         "activities",
-        "time_elapsed",
         "seen_by",
         "link",
     ];
@@ -54,6 +53,10 @@ class DocumentRoute extends Model
 
     public function nextRoute() {
         return $this->hasOne("App\DocumentRoute", "id", "nextId");
+    }
+
+    public function hasNextRoute() {
+        return $this->allNextRoutes()->count() > 0;
     }
 
     public function allNextRoutes() {
@@ -192,12 +195,36 @@ class DocumentRoute extends Model
             return "";
 
         $d = new Carbon($this->arrivalTime);
-        if ( ! $this->nextRoute || !$this->nextRoute->arrivalTime) {
-            if ($d->diffInSeconds() < 30)
+
+        if ( ! $this->isDone()) {
+            if ($d->diffInSeconds() < 10)
                 return "just now";
             return $d->diffForHumans(now(), true);
         }
-        return $d->diffForHumans(new Carbon($this->nextRoute->arrivalTime), true);
+        if ( ! $this->hasNextRoute()) {
+            return "";
+        }
+        return $d->diffForHumans(new Carbon($this->lastDeliveryTime()), true);
+    }
+
+    public function lastDeliveryTime() {
+        $routes = $this->allNextRoutes();
+        if ($routes->count() == 0)
+            return new Carbon();
+
+        $time = null;
+        foreach ($routes as $route) {
+            $time_ = $route->arrivalTime;
+            if ( ! $time) {
+                $time = $time_;
+                continue;
+            }
+            $t2 = new Carbon($time_);
+            $t1 = new Carbon($time);
+            if ($time_ && $t2->gt($t1))
+                $time = $time_;
+        }
+        return $time;
     }
 
     public function getStatusAttribute() {

@@ -76,7 +76,7 @@ Route
 
     Route::get('/{trackingId}/routes', function($trackingId) {
         $doc = App\Document::where("trackingId", $trackingId)->firstOrFail();
-        $user = Auth::user();
+        $user = optional(Auth::user());
         $api = api();
         $actionRes = $api->actionFor($doc, $user->office);
         $routeGraph = $api->getRouteGraph($doc);
@@ -108,6 +108,7 @@ Route::middleware(['auth'])->group(function() {
 
     Route::get('/change-password', function (Request $req) {
         return view("change-pass", [
+            "errors" => [],
         ]);
     });
     Route::post('/change-password', function (Request $req) {

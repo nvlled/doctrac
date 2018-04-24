@@ -1,10 +1,15 @@
 
 TODO:
 
+
+* forwarding with no route selected should return an error
 * page results
 * create a complete zombie test script
 * re-upload forgotten attachment
 * change password, change default password
+* recent document sidebar
+* office page (details, last-login)
+* fix seen
 
 -------------------
 

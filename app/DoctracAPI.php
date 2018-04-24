@@ -19,7 +19,7 @@ class DoctracAPI {
     public $debug = false;
 
     public function __construct($user) {
-        $this->user = $user;
+        $this->user = optional($user);
         $this->errors = collect();
     }
 
@@ -558,7 +558,7 @@ class DoctracAPI {
 
     public function allOfficeRoutes($doc, $office) {
         $doc = $this->getDocument($doc);
-        $office = $this->getOffice($office);
+        $office = optional($this->getOffice($office));
         return $this->searchRoutes($doc, false,
             function($route) use ($office) {
                 return $route->officeId == $office->id;
