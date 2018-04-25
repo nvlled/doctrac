@@ -131,10 +131,7 @@ class Office extends Model
     }
 
     function actionForStatus($doc, $status) {
-        //if ($status == "processing" && $doc->state == "ongoing")
         if ($status == "processing") {
-            if ($doc->state == "disapproved")
-                return "return";
             return "send";
         } else if ($status == "waiting") {
             return "recv";

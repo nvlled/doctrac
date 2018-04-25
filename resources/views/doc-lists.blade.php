@@ -4,6 +4,7 @@
 
 @section("contents")
 @php
+    $docs = $docs ?? collect();
     $page = $page ?? 1;
     $pageInfo = paginate($docs, $page);
     $currentName = $currentName ?? "all";

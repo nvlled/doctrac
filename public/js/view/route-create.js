@@ -36,6 +36,7 @@ function RouteCreate(graph, args) {
         showTable: util.defbool(args.showTable, true),
         showType:  util.defbool(args.showType,  currentOffice.level > 1),
         showAddButton:  util.defbool(args.showAddButton,  true),
+        noSelect: args.noSelect,
         vm: null,
         graph: graph,
         rows: rows,
@@ -386,7 +387,7 @@ function RouteCreateView(vm, api) {
                 "select.campuses[name=campuses]",
                 {
                     _ref: "campuses",
-                    disabled: api.isCampusDisabled() || isDeadEnd,
+                    disabled: api.noSelect || api.isCampusDisabled() || isDeadEnd,
                     onchange: [api.changeCampus]
                 },
                 api.getCampuses().map(function(obj, idx) {
@@ -400,7 +401,7 @@ function RouteCreateView(vm, api) {
                 "select.offices[name=offices]",
                 {
                     _ref: "offices",
-                    disabled: isDeadEnd,
+                    disabled: api.noSelect || isDeadEnd,
                     onchange: [api.changeOffice]
                 },
                 api.getOffices().map(function(obj, idx) {

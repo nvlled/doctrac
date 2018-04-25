@@ -13,6 +13,7 @@ class DocumentRoute extends Model
         "document_class",
         "document_type",
         "document_link",
+        "document_state",
         "time_elapsed",
         "seconds_elapsed",
         "campus_id",
@@ -58,6 +59,10 @@ class DocumentRoute extends Model
 
     public function getDocumentLinkAttribute() {
         return route("view-routes", $this->document->trackingId);
+    }
+
+    public function getDocumentStateAttribute() {
+        return  $this->document->state;
     }
 
     public function hasNextRoute() {

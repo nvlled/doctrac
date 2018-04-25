@@ -62,6 +62,7 @@ window.addEventListener("load", function() {
                 showAddButton: canParallelSend,
                 currentOffice:  currentOffice,
                 type: docType,
+                noSelect: doc.document_state == "disapproved",
                 selectedOffice: (docType == "serial") && nextOffice ? nextOffice : null,
             });
             var vm = officeSel.vm;
@@ -215,19 +216,14 @@ window.addEventListener("load", function() {
                 case "send":
                     $sendData.show();
                     $btnSend.show();
-                    if (currentDoc.document_type == "serial") {
+                    if (currentDoc.document_type == "serial" &&
+                        currentDoc.document_state != "disapproved") {
                         if (currentUser.gateway) {
                             $btnFinalize.show();
                         } else {
                             $btnReject.show();
                         }
                     }
-                    break;
-
-                case "return":
-                    $sendData.show();
-                    $annots.hide();
-                    $btnReturn.show();
                     break;
 
                 case "recv":
