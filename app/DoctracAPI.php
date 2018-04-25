@@ -412,6 +412,16 @@ class DoctracAPI {
         ];
     }
 
+    public function getUser($obj) {
+        if ($obj instanceof \App\User)
+            return $obj;
+        if (is_string($obj))
+            return \App\User::where("username", $obj)->first();
+        if (is_integer($obj))
+            return \App\User::find($obj);
+        return null;
+    }
+
     public function getOffice($obj) {
         if ($obj instanceof \App\Office)
             return $obj;

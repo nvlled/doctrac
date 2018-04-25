@@ -156,3 +156,33 @@ function paginate($coll, $pageNo) {
         "numItems"=>$coll->count(),
     ];
 }
+
+function http_parse_query($queryStr) {
+    $queryStr = trim($queryStr);
+    if ($queryStr[0] == "?")
+        $queryStr = substr($queryStr, 1);
+
+    $query = [];
+    foreach (explode("&", $queryStr) as $str) {
+        $fields = explode("=", trim($str));
+        $k = $fields[0];
+        $v = $fields[1] ?? "";
+        $query[$k] = $v;
+    }
+    return $query;
+}
+
+// note; does not handle hashes on url
+function replaceQueryString($url, $queryStr) {
+    $index = strpos($url, "?");
+
+    $queryStr = trim($queryStr);
+    if ($queryStr[0] == "?")
+        $queryStr = substr($queryStr, 1);
+
+    if ($index !== false) {
+        $url = substr($url, 0, $index);
+    }
+
+    return "$url?$queryStr";
+}
