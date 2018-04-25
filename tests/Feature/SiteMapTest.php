@@ -47,7 +47,7 @@ class SiteMapTest extends TestCase
 
             echo "* crawling $link\n";
             if ($this->isRedirect($response)) {
-                \Log::debug("redirecting");
+                echo "redirecting\n";
                 $toVisit->push($response->headers->get("location"));
                 continue;
             }

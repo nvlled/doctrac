@@ -7,6 +7,8 @@ const {
     sleep,
     selectMenu,
     receive,
+    finalize,
+    reject,
     send,
     setUser,
 }= require("./common");
@@ -14,7 +16,6 @@ const {
 module.exports = async function({browser, getPage}) {
     let page = await getPage(process.env.PWD);
     page.setDefaultNavigationTimeout(15500);
-
 
     console.log("dispatching from records");
     await setUser(page, "urd-records");
@@ -28,19 +29,10 @@ module.exports = async function({browser, getPage}) {
     console.log("receiving from registrar");
     await setUser(page, "urd-registrar");
     await receive(page, trackingId);
-    await send(page, trackingId, "urd-records");
+    await reject(page, trackingId, "urd-records");
 
-    console.log("receiving from registrar");
+    console.log("receiving from records");
     await setUser(page, "urd-records");
     await receive(page, trackingId);
-    //await finalize(page, trackingId);
-
-    //await logout(page);
-    //await login(page, "urd-records", "x");
-    //await receive(page, trackingId);
-
-    //actionLink = await page.$("a.action");
-    //await navigation(page, _=> actionLink.click());
-    //recvBtn = await page.$("button.recv.finalize");
-    //await recvBtn.click();
+    await reject(page, trackingId);
 }

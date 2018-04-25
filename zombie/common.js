@@ -56,6 +56,7 @@ let common = {
             await navigation(page, _=> clickElem(btnLogout));
         }
     },
+
     async login(page, username="urd-records", password="x") {
         await page.goto("http://doctrac.local/login");
         let inputUsername = await page.$("input#name");
@@ -64,6 +65,26 @@ let common = {
         await inputUsername.type(username);
         await inputPassword.type(password);
         await navigation(page, _=> clickElem(btnSubmit));
+    },
+
+    async setUser(page, username, password) {
+        if (username == await common.currentUsername(page))
+            return;
+        await common.logout(page);
+        await common.login(page, username, password);
+    },
+
+    async currentUsername(page) {
+        return await page.evaluate(() => {
+            let input = document.body.querySelector("input#current-user");
+            if (!input)
+                return "";
+            try {
+                let user = JSON.parse(input.value);
+                return user.username;
+            } catch (e) { };
+            return "";
+        });
     },
 
     async dispatchInput(page) {
@@ -78,14 +99,41 @@ let common = {
             await annotations.type(Math.random().toString(36).slice(2));
     },
 
-    async dispatch(page, nroutes=3) {
-        await page.goto("http://doctrac.local/dispatch");
+    async selectOffices(page, type, data) {
+        type = type || "serial"
+        if (!data) {
+            data = [
+                ["urdaneta",  ["mis", "registrar"]],
+            ]
+        }
+        let btnAdd = await page.$("button.add");
+        let typeRadio = await page.$(`input[value=${type}]`);
+        if (typeRadio)
+            await typeRadio.click();
+
+        if (typeof data == "string") {
+            await common.selectMenu(page, "select.offices", data);
+            if (btnAdd)
+                await clickElem(btnAdd);
+        } else {
+            for (let [campus, offices] of data) {
+                await common.selectMenu(page, "select.campuses", campus);
+                await common.sleep(150);
+                for (let office of offices) {
+                    await common.selectMenu(page, "select.offices", office);
+                    if (btnAdd)
+                        await clickElem(btnAdd);
+                }
+            }
+        }
+
+    },
+
+    async dispatch(page, data) {
+        await navigation(page, _=> page.goto("http://doctrac.local/dispatch"));
         await common.dispatchInput(page);
 
-        let btnAdd = await page.$("button.add");
-        for (let i = 0; i < nroutes; i++)
-            await clickElem(btnAdd);
-
+        await common.selectOffices(page, "serial", data);
         let btnSend = await page.$("button.send");
         await navigation(page, _=> clickElem(btnSend));
 
@@ -131,20 +179,7 @@ let common = {
     },
 
     async receive(page, trackingId) {
-        await navigation(page, _=> page.goto(`http://doctrac.local/${trackingId}/routes`));
-        let actionLink = await page.$("a.action");
-        if (!actionLink) {
-            console.log("no action available for", trackingId);
-            return;
-        }
-
-        await navigation(page, _=> clickElem(actionLink, page));
-        let recvBtn = await page.$("button.recv.action");
-
-        if (recvBtn)
-            await navigation(page, _=> clickElem(recvBtn));
-        else
-            console.log("action not available: send");
+        await common.performAction(page, trackingId, "recv");
     },
 
     async send(page, trackingId, office="records") {
@@ -169,6 +204,39 @@ let common = {
             await navigation(page, _=> clickElem(sendBtn));
         else
             console.log("action not available: send");
+    },
+
+    async finalize(page, trackingId) {
+        await common.performAction(page, trackingId, "finalize");
+    },
+
+    async reject(page, trackingId) {
+        await common.performAction(page, trackingId, "reject");
+    },
+
+    async performAction(page, trackingId, action) {
+        await navigation(page, _=>
+            page.goto(`http://doctrac.local/${trackingId}/routes`));
+
+        let actionLink = await page.$("a.action");
+        if (!actionLink) {
+            console.log("no action available for", trackingId, ":", action);
+            return;
+        }
+        await navigation(page, _=> clickElem(actionLink));
+
+        let annotations = await page.$("textarea[name=annotation]");
+        if (annotations) {
+            await annotations.type(Math.random().toString(36).slice(2));
+        } else {
+            console.warn("no annotations found");
+        }
+
+        let actionBtn = await page.$(`button.${action}.action`);
+        if (actionBtn)
+            await navigation(page, _=> clickElem(actionBtn));
+        else
+            console.log(`action not available: ${action}`);
     },
 
     // TODO: move to zombieteer code
