@@ -755,6 +755,10 @@ class DoctracAPI {
             return \App\Office::find($id);
         });
 
+        if (count($officeIds) == 0) {
+            return $this->appendError("must have at least one destination");
+        }
+
         $office = $route->office;
         $offices = rejectNull($offices);
         foreach ($offices as $destOffice) {

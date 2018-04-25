@@ -2,7 +2,7 @@
 TODO:
 
 
-* forwarding with no route selected should return an error
+* add rejected list category
 * page results
 * create a complete zombie test script
 * re-upload forgotten attachment
