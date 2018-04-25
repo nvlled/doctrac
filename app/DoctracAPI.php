@@ -463,6 +463,19 @@ class DoctracAPI {
             ->first();
     }
 
+    public function ending($trackingId) {
+        return $this->endRoute($this->origin($trackingId));
+    }
+
+    public function isReturned($trackingId) {
+        $startId = optional($this->origin($trackingId))->officeId;
+        $endRoute = $this->ending($trackingId);
+        if (!$endRoute)
+            return false;
+        $endId  = $endRoute->officeId;
+        return $startId == $endId && $endRoute->isDone();
+    }
+
     public function startRoute($routeId) {
         $route = $this->getRoute($routeId);
         $path  = $this->traceRoute($routeId);

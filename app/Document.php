@@ -292,6 +292,10 @@ class Document extends Model
 
     public function isDone() {
         $state = $this->state;
-        return $state == "completed";
+        $returned = false;
+        if ($state == "disapproved") {
+            $returned = api()->isReturned($this);
+        }
+        return $state == "completed" || $returned;
     }
 }
