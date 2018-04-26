@@ -323,6 +323,10 @@ Route
                 return ["errors"=>["file"=>"upload failed"]];
             }
 
+            $user = Auth::user();
+            if (!$user || $user->officeId != $doc->officeId) {
+                return ["errors"=>["file"=>"not authorized to set attachment"]];
+            }
 
             $path = $file->store("uploads");
             $filename = $req->filename
@@ -337,7 +341,7 @@ Route
             $doc->attachmentId = $file->id;
             $doc->save();
 
-            return $file->id;
+            return $doc->attachment_url;
         });
 
     // TODO: rename to create

@@ -8,6 +8,8 @@
 .left { text-align:   left  !important}
 .block { display: block}
 
+.indent15 { padding-left: 15px !important; }
+
 .bracket::before { content: "[" }
 .bracket::after  { content: "]" }
 
@@ -15,7 +17,9 @@
 .half { width: 50%; }
 
 ul.inline{
+    display: inline-block;
     padding: 0px;
+    margin: 0px;
 }
 
 ul.inline > li {

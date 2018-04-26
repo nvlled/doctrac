@@ -400,6 +400,27 @@ var UI = {
             });
         });
     },
+
+    uploadFile: function(trackingId, $btn, file) {
+        var text = $btn.text();
+        UI.clearErrors($btn.parent());
+        if (file) {
+            $btn.text("uploading file...");
+            return api.doc.setAttachment({
+                trackingId: trackingId,
+                filename: file.name,
+                filedata: file,
+            }).then(function(resp) {
+                if (resp && resp.errors)
+                    return UI.showErrors($btn.parent(), resp.errors);
+                $btn.text(text);
+                return resp;
+            });
+        } else {
+            $btn.attr("disabled", false);
+            return Promise.resolve();
+        }
+    },
 }
 UI._templates = {
     $flash: null,

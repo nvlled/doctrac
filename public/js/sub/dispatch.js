@@ -78,7 +78,7 @@ var dispatch = {
                         var trackingId = resp.trackingId;
                         var fileInput = $container.find("input[name=attachment]")[0];
                         var file = fileInput.files[0];
-                        uploadFile(trackingId, file).then(function() {
+                        UI.uploadFile(trackingId, $btnSend, file).then(function() {
                             $message.text("document sent: " + trackingId);
                             $container.find("form")[0].reset();
                             $btnSend.text("Send");
@@ -91,24 +91,6 @@ var dispatch = {
                     }
                 });
             });
-        }
-
-        function uploadFile(trackingId, file) {
-            if (file) {
-                $btnSend.text("uploading file...");
-                return api.doc.setAttachment({
-                    trackingId: trackingId,
-                    filename: file.name,
-                    filedata: file,
-                }).then(function(resp) {
-                    if (resp && resp.errors)
-                        return UI.showErrors($container, resp.errors);
-                });
-            } else {
-                $btnSend.text("Send");
-                $btnSend.attr("disabled", false);
-                return Promise.resolve();
-            }
         }
 
     }

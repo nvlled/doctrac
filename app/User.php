@@ -80,4 +80,10 @@ class User extends Authenticatable
                 $notif->markAsRead();
         }
     }
+
+    public function ownsDocument($doc) {
+        if (!$doc)
+            return false;
+        return $this->officeId == $doc->officeId;
+    }
 }

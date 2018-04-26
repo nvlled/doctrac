@@ -11,6 +11,7 @@ function defaultHandler(resp) {
     } else {
         console.log("api response", resp);
     }
+    return resp;
 }
 
 function makeHandler(url) {

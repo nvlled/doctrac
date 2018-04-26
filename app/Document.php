@@ -8,12 +8,14 @@ use Illuminate\Support\Facades\Validator;
 class Document extends Model
 {
     public $appends = [
+        "officeId",
         "attachment_filename",
         "attachment_size",
         "attachment_url",
     ];
     public $hidden = [
         "attachment",
+        "user",
     ];
 
     public function create($user, $data) {
@@ -281,6 +283,14 @@ class Document extends Model
             "id"      => $attachment->id,
             "filename"=> $attachment->name,
         ]);
+    }
+
+    public function getOfficeIdAttribute() {
+        return optional($this->user)->officeId;
+    }
+
+    public function user() {
+        return $this->hasOne("App\User", "id", "userId");
     }
 
     public function isSerial() {

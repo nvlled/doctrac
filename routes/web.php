@@ -125,8 +125,9 @@ Route
             "office" => optional($user)->office,
             "action"=> $actionRes["action"] ?? "",
             "routeLink"=> $routeLink,
-            "routes"=> @$routeGraph["routes"] ?? [],
-            "tree"=>   @$routeGraph["tree"] ?? [],
+            "routes" => @$routeGraph["routes"] ?? [],
+            "tree"   =>  @$routeGraph["tree"] ?? [],
+            "user"   => $user,
         ]);
     })->name("view-routes");
 });
