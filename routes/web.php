@@ -120,6 +120,8 @@ Route
             ? $routeLink = route("view-document", @$actionRes["routeId"])
             : "";
 
+        api()->readNotification(request());
+
         $office = $user->office;
         list($seen, $route) = api()->seeDocument($office, $doc);
         if ($seen) {
@@ -203,6 +205,9 @@ Route::middleware(['auth'])->group(function() {
             $error = "";
             $docJson = "";
             $trackingId = "";
+
+            api()->readNotification(request());
+
             if ($route) {
                 $docJson = $route->toJson();
                 $trackingId = $route->trackingId;
@@ -222,6 +227,7 @@ Route::middleware(['auth'])->group(function() {
             } else {
                 $error = "document not found: $id";
             }
+
             return view('document', [
                 "trackingId"=>$trackingId,
                 "document" => $route->document,

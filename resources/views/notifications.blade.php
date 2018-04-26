@@ -14,7 +14,12 @@
 @foreach($notifications->items as $notif)
     <div class="notif-msg {{textIf($notif["unread"], "unread")}}">
         <strong class='num'>{{$startNo+$loop->index}}</strong>
-        <a href="{{$notif["url"]}}">
+        @php
+            $url = $notif["url"];
+            if ($notif["unread"])
+                $url = addQueryString($url, "?notifid={$notif['id']}")
+        @endphp
+        <a href="{{$url}}">
             <span class='contents'>{{$notif["message"]}}</span>
         </a>
         (<small class='diff'>{{$notif["diff"]}}</small>)
@@ -37,8 +42,6 @@
     <div class="center"><em>(no notifications)</em></div>
 </div> <!--div.notifs-->
 @endif
-
-
 
 <div class="loading-msg hidden">loading...</div>
 <div class='center'>

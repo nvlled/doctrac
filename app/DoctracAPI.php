@@ -1152,4 +1152,14 @@ class DoctracAPI {
         $route = $this->getRoute($route);
         return !!\App\SeenRoute::where("dstRouteId", $route->id)->first();
     }
+
+    public function readNotification($req) {
+        $user = $this->user;
+        if (!$user)
+            return;
+        $notifId = $req->notifid;
+        if ($notifId) {
+            $user->notifications->where('id', $notifId)->markAsRead();
+        }
+    }
 }

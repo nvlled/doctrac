@@ -157,17 +157,20 @@ function paginate($coll, $pageNo) {
     ];
 }
 
-function http_parse_query($queryStr) {
-    $queryStr = trim($queryStr);
-    if ($queryStr[0] == "?")
-        $queryStr = substr($queryStr, 1);
+function http_parse_query($str) {
+    $str = trim($str);
+    $qi = strpos($str, "?");
+    if ($qi === false)
+        return [];
+    $str = substr($str, $qi+1);
 
     $query = [];
-    foreach (explode("&", $queryStr) as $str) {
+    foreach (explode("&", $str) as $str) {
         $fields = explode("=", trim($str));
         $k = $fields[0];
         $v = $fields[1] ?? "";
-        $query[$k] = $v;
+        if ( !! $k)
+            $query[$k] = $v;
     }
     return $query;
 }
@@ -179,6 +182,29 @@ function replaceQueryString($url, $queryStr) {
     $queryStr = trim($queryStr);
     if ($queryStr[0] == "?")
         $queryStr = substr($queryStr, 1);
+
+    if ($index !== false) {
+        $url = substr($url, 0, $index);
+    }
+
+    return "$url?$queryStr";
+}
+
+function makeQueryString($params) {
+    $str = [];
+    foreach ($params as $k => $v) {
+        $str []= "$k=$v";
+    }
+    return implode($str, "&");
+}
+
+function addQueryString($url, $queryStr) {
+    $queryParams = array_merge(
+        http_parse_query($url),
+        http_parse_query($queryStr)
+    );
+    $index = strpos($url, "?");
+    $queryStr = makeQueryString($queryParams);
 
     if ($index !== false) {
         $url = substr($url, 0, $index);
