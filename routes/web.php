@@ -26,14 +26,14 @@ Route::get('/', function() {
 
 Route::get('/lists', function(Request $req) {
     $listNames = [
-        "all",
         "recent",
+        "all",
         "delivering",
         "waiting",
         "processing",
         "finished",
     ];
-    $name = $req->name ?? "all";
+    $name = $req->name ?? "recent";
     $office = optional(optional(Auth::user())->office);
     $routes = collect();
 

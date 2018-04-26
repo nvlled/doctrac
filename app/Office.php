@@ -212,7 +212,7 @@ class Office extends Model
     public function getRecentRoutes() {
         $routes = \App\DocumentRoute
             ::where("officeId", $this->id)
-            ->orderByDesc("created_at")
+            ->orderByDesc("updated_at")
             ->limit(30)
             ->get();
         return uniqueBy("trackingId", $routes);

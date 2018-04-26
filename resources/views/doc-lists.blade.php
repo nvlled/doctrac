@@ -7,7 +7,7 @@
     $docs = $docs ?? collect();
     $page = $page ?? 1;
     $pageInfo = paginate($docs, $page);
-    $currentName = $currentName ?? "all";
+    $currentName = $currentName ?? "";
 @endphp
 <section id="doc-lists">
     <ul class="list-names inline">

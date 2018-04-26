@@ -30,18 +30,12 @@ TODO:
 * I remember hearing something about an audit trail
   in the last meeting, but then I'm not even sure
 
-* add facebook notifications
-
 * editable routes
-
-* set more than one attachments and notes/annotations
-    ** Add model: Note(id, trackingId, officeId, contents)
 
 --------------------------------------------
 
 * num of days/minutes
 * subject searching
-* show loading indicators
 * page queries
 * handle deletion (or prevent)
 
