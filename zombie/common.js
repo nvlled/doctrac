@@ -117,7 +117,8 @@ let common = {
                 await clickElem(btnAdd);
         } else {
             for (let [campus, offices] of data) {
-                await common.selectMenu(page, "select.campuses", campus);
+                if (campus)
+                    await common.selectMenu(page, "select.campuses", campus);
                 await common.sleep(150);
                 for (let office of offices) {
                     await common.selectMenu(page, "select.offices", office);
@@ -126,7 +127,6 @@ let common = {
                 }
             }
         }
-
     },
 
     async dispatch(page, data) {
@@ -154,15 +154,7 @@ let common = {
 
         let btnAdd = await page.$("button.add");
 
-        await page.click("input[value=parallel]");
-        Object.keys(data).forEach(async function(campus) {
-            await common.selectMenu(page, "select.campuses", campus);
-            await common.sleep(1500);
-            data[campus].forEach(async function(off) {
-                await common.selectMenu(page, "select.offices", off);
-                await clickElem(btnAdd);
-            });
-        });
+        await common.selectOffices(page, "parallel", data);
 
         let btnSend = await page.$("button.send");
         await navigation(page, _=> clickElem(btnSend));
@@ -182,8 +174,12 @@ let common = {
         await common.performAction(page, trackingId, "recv");
     },
 
-    async send(page, trackingId, office="records") {
-        await navigation(page, _=> page.goto(`http://doctrac.local/${trackingId}/routes`));
+    async send(page, trackingId, data="records") {
+        if (trackingId) {
+            await navigation(page, _=>
+                page.goto(`http://doctrac.local/${trackingId}/routes`));
+        }
+
         let actionLink = await page.$("a.action");
         if (!actionLink) {
             console.log("no action available for", trackingId);
@@ -198,7 +194,8 @@ let common = {
             console.warn("no annotations found");
         }
 
-        await common.selectMenu(page, "select.offices",office);
+        await common.selectOffices(page, "parallel", data);
+
         let sendBtn = await page.$("button.send.action");
         if (sendBtn)
             await navigation(page, _=> clickElem(sendBtn));
