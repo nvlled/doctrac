@@ -279,7 +279,7 @@ class DocumentRoute extends Model
     public function getActivitiesAttribute() {
         $activities = collect();
         $prevRoute = $this->prevRoute;
-        $nextRoute = $this->nextRoute;
+        $nextRoutes = $this->allNextRoutes();
 
         if ($prevRoute && $prevRoute->sender) {
             $activities->push(joinLines(
@@ -292,10 +292,13 @@ class DocumentRoute extends Model
                 "Received on {$this->arrivalTime}"
             ));
         }
-        if ($nextRoute && $this->sender) {
+        if ($this->sender && $nextRoutes->count() > 0) {
+            $routeNames = $nextRoutes->map(function($route) {
+                return $route->office_name;
+            })->implode(", ");
             $activities->push(joinLines(
-                "Forwarded to {$nextRoute->office_name}
-                 on {$this->forwardTime}"
+                "Forwarded on {$this->forwardTime}
+                to {$routeNames}"
             ));
         }
 

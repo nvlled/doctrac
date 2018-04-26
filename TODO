@@ -2,34 +2,21 @@
 TODO:
 
 
+* re-upload forgotten attachment
+
 * add rejected list category
 * page results
-* create a complete zombie test script
-* re-upload forgotten attachment
-* change password, change default password
 * recent document sidebar
 * office page (details, last-login)
 * fix seen
 
 -------------------
 
-* changed campus code to scc of san carlos
-* finalized document lists for sender
-* fix parallel routes, parallel routes
-  are for notifications only (MAIN -> alaminos -> local offices)
-* pagination
 * psu.edu.ph domain
 
 * add send test button to sms/email
-* change office name format: <CAMPUS> <OFFICE>
-
-* office contact page
-** fix seen notifications
 * export data
-* office to office messaging
 * account management
-* dynamic update route table (or simply reload the page)
-* recent/active document list
 * email interface
 
 * fix logout
