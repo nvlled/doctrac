@@ -323,8 +323,10 @@ class DoctracAPI {
             list($origin, $routes) = $this->serialDispatchDocument($doc, $ids);
         }
 
-        if ($this->hasErrors())
+        if ($this->hasErrors()) {
+            $doc->delete();
             return null;
+        }
 
         if ($routes && $routes->count() > 0) {
             $origin->annotations = $docData->annotations ?? "";
