@@ -406,7 +406,8 @@ var UI = {
         UI.clearErrors($btn.parent());
         if (file) {
             $btn.text("uploading file...");
-            return api.doc.setAttachment({
+            $btn.attr("disabled", true);
+            var promise = api.doc.setAttachment({
                 trackingId: trackingId,
                 filename: file.name,
                 filedata: file,
@@ -415,7 +416,18 @@ var UI = {
                     return UI.showErrors($btn.parent(), resp.errors);
                 $btn.text(text);
                 return resp;
+            }).fail(function(resp) {
+                $btn.attr("disabled", false);
+                $btn.text(text);
+                var message = resp.statusText;
+                if (resp.status == 413) {
+                    message = "upload failed, file is too large";
+                }
+                return UI.showErrors($btn.parent(), [message]);
+                console.log("fail", args);
             });
+
+            return promise;
         } else {
             $btn.attr("disabled", false);
             return Promise.resolve();

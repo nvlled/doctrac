@@ -32,16 +32,16 @@
         </a>
     </p>
 
-    <div class='info attachment {{hiddenIf(!$doc->attachment)}}'>
+    <div class='info attachment'>
         <strong>attachment</strong>:
         <a href="{{$doc->attachment_url}}" target="_blank">{{$doc->attachment_filename}}</a>
-        <span class="{{hiddenIf(!$user || !$user->ownsDocument($doc))}}">
+        <div class="{{hiddenIf(!$user || !$user->ownsDocument($doc))}}">
             <ul class="errors inline indent15"></ul>
             <br>
             <input type="file" name="attachment">
             <button class="upload small">upload new file</button>
             <br>
-        </span>
+        </div>
     </div>
 
     <table class='full routes'>

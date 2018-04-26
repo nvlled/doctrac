@@ -29,11 +29,11 @@
 
     <div class="dom"></div>
 
-    <ul class="errors"></ul>
     @include("sub.loading")
     <div class="center">
         <button class="half send action pure-button pure-button-primary">Send</button>
         <p class='message' style='color: #050'><p>
+        <ul class="left errors"></ul>
     </div>
 
     <p style="font-size: 15px; color: gray">

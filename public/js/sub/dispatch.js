@@ -67,7 +67,6 @@ var dispatch = {
                     officeIds: officeIds,
                     type: type,
                 }
-                $btnSend.text("sending...");
                 api.doc.send(doc, function(resp) {
                     UI.hideLoadingMeow();
                     if (resp.errors) {
@@ -87,6 +86,17 @@ var dispatch = {
                             util.redirectRoute("view-routes",{
                                 trackingId: trackingId,
                             });
+                        }).fail(function(e) {
+                            $btnSend.text("redirecting...");
+                            $btnSend.attr("disabled", true);
+                            setTimeout(function() {
+                                api.util.urlFor({
+                                    routeName: "view-routes",
+                                    trackingId: trackingId,
+                                }).then(function(resp) {
+                                    window.location = resp.url;
+                                });
+                            }, 2000);
                         });
                     }
                 });
