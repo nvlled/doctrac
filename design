@@ -1,0 +1,429 @@
+
+
+I don't know if this adds value or anything,
+but I'm going to make the document list
+static, and add a "recents" section to it.
+
+And after that, I'll write some more automated tests,
+particularly tests that prevent me from omitting
+a file from a commit.
+
+The advice I got from HN where I test all 
+pages for 200 is a good and easy one.
+
+Also, zombie scripts that tests:
+* finalization
+* rejection
+* main parallel
+* records parallel
+
+-----------------------------------------
+
+
+Well, I'm mostly done with the hard parts, which
+is the parallel dispatch and the office selection UI component.
+I'm pretty sure there are some nasty bugs lurking somewhere,
+but for now I need to at least allocate some time 
+while planning on what to work on next. I should
+probably prioritize tasks that have a high value to difficulty ratio.
+
+* paging of every lists
+* some chat/feedback form
+* database/record management
+* improve my zombie scripts
+
+
+
+
+--------------------------------------------------
+
+document routes
+
+A   sending
+B   waiting
+C   waiting
+D   waiting
+
+-----------------
+
+A   done
+B   processing
+C   processing
+D   processing
+
+-----------------
+
+A   done        |  A   done      
+B   sending     |      B   sending       
+E   waiting     |          E   waiting   
+F   waiting     |          F   waiting   
+C   processing  |      C   processing       
+D   processing  |      D   processing       
+
+
+* For now, I'll just flatten the tree
+* It's either I disallow cyclic graphs,
+  or I create a hierarchy where parallel send
+  can only be done from higher to lower
+
+* I guess I'll go with the hierarchical trees
+  since it is closer to business rules
+  and I'll try to avoid some rabbit holes
+  related to cyclic graphs detection.
+
+* Oh man, if I had known there'd be office levels,
+  it would have saved me lots of time refactoring.
+  Well, I actually do recall something about office levels,
+  but they were not emphasized enough or the problem
+  space wasn't thoroughly explored.
+
+* I still can't believe I'm the one defining 
+  the terms too...
+
+hierarchical:
+- main
+- records
+- sub
+
+* do levels only apply to only to parallel dispatches? m.a.y.b.e.
+
+A
+-B
+--E
+--F
+-C
+--G
+--H
+
+office (A)
+parallel dispatch
+> B
+> C
+> F
+| dispatch |
+
+By my own definition (i.e. higher offices can send to lower offices),
+A offices can parallel send directly to F, which is against the business rules (probably)
+
+A more stricter definition would be:
+higher offices can parallel send directly to the lower offices,
+where directly lower means (level-1)
+
+
+
+--------------------------
+
+document title
+status: disapproved
+
+office 1    done        ✓
+office 2    sending     ✓
+office 3    waiting
+
+vvv
+receive
+vvv
+
+office 1    done        ✓
+office 2    done        ✓
+office 3    processing
+
+vvv
+reject
+vvv
+
+office 1    done        ✓
+office 2    done        ✓
+office 3    returning   ✗
+office 1    waiting
+
+
+------------------------------
+
+more complications:
+records 1
+office  1
+office  2
+office  3
+records 2
+office  4
+office  5
+records 3
+office  6
+office  7 ✗
+
+office  7 -> records 3 -> records 1
+* how do I know records 3 goes back to records 1?
+* Will it always be a three node path? Yeah, let's go with that.
+
+
+
+
+-----------------------------
+Annotations: |super nope    |
+
+
+-----------------------------
+
+parallel routes
+
+# status
+office name	        status
+Records Alaminos	sending   (source)
+  Records urdaneta	done
+  MIS alaminos	        done
+  Registrar alaminos	*
+
+a parallel source status:
+done       -> all destinations have received
+sending    -> all are sending
+processing -> no sending route
+partial    -> combination of sending/processing
+
+# aborting
+
+Records urdaneta
+    Annotations: |      |
+    |SEND|
+MIS alaminos
+    |Abort|
+ALL
+    |ABORT/SEND|
+
+
+-----------------------------
+
+
+        next
+AR      A1, ..., BR, CR
+BR
+-----
+
+AR
+A1      AR, A1, ...
+A2      AR, A2, ...
+
+-----
+
+AR
+A1
+A2
+AR     A1, ..., BR, CR
+BR     X
+------------------------------
+
+
+
+------------------------------
+
+general
+/login
+/register
+/api/login
+/api/register
+
+pages
+/agent/index
+/agent/search
+/agent/document
+/agent/notices
+
+api
+/api/users/self/set       admin
+/api/document/dispatch    officer
+
+/officer
+/admin
+
+/search
+|000001-1    |
+No-document found
+
+/document/tid
+title
+info
+
+action: send
+
+/history/tid
+title:
+info:
+route 1 done
+route 2 delivering
+route 3 waiting
+
+--------------------------------
+
+
+
+Source : 13  records urdaneta  
+
+Destinations
+id  office name         status
+14  COC urdaneta        waiting
+15  cashier urdaneta    waiting
+16  MIS urdaneta        done
+
+
+-------------------------------
+
+state transitions
+
+actions 
+    send
+    recv
+    abort
+
+states
+    done
+    onhold
+    delivering
+    waiting
+    "*"
+
+delivering 
+    abort -> sending
+    recv  -> sending
+
+processing
+    send -> sending
+    
+
+
+------------------------
+
+
+route
+    id
+    trackingId
+    nextId
+    prevId
+    timeSent
+    timeSeen
+    timeRecv
+    officeId
+    agentId
+
+seen
+    routeId
+    userId
+
+(this actually would not work for pre-built routes)
+//current routes  = agent == null || time == null
+
+current offices = 
+    where agent != null && arrivalTime != null
+    orderby arrivalTime desc
+    groupBy routeId
+next offices = map nextId of current offices 
+
+in progress documents
+    nextId == null && !final
+
+incoming
+    trackingID=$tid && agent == null && time == null
+
+-----
+
+create
+id  routeId office sendAgent recvAgent next   time    final
+1   9      X       A         A         2      10:00
+2   9      Y                 B         3      20:00
+3   9      Z                           4
+4   9      W                 
+
+-----------------
+
+tracking ID : 11223
+create
+id  routeId office agent next   time    final
+1   9      X      A     2      10:00
+2   9      Y      
+
+seen
+2 B
+2 C
+
+
+-------------------------
+
+
+recv
+id  office agent next   time
+1   X      A     2      10:00
+2   Y      B            10:05    
+
+-------------------------
+
+send
+id  office agent next   time
+1   X      A     2      10:00
+2   Y      B            10:05    
+3   Z
+
+
+==================================
+
+multiple dispatch
+id  routeId office agent next   time
+1   9      X      A     _      _
+2   10     Y      A     _      _
+3   11     Z      A     _      _
+    
+-------------------------
+
+id  routeId office agent next   time
+1   9      X      A     4      _
+2   10     X      A     5      _
+3   11     X      A     6      _
+
+4   9      Y      _     _      _
+5   10     Z      _     _      _
+6   11     W      _     _      _
+
+-------------------------
+
+id  office agent next   time
+1   X      A     4      _
+2   X      A     5      _
+3   X      A     6      _
+
+4   Y      B     _      _
+5   Z      C     _      _
+6   W      D     _      _
+
+------------------------------------------------
+alternate db structure
+
+trackingId  action      agent   time    dest
+1122        make        A       10:01
+1122        send        B       10:02   X 
+1122        seen        B       10:03  
+1122        recv        C       10:04  
+1122        send        D       10:04  
+1122        done        C       10:04  
+
+issues:
+    where is the destination?
+    getting the current state requires building the route table
+
+
+
+------------------------
+
+Things are starting to become pastamessy spagehtto,
+so it's about time I consider a component library,
+like react, or maybe something lighter that requires
+no tooling.
+
+var html = blah();
+var component = html.div(
+    ['x'=>'y'],
+    function() {
+        html.p("asdf");
+        html.p("asdf");
+    }
+);
+css({
+    "asdf":
+});
