@@ -120,6 +120,20 @@ Route
             ? $routeLink = route("view-document", @$actionRes["routeId"])
             : "";
 
+        $office = $user->office;
+        list($seen, $route) = api()->seeDocument($office, $doc);
+        if ($seen) {
+            \Flash::add("document first seen");
+            $prevRoute = $route->prevRoute;
+            if ($prevRoute) {
+                \App\Notif::seen(
+                    $prevRoute->office,
+                    $route->office,
+                    $route
+                );
+            }
+        }
+
         return view('routes', [
             "doc" => $doc,
             "office" => optional($user)->office,
@@ -192,7 +206,19 @@ Route::middleware(['auth'])->group(function() {
             if ($route) {
                 $docJson = $route->toJson();
                 $trackingId = $route->trackingId;
-                try { $route->seenBy(Auth::user()); } catch (Exception $e) { }
+                $office = optional(Auth::user())->office;
+                $seen = api()->seeRoute($office, $route);
+                if ($seen) {
+                    \Flash::add("document first seen");
+                    $prevRoute = $route->prevRoute;
+                    if ($prevRoute) {
+                        \App\Notif::seen(
+                            $prevRoute->office,
+                            $route->office,
+                            $route
+                        );
+                    }
+                }
             } else {
                 $error = "document not found: $id";
             }

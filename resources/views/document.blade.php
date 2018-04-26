@@ -54,12 +54,12 @@ TODO
             <strong>attachment:</strong>
             <a href="{{$document->attachment_url}}" target="_blank">{{$document->attachment_filename}}</a>
         </p>
-        @php $seenBy = optional($document->seen_by) @endphp
+        @php $seenBy = optional($route->seen_by) @endphp
         <p class='info {{hiddenIf(!$seenBy->count())}}'>
             <strong>seen by:</strong>
             <span class='seen-by'>
             @if ($seenBy->count())
-                {{implode($seenBy, " ") }}
+                {{$seenBy->implode(", ") }}
             @endif
             </span>
         </p>

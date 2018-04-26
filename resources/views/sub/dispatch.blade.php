@@ -45,4 +45,9 @@
     <script src='{{asset("js/view/route-create.js")}}'></script>
     <script src='{{asset("js/sub/office-selection.js")}}'></script>
     <script src="{{asset('js/sub/dispatch.js')}}"></script>
+    <style>
+    section#dispatch {
+        width: 700px;
+    }
+    </style>
 </section>

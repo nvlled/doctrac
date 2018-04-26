@@ -347,30 +347,12 @@ class DocumentRoute extends Model
     }
 
     public function getSeenByAttribute() {
-        $status = $this->status;
-        if ($status == "delivering") {
-            $seenRoutes = SeenRoute
-                ::where("routeId", $this->nextId)
-                ->where("status",  "waiting")
-                ->get();
-        } else if ($status == "waiting") {
-            $seenRoutes = SeenRoute
-                ::where("routeId", $this->id)
-                ->where("status",  "waiting")
-                ->get();
-        } else {
-            return collect();
-        }
-
-        $result = collect();
-        return $seenRoutes;
-        foreach ($seenRoutes as $sr) {
-            $office = optional($sr->user)->office;
-            if ($office && $office->id != $this->officeId) {
-                $result->push($sr);
-            }
-        }
-        return $result;
+        return SeenRoute
+            ::where("srcRouteId", $this->id)
+            ->get()
+            ->map(function($sr) {
+                return $sr->office->complete_name;
+            });
     }
 
     public function isStart() {

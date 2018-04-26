@@ -15,10 +15,9 @@ class CreateSeenRoutesTable extends Migration
     {
         Schema::create('seen_routes', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('routeId');
-            $table->integer('userId');
-            $table->string('status', 25);
-            $table->unique(['routeId', 'userId', 'status']);
+            $table->integer('srcRouteId');
+            $table->integer('dstRouteId');
+            $table->unique(['srcRouteId', 'dstRouteId']);
             $table->timestamps();
         });
     }

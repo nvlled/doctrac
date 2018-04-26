@@ -1113,4 +1113,43 @@ class DoctracAPI {
         $user->save();
         return $user;
     }
+
+    public function seeDocument($office, $doc) {
+        $hasSeen = false;
+        $route = null;
+        foreach ($this->allWaitingRoutes($doc) as $route_) {
+            if ($office->id != $route_->officeId) {
+                continue;
+            }
+            $route = $route_;
+            $hasSeen = $hasSeen || $this->seeRoute($office, $route);
+        }
+        return [$hasSeen, $route];
+    }
+
+    public function seeRoute($office, $route) {
+        $office = $this->getOffice($office);
+        $route = $this->getRoute($route);
+        if (!$office || !$route)
+            return false;
+        if ($office->id != $route->officeId)
+            return false;
+        if ($route->status != "waiting")
+            return false;
+        if ($this->isSeen($route))
+            return false;
+        try {
+            $seen = new \App\SeenRoute();
+            $seen->srcRouteId = $route->prevRoute->id;
+            $seen->dstRouteId = $route->id;
+            $seen->save();
+            return true;
+        } catch (\Exception $e) {dump($e); }
+        return false;
+    }
+
+    public function isSeen($route) {
+        $route = $this->getRoute($route);
+        return !!\App\SeenRoute::where("dstRouteId", $route->id)->first();
+    }
 }

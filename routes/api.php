@@ -425,33 +425,11 @@ Route
 
     Route::any('/{userId}/see-route/{routeId}',
         function (Request $req, $userId, $routeId) {
-            $user  = App\User::find($userId);
-            $route = App\DocumentRoute::find($routeId);
-            if (!$user || !$route)
-                return null;
-
-            try {
-                $route->seenBy($user);
-                $prevRoute = $route->prevRoute;
-                \Notif::seen($prevRoute->office, $route->office, $prevRoute);
-                return "okay";
-            } catch (\Exception $e) {
-                return $e->getMessage();
-            }
+            trigger_error("Deprecated function called.", E_USER_DEPRECATED);
     });
 
     Route::any('/{userId}/seen-routes', function (Request $req, $userId) {
-        $user = App\User::find($userId);
-        if (!$user)
-            return null;
-        $ids = collect();
-        foreach ($user->seenRoutes() as $sr) {
-            if (@$ids[$sr->routeId] == null) {
-                $ids[$sr->routeId] = collect();
-            }
-            $ids[$sr->routeId]->push($sr->status);
-        }
-        return $ids;
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
     });
 
     Route::any('/search', function (Request $req) {

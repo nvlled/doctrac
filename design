@@ -1,5 +1,34 @@
 
 
+(1) A -> B
+
+(2) B -> C
+
+(3) C -> D
+      -> E
+      -> F
+
+
+seen(2)
+seen(3)
+
+$hasSeen = api()->see($office, $trackingId)
+             //$waitingRoute = api()->getWaitingRoute($office, $trackingId);
+
+if ($hasSeen) {
+    notify
+}
+
+Create a seen notification 
+to an office of delivering status when
+an office of waiting status views
+the waiting route page or document page.
+
+"seen" applies only to receiving offices
+and is of concern only to delivering offices
+
+----------------------------------------------
+
 I don't know if this adds value or anything,
 but I'm going to make the document list
 static, and add a "recents" section to it.
@@ -19,7 +48,6 @@ Also, zombie scripts that tests:
 
 -----------------------------------------
 
-
 Well, I'm mostly done with the hard parts, which
 is the parallel dispatch and the office selection UI component.
 I'm pretty sure there are some nasty bugs lurking somewhere,
@@ -31,9 +59,6 @@ probably prioritize tasks that have a high value to difficulty ratio.
 * some chat/feedback form
 * database/record management
 * improve my zombie scripts
-
-
-
 
 --------------------------------------------------
 
