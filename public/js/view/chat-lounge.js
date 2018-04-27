@@ -147,7 +147,7 @@ ChatLounge.View = function(vm, api) {
 
     var sheet = j2c.sheet({
         ".chat-lounge": {
-            width: "700px",
+            width: "800px",
         },
         ".messages": {
             "border": "1px solid #552",
@@ -168,6 +168,7 @@ ChatLounge.View = function(vm, api) {
         ".msg-footer": {
             color: "gray",
             "font-size": "9px",
+            "border-bottom": "1px solid #ddd",
         },
         ".msg-date": {
             "padding": "5px",
@@ -212,7 +213,7 @@ ChatLounge.View = function(vm, api) {
                 zerop(d.getHours()) + ":" + zerop(d.getMinutes());
         }
         var messages = api.messages.map(function(msg) {
-            var domContents = $("<span>"+msg.contents.split("\n").join("<br>")+"</span>")[0];
+            var domContents = $("<pre>"+msg.contents.split("\n").join("<br>")+"</pre>")[0];
 
             return el("div", {class: cl("msg")}, [
                 msg.loading && el("span", "@"),
@@ -222,7 +223,8 @@ ChatLounge.View = function(vm, api) {
 
                 msg.deleted_at
                     ? el("span", {class: cl("deleted")}, "(deleted)")
-                    : el("span", {_ref: Math.random()+""}, [ie(domContents)]),
+                    : el("span", {_ref: Math.random()+""}, [el("pre", msg.contents)]),
+                    //: el("span", {_ref: Math.random()+""}, [ie(domContents)]),
 
 
                 el("div", {class: cl("msg-footer")}, [
