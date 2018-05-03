@@ -72,7 +72,7 @@
             @php
             $office = optional($route->office);
             $level  = $office->level;
-            if ($root->campus_id == $office->campusId && !$office->gateway)
+            if ($level >= 3 && $root->campus_id == $office->campusId && !$office->gateway)
                 $level++;
             @endphp
             <td class='{{textIf($doc->type == "parallel", "indent-$level")}}'>
