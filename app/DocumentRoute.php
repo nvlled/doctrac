@@ -58,7 +58,7 @@ class DocumentRoute extends Model
     }
 
     public function getDocumentLinkAttribute() {
-        return route("view-routes", $this->document->trackingId);
+        return route("view-routes", optional($this->document)->trackingId);
     }
 
     public function getDocumentStateAttribute() {

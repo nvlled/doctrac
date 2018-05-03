@@ -324,6 +324,10 @@ class DoctracAPI {
         }
 
         if ($this->hasErrors()) {
+            // TODO: use transactions instead
+            if ($origin) $origin->delete();
+            foreach ($routes ?? [] as $r)
+                $r->delete();
             $doc->delete();
             return null;
         }
@@ -770,7 +774,7 @@ class DoctracAPI {
             return \App\Office::find($id);
         });
 
-        if (count($officeIds) == 0) {
+        if (count($officeIds ?? []) == 0) {
             return $this->appendError("must have at least one destination");
         }
 
