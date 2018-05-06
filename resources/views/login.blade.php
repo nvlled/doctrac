@@ -18,7 +18,8 @@
         </div>
 
         <div class="pure-controls">
-            <p class='msg'></p>
+            <ul class="errors"></ul>
+            <p class='error msg'></p>
             <button type="submit" class="pure-button pure-button-primary">Login</button>
         </div>
     </fieldset>

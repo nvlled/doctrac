@@ -369,14 +369,36 @@ Route
     });
 });
 
-
 Route::any('/users/login', function (Request $req) {
     $username = $req->username;
     $password = $req->password;
-    if (Auth::attempt(["username"=>$username, "password"=>$password])) {
-        return Auth::user();
+
+    $sanctions = \App\AccountSanction::getActive($username);
+    if ($sanctions->count() > 0) {
+        $sanc = $sanctions[0];
+        return [
+            "errors"   => ["$sanc->reason : wait for {$sanc->minutesLeft} minute/s"],
+            "minutes"  => $sanc->minutesLeft,
+        ];
     }
-    return null;
+
+    if (Auth::attempt(["username"=>$username, "password"=>$password])) {
+        \App\LoginAttempt::success($username, $req->getClientIp());
+        return ["okay" => true];
+    }
+
+    // TODO: check if username exists
+
+    \App\LoginAttempt::fail($username, $req->getClientIp());
+    $count = \App\LoginAttempt::countFailed($username, $req->getClientIp());
+    if ($count >= \App\Config::$loginAttempts) {
+        \App\AccountSanction::disable(
+            $username,
+            "login attempts exceeded"
+        );
+    }
+
+    return ["attempts" => $count];
 });
 
 Route::any('/users/logout', function (Request $req) {

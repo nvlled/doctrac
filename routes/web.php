@@ -155,6 +155,7 @@ Route::middleware(['auth'])->group(function() {
             return redirect("/");
         return view('dispatch');
     });
+
     Route::get('/notifications', function(Request $req) {
         $page = $req->page ?? 1;
         $notifications = api()->getNotifications($page);

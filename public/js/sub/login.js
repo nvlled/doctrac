@@ -4,20 +4,26 @@ window.addEventListener("load", function() {
     $loginForm.submit(function(e) {
         e.preventDefault();
         var data = util.getFormData($loginForm);
-        api.user.login(data).then(function(user) {
-            if (user) {
-                $loginForm
-                    .find(".msg")
-                    .text("login successful")
-                    .show();
-                util.redirect("/");
-            } else {
-                $loginForm.find(".msg")
-                    .text("invalid username or password")
-                    .show()
-                    .delay(1000)
-                    .fadeOut();
+        api.user.login(data).then(function(resp) {
+            UI.clearErrors($loginForm);
+            if (resp) {
+                if (resp.errors) {
+                    UI.showErrors($loginForm, resp.errors);
+                    return;
+                }
+
+                if (resp.okay) {
+                    $loginForm
+                        .find(".msg")
+                        .text("login successful")
+                        .show();
+                    util.redirect("/");
+                    return;
+                }
             }
+
+            var count = "(" + (resp.attempts||0) + ")";
+            UI.showErrors($loginForm, ["invalid username or password " + count])
         });
     });
 });

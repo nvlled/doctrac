@@ -23,6 +23,8 @@ ul.msgs {
     color: #3d3;
 }
 ul.errors {
+    margin: 0px;
+    padding: 0px;
     list-style-type: square;
     color: #d33;
 }
