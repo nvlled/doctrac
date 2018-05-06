@@ -130,32 +130,32 @@ class Office extends Model
         return false;
     }
 
-    function actionForStatus($doc, $status) {
-        if ($status == "processing") {
+    function actionResponse($doc, $actionTaken) {
+        if ($actionTaken == "processing") {
             return "send";
-        } else if ($status == "waiting") {
+        } else if ($actionTaken == "waiting") {
             return "recv";
         }
         return "";
     }
 
-    public function actionForRoute($route) {
+    public function actionResponseForRoute($route) {
         if ($route->officeId == $this->id)
-            return $this->actionForStatus($route->document, optional($route)->status);
+            return $this->actionResponse($route->document, optional($route)->actionTaken);
         return "";
     }
 
     public function actionFor($doc) {
         foreach($doc->currentRoutes() as $route) {
             if ($this->id == $route->officeId) {
-                $action = $this->actionForStatus($doc, $route->status);
+                $action = $this->actionResponse($doc, $route->actionTaken);
                 if ($action)
                     return $action;
             }
         }
         foreach($doc->nextRoutes() as $route) {
             if ($this->id == $route->officeId) {
-                $action = $this->actionForStatus($doc, $route->status);
+                $action = $this->actionResponse($doc, $route->actionTaken);
                 if ($action)
                     return $action;
             }
@@ -175,14 +175,14 @@ class Office extends Model
     public function getIncomingRoutes() {
         $routes = \App\DocumentRoute::where("officeId", $this->id)->get();
         return uniqueBy("trackingId", filter($routes, function($route) {
-            return $route->status == "waiting";
+            return $route->actionTaken == "waiting";
         }));
     }
 
     public function getDeliveringRoutes() {
         $routes = \App\DocumentRoute::where("officeId", $this->id)->get();
         return uniqueBy("trackingId", filter($routes, function($route) {
-            return $route->status == "delivering";
+            return $route->actionTaken == "delivering";
         }));
     }
 
@@ -205,7 +205,7 @@ class Office extends Model
         $routes = \App\DocumentRoute::where("officeId", $this->id)->get();
 
         return uniqueBy("trackingId", filter($routes, function($route) {
-            return $route->status == "processing";
+            return $route->actionTaken == "processing";
         }));
     }
 

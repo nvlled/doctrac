@@ -37,8 +37,8 @@ TODO
             <span class='classification'>{{$document->classification}}</span>
         </p>
         <p class='info'>
-            <strong>status:</strong>
-            <span class='status'>{{$route->status}}</span>
+            <strong>action taken:</strong>
+            <span class='action-taken'>{{$route->actionTaken}}</span>
         </p>
         <p class='info'>
             <strong>details:</strong>

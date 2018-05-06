@@ -210,7 +210,7 @@ window.addEventListener("load", function() {
             officeId: currentUser.officeId,
             routeId:  route ? route.id : -1,
         }
-        api.office.actionForRoute(params, function(resp) {
+        api.office.actionResponseForRoute(params, function(resp) {
             console.log("action for", resp);
             switch(resp) {
                 case "send":

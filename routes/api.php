@@ -652,12 +652,12 @@ Route
             return [];
         });
 
-    Route::post('/{officeId}/action-for-route/{routeId}',
+    Route::post('/{officeId}/action-resp-for-route/{routeId}',
         function (Request $req, $officeId, $routeId) {
             $office = App\Office::find($officeId);
             $route = App\DocumentRoute::find($routeId);
             if ($office)
-                return $office->actionForRoute($route);
+                return $office->actionResponseForRoute($route);
             return "";
         });
 

@@ -20,7 +20,7 @@ class DocumentRoute extends Model
         "attachment_filename",
         "attachment_size",
         "attachment_url",
-        "status",
+        "action_taken",
         "office_name",
         "next_office_name",
         "next_office_id",
@@ -95,25 +95,25 @@ class DocumentRoute extends Model
     }
 
     public function isDelivering() {
-        return $this->status == "delivering";
+        return $this->actionTaken == "delivering";
     }
 
     public function isWaiting() {
-        return $this->status == "waiting";
+        return $this->actionTaken == "waiting";
     }
 
     public function isProcessing() {
-        return $this->status == "processing";
+        return $this->actionTaken == "processing";
     }
 
     public function isCurrent() {
-        $status = $this->status;
-        return $status == "processing"
-            || $status == "delivering";
+        $actionTaken = $this->actionTaken;
+        return $actionTaken == "processing"
+            || $actionTaken == "delivering";
     }
 
     public function isDone() {
-        return $this->status == "done";
+        return $this->actionTaken == "done";
     }
 
     public function isNext($route) {
@@ -237,7 +237,7 @@ class DocumentRoute extends Model
         return $time;
     }
 
-    public function getStatusAttribute() {
+    public function getActionTakenAttribute() {
         if ($this->arrivalTime) {
             $nextRoute  = $this->nextRoute;
             $nextRoutes = $this->allNextRoutes();
@@ -366,7 +366,7 @@ class DocumentRoute extends Model
             $seen = new \App\SeenRoute();
             $seen->userId = $user->id;
             $seen->routeId = $this->id;
-            $seen->status = $this->status;
+            $seen->actionTaken = $this->actionTaken;
             $user->readNotification($this->id);
             $seen->save();
         } catch (Exception $_) { /* ignore */ }

@@ -250,16 +250,16 @@ class DoctracAPI {
     public function routeStatus($doc, $office) {
         $routes = $this->allOfficeRoutes($doc, $office);
         foreach ($routes->reverse() as $route) {
-            $status = $route->status;
+            $actionTaken = $route->actionTaken;
             $nextRoute = $route->nextRoute;
-            if ($status && $status != "*") {
+            if ($actionTaken && $actionTaken != "*") {
                 if (!$nextRoute)
-                    return $status;
+                    return $actionTaken;
                 if (!$nextRoute->isDone())
-                    return $status;
+                    return $actionTaken;
             }
         }
-        return optional($routes->last())->status ?? "";
+        return optional($routes->last())->actionTaken ?? "";
     }
 
     /**
@@ -272,9 +272,9 @@ class DoctracAPI {
         if ( ! $this->canReceive($route) || !$this->authorize($route))
             return null;
 
-        $status = $prevRoute->status;
-        if ($status != "delivering")
-            return $this->appendError("cannot receive to route, previous route is `$status`");
+        $actionTaken = $prevRoute->actionTaken;
+        if ($actionTaken != "delivering")
+            return $this->appendError("cannot receive to route, previous route is `$actionTaken`");
 
         $doc = $route->document;
         if ($doc->state == "disapproved") {
@@ -346,7 +346,7 @@ class DoctracAPI {
 
     public function mapTree($routeOrId, $fn = null) {
         $fn = $fn ?? function($route) {
-            return "({$route->id}) {$route->office_name} {$route->status}";
+            return "({$route->id}) {$route->office_name} {$route->actionTaken}";
         };
 
         $route = null;
@@ -376,7 +376,7 @@ class DoctracAPI {
 
     public function getTree($routeOrId, $formatter = null) {
         $formatter = $formatter ?? function($route) {
-            return "({$route->id}) {$route->office_name} {$route->status}";
+            return "({$route->id}) {$route->office_name} {$route->actionTaken}";
         };
 
         return $this->mapTree($routeOrId, function($route, $next, &$node) use ($formatter) {
@@ -598,7 +598,7 @@ class DoctracAPI {
         $office = $this->getOffice($office);
         $routes = $this->allOfficeRoutes($doc, $office);
         foreach ($routes as $route) {
-            $action = $office->actionForRoute($route);
+            $action = $office->actionResponseForRoute($route);
             if ($action) {
                 return [
                     "action" => $action,
@@ -808,7 +808,7 @@ class DoctracAPI {
             return $this->appendError("no previous route") ?? false;
         if (! $prevRoute->nextId != $route->id)
             return $this->appendError("cannot transfer document to route") ?? false;
-        return $route->status == "processing";
+        return $route->actionTaken == "processing";
     }
 
     public function canReceive($route) {
@@ -824,10 +824,10 @@ class DoctracAPI {
                  to route {$route->id}"
             ) ?? false;
 
-        $status = $route->status;
-        if ($status != "waiting")
+        $actionTaken = $route->actionTaken;
+        if ($actionTaken != "waiting")
             return $this->appendError(
-                "cannot receive, invalid route state: $status"
+                "cannot receive, invalid route state: $actionTaken"
             ) ?? false;
         return true;
     }
@@ -835,9 +835,9 @@ class DoctracAPI {
     public function setSender($route, $annotations = null) {
         $user = $this->user;
         $prevRoute = $route->prevRoute;
-        $status = $prevRoute->status;
-        if ($prevRoute->status != "processing")
-            return $this->appendError("cannot send to route, previous route is `$status`");
+        $actionTaken = $prevRoute->actionTaken;
+        if ($prevRoute->actionTaken != "processing")
+            return $this->appendError("cannot send to route, previous route is `$actionTaken`");
 
         $prevRoute->senderId = $user->id;
         $prevRoute->forwardTime = ngayon();
@@ -1140,7 +1140,7 @@ class DoctracAPI {
             return false;
         if ($office->id != $route->officeId)
             return false;
-        if ($route->status != "waiting")
+        if ($route->actionTaken != "waiting")
             return false;
         if ($this->isSeen($route))
             return false;

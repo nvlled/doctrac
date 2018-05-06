@@ -244,8 +244,8 @@ var api = {
 
         search: makeHandler("/api/offices/search"),
         actionFor: makeHandler("/api/offices/{officeId}/action-for/{trackingId}"),
-        actionForRoute:
-            makeHandler("/api/offices/{officeId}/action-for-route/{routeId}"),
+        actionResponseForRoute:
+            makeHandler("/api/offices/{officeId}/action-resp-for-route/{routeId}"),
 
         canSend: function(officeId, trackingId, fn) {
             fn = fn || defaultHandler;

@@ -55,10 +55,10 @@
         <thead>
         <tr>
             <th>office name</th>
-            <th>status</th>
+            <th>actions taken</th>
             <th>time elapsed</th>
             @if ($doc->type == "serial")
-                <th>approval</th>
+                <th>status</th>
                 <th>annotations</th>
             @endif
         </tr>
@@ -78,7 +78,7 @@
             <td class='{{textIf($doc->type == "parallel", "indent-$level")}}'>
                 <a href="{{$route->link}}">{{$office->complete_name}}</a>
             </td>
-            <td>{{$route->status}}</td>
+            <td>{{$route->actionTaken}}</td>
             <td>{{$route->time_elapsed}}</td>
             @if ($doc->type == "serial")
                 <td>{{$route->approvalState}}</td>
