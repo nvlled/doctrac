@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Collection;
 
+use Carbon\Carbon;
+
 function generateId() : int {
     $gen = new App\IdGen();
     $gen->save();
@@ -211,4 +213,22 @@ function addQueryString($url, $queryStr) {
     }
 
     return "$url?$queryStr";
+}
+
+function dateInBetween($time, $from, $to) {
+    //if ( !($time || $from || $to))
+    //    return true;
+    if ( ! $time && ($from || $to))
+        return false;
+    if ($time && !($from || $to))
+        return true;
+
+    if ($from xor $to) {
+        $time_ = $from ?? $to;
+        $delta = (new Carbon($time))->diffInSeconds(new Carbon($time_));
+        return $delta < 60;
+    }
+    $ct = (new Carbon($time));
+    return $ct->greaterThanOrEqualTo(new Carbon($from))
+        && $ct->lessThanOrEqualTo(new Carbon($to));
 }

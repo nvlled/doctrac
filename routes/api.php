@@ -25,6 +25,10 @@ Route
 ::prefix("routes")
 ->middleware(["restrict-doc"])
 ->group(function() {
+    Route::any('/search-hist', function (Request $req) {
+        return api()->searchHistory($req->toArray());
+    });
+
     Route::any('/finalize/{routeId}', function (Request $req, $routeId) {
         $route = \App\DocumentRoute::find($routeId);
         if (!$route)

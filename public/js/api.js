@@ -119,6 +119,8 @@ var api = {
         forward:    makeHandler("/api/routes/{routeId}/forward"),
         finalize:   makeHandler("/api/routes/finalize/{routeId}"),
         tree:       makeHandler("/api/routes/tree/{trackingId}"),
+        searchHistory:
+            makeHandler("/api/routes/search-hist"),
     },
 
     campus: {

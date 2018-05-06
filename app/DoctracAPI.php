@@ -1124,7 +1124,7 @@ class DoctracAPI {
         $hasSeen = false;
         $route = null;
         foreach ($this->allWaitingRoutes($doc) as $route_) {
-            if ($office->id != $route_->officeId) {
+            if (optional($office)->id != $route_->officeId) {
                 continue;
             }
             $route = $route_;
@@ -1167,5 +1167,36 @@ class DoctracAPI {
         if ($notifId) {
             $user->notifications->where('id', $notifId)->markAsRead();
         }
+    }
+
+    public function searchHistory($options) {
+        $officeId = $options["officeId"] ?? null;
+        $campusId = $options["campusId"] ?? null;
+        $title = $options["title"] ?? "";
+        $query = \App\DocumentRoute::whereHas("document", function($query) use ($title) {
+                $query->where("title", "like", "%$title%");
+        });
+        if ($campusId) {
+            $query = $query->whereHas("office", function($query) use ($campusId) {
+                $query->where("campusId", $campusId);
+            });
+        } else if ($officeId) {
+            $query = $query->where("officeId", $officeId);
+        }
+
+        $result = $query->get();
+
+        $added = collect();
+        return $result->filter(function($route) use ($options, $added) {
+            //if ($added->get($route->trackingId))
+            //    return false;
+            $timeSentFrom = $options["timeSentFrom"] ?? null;
+            $timeSentTo   = $options["timeSentTo"] ?? null;
+            $timeRecvFrom = $options["timeRecvFrom"] ?? null;
+            $timeRecvTo   = $options["timeRecvTo"] ?? null;
+            $added[$route->trackingId] = true;
+            return dateInBetween($route->forwardTime, $timeSentFrom, $timeSentTo)
+                && dateInBetween($route->arrivalTime, $timeRecvFrom, $timeRecvTo);
+        })->values();
     }
 }

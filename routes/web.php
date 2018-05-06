@@ -80,6 +80,10 @@ Route
         return view('search');
     })->name("search");
 
+    Route::get('/search-history', function() {
+        return view('search-history');
+    })->name("search-history");
+
     Route::post('/search', function(Request $req) {
         $id = $req->trackingId;
         $doc = \App\Document::where("trackingId", $id)->first();

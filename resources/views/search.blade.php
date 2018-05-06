@@ -14,6 +14,7 @@
         </div>
         <div class="pure-controls">
             <span class="pure-form-message-inline error">{{$message ?? ""}}</span>
+            <a class="bracket" href="{{route('search-history')}}">advanced search</a>
         </div>
     </fieldset>
 </form>
