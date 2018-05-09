@@ -7,6 +7,7 @@
 .right { text-align:  right  !important}
 .left { text-align:   left  !important}
 .block { display: block}
+.border { padding: 5px; border: 1px solid #ababab; }
 
 .indent15 { padding-left: 15px !important; }
 
@@ -30,3 +31,12 @@ ul.inline > li {
 ul.inline > li:last-child {
     border-right: none;
 }
+
+.grid-lr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+.grid-lr > .left { grid-column: 1 / span 1; }
+.grid-lr > .right { grid-column: 2 / span 1; }
+
+.nobreak { white-space: nowrap; }

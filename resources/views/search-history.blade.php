@@ -6,35 +6,90 @@
 <form method="POST" class="search pure-form pure-form-aligned">
     {{ csrf_field() }}
     <fieldset>
-        <div class="pure-control-group">
-            <label for="name">time received</label>
-            <input id="recv-start" name="recv-start" placeholder="from">
-            <br>
-            <label for="name"></label>
-            <input id="recv-end" name="recv-end" placeholder="to">
-            <hr>
-        </div>
-        <div class="pure-control-group">
-            <label for="name">campus</label>
-            <input id="campusId" name="campusId" type="hidden">
-            <input id="campus" name="campus">
-        </div>
-        <div class="pure-control-group">
-            <label for="name">title</label>
-            <input id="subject" name="title">
-        </div>
-        <div class="pure-control-group">
-            <label for="name">keyword</label>
-            <input id="keyword" name="keyword">
-        </div>
-        <div class="pure-control-group">
-            <label for="name"></label>
-            <button type="submit" class="search pure-button pure-button-primary">Search</button>
+        <div class="grid-lr">
+            <div class="grid-left">
+                <div class="">
+                    <label for="name">title</label>
+                    <input id="subject" name="title">
+                </div>
+                <div class="">
+                    <label style="position: relative; top: 10px" for="name">campus</label>
+                    <input id="campusId" name="campusId" type="hidden">
+                    <input id="campus" name="campus" class="typeahead">
+                </div>
+                <div class="">
+                    <label for="name">keyword</label>
+                    <input id="keyword" name="keyword">
+                </div>
+            </div>
+            <div class="grid-right">
+                <label for="name">time</label>
+                <input id="time-start" name="time-start" placeholder="from">
+                <br>
+                <label for="name"></label>
+                <input id="time-end" name="time-end" placeholder="to">
+                <br>
+                <label></label>
+                <span class="nobreak">
+                    <label class="radio"><input checked type="radio" name="time-type" value="recv"> received</label>
+                    <label class="radio"><input type="radio" name="time-type" value="sent"> sent</label>
+                    <label class="radio"><input type="radio" name="time-type" value="both"> both</label>
+                </span>
+                <br>
+                <div class="center">
+                <button type="submit" class="search pure-button pure-button-primary">Search</button>
+                </div>
+            </div>
         </div>
         <div class="pure-controls">
             <ul class="errors"></ul>
             <span class="pure-form-message-inline error">{{$message ?? ""}}</span>
         </div>
+        <style>
+        label {
+            text-align: center !important;
+            display: inline-block;
+            width: 90px !important;
+        }
+        label.radio {
+            width: inherit !important;
+            padding: 0px !important;
+            margin: 0px !important;
+        }
+        </style>
+        <link rel="stylesheet" href="/css/typeahead.css">
+        <script src="{{asset('/js/lib/typeahead.bundle.min.js')}}"></script>
+        <script>
+        api.campus.fetch().then(function(campuses) {
+            campuses = campuses || [];
+
+            var $input = $("input#campus");
+            $input.typeahead({
+                hint: true,
+                highlight: true,
+                minLength: 1
+            }, {
+                name: "campuses",
+                source: matcher,
+                display: function(obj) {
+                    return obj.name;
+                },
+            });
+            $input.bind('typeahead:select', function(ev, campus) {
+                console.log("campus id", campus.id);
+                $("input#campusId").val(campus.id);
+            });
+
+            function matcher(query, cb) {
+                var result = [];
+                campuses.forEach(function(c) {
+                    if (c.name.toLowerCase().search(query.toLowerCase()) >= 0)
+                        result.push(c);
+                });
+                cb(result);
+            }
+        });
+        </script>
     </fieldset>
 </form>
 <table id="results">

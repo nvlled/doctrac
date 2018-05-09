@@ -12,8 +12,9 @@
             <span class="pure-form-message-inline"></span>
             <button type="submit" class="pure-button pure-button-primary">Search</button>
         </div>
-        <div class="pure-controls">
+        <div class="center">
             <span class="pure-form-message-inline error">{{$message ?? ""}}</span>
+            <br>
             <a class="bracket" href="{{route('search-history')}}">advanced search</a>
         </div>
     </fieldset>
