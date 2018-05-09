@@ -63,8 +63,8 @@
 <link rel="stylesheet" href="{{asset('css/rome.min.css')}}">
 <script src="{{asset('js/lib/rome.min.js')}}"></script>
 <script>
-    rome($("input#recv-start")[0]);
-    rome($("input#recv-end")[0]);
+    rome($("input#time-start")[0]);
+    rome($("input#time-end")[0]);
 
     var $table = $("table#results tbody");
     var $form  = $("form.search");
@@ -75,14 +75,15 @@
     $searchButton.click(function(e) {
         e.preventDefault();
         $searchButton.attr("disabled", true);
+        var time = getTime();
         api.route.searchHistory({
             title:        $("input[name=title]").val(),
             keyword:      $("input[name=keyword]").val(),
             campusId:     $("input[name=campusId]").val(),
-            timeRecvFrom: $("input[name=recv-start]").val(),
-            timeRecvTo:   $("input[name=recv-end]").val(),
-            timeSentFrom: $("input[name=recv-start]").val(),
-            timeSentTo:   $("input[name=recv-end]").val(),
+            timeRecvFrom: time.recvFrom,
+            timeRecvTo:   time.recvTo,
+            timeSentFrom: time.sentFrom,
+            timeSentTo:   time.sentFrom,
         }).then(function(resp) {
             $searchButton.attr("disabled", false);
             $table.html("");
@@ -109,6 +110,33 @@
                 $table.append($row);
             });
         });
+
+        function getTime() {
+            var from = $("input#time-start");
+            var to = $("input#time-end");
+            var type = $("input[name=time-type]:checked").val();
+            if (type == "recv") {
+                return {
+                    recvFrom: from.val(),
+                    recvTo:   to.val(),
+                }
+            }
+            if (type == "sent") {
+                return {
+                    sentFrom: from.val(),
+                    sentTo:   to.val(),
+                }
+            }
+            if (type == "both") {
+                return {
+                    recvFrom: from.val(),
+                    recvTo:   to.val(),
+                    sentFrom: from.val(),
+                    sentTo:   to.val(),
+                }
+            }
+            return {};
+        }
     });
 </script>
 </section>

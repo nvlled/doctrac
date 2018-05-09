@@ -229,6 +229,11 @@ function dateInBetween($time, $from, $to) {
         return $delta < 60;
     }
     $ct = (new Carbon($time));
-    return $ct->greaterThanOrEqualTo(new Carbon($from))
-        && $ct->lessThanOrEqualTo(new Carbon($to));
+    $fromTime = (new Carbon($from));
+    $toTime = (new Carbon($to));
+    if ($fromTime->greaterThan($toTime))
+        list($fromTime, $toTime) = [$toTime, $fromTime]; // swap
+
+    return $ct->greaterThanOrEqualTo($fromTime)
+        && $ct->lessThanOrEqualTo($toTime);
 }
