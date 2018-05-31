@@ -3,45 +3,73 @@
     <input id="document" value="{{$doc ?? ""}}" type="hidden">
     <input id="user" value="{{$user->toJson()}}" type="hidden">
 
-    <h2 class="title">
+    <h2 class="title center">
         <span class='contents'>{{$doc->title}}</span>
-        (<small class='type'>{{$doc->type}}</small>)
+        <br>
+        <small class='trackingId'>({{$doc->trackingId}})</small>
     </h2>
-    <p class="info"><strong>state: </strong>
+
+    <div class="left-col">
+        <p class="info"><strong>state: </strong>
         <span class="doc-state {{$doc->state}}">
             {{$doc->state}}
         </span>
-    </p>
-    <p class="info"><strong>tracking ID:</strong>
-        <span class="trackingId">
-            {{$doc->trackingId}}
+        </p>
+        <p class="info"><strong>type:</strong>
+        <span class="type">
+            {{$doc->type}}
         </span>
-    </p>
-    <p class='info'>
-        <strong>classification level:</strong>
+        </p>
+        <p class='info'>
+        <strong>classification:</strong>
         <span class='classification'>{{$doc->classification}}</span>
-    </p>
-    <p class='info'>
-        <strong>details:</strong>
-        <span class='details'>{{$doc->details}}</span>
-    </p>
-    <p class='info {{!$action ? "hidden" : ""}}'>
+        </p>
+    </div>
+
+
+
+    <div class="right-col">
+        <p class='info {{!$action ? "hidden" : ""}}'>
         <strong>action:</strong>
         <a href="{{$routeLink}}" class='action'>
             {{$action}}
         </a>
-    </p>
+        </p>
 
-    <div class='info attachment'>
-        <strong>attachment</strong>:
-        <a href="{{$doc->attachment_url}}" target="_blank">{{$doc->attachment_filename}}</a>
-        <div class="{{hiddenIf(!$user || !$user->ownsDocument($doc))}}">
-            <ul class="errors inline indent15"></ul>
-            <br>
-            <input type="file" name="attachment">
-            <button class="upload small">upload new file</button>
-            <br>
+        <div class='info attachment'>
+            <strong>attachment</strong>:
+            <a href="{{$doc->attachment_url}}" 
+               target="_blank">{{$doc->attachment_filename}}
+            </a>
+            <span class="{{hiddenIf(!$user || !$user->ownsDocument($doc))}}">
+                <ul class="errors inline indent15"></ul>
+                <!-- TODO--!>
+                <button class="change small">change</button>
+                <input class="hidden" type="file" name="attachment">
+                <button class="hidden upload small">upload new file</button>
+                <script>
+                var $inputFile = $(".info.attachment input[name=attachment]");
+                var $uploadBtn = $(".info.attachment button.upload");
+                var $changeBtn = $(".info.attachment button.change");
+                $changeBtn.click(function(e) {
+                    e.preventDefault();
+                    $inputFile.click();
+                    console.log("X");
+                });
+                $inputFile.change(function() {
+                    if ($inputFile[0].files.length > 0) {
+                        $uploadBtn.removeClass("hidden").show();
+                    } else {
+                        $uploadBtn.addClass("hidden").hide();
+                    }
+                });
+                </script>
+            </span>
         </div>
+        <p class='info'>
+            <strong>details:</strong>
+            <span class='details'>{{$doc->details}}</span>
+        </p>
     </div>
 
     <table class='full routes'>
@@ -132,5 +160,38 @@
         });
     });
     </script>
+    <style>
+    #site-wrapper .site-contents > section {
+        max-width: 900px;
+    }
+    #doc-history {
+        padding: 10px;
+        display: grid;
+        grid-tempate-columns: repeat(2, 1fr);
+        max-width: 850px;
+    }
+    #doc-history .title {
+        grid-row: 1 / 2;
+        grid-column: 1 / 3;
+    }
+    #doc-history .left-col {
+        grid-row: 2 / 3;
+        grid-column: 1 / 2;
+    }
+    #doc-history .right-col {
+        grid-row: 2 / 3;
+        grid-column: 2 / 3;
+    }
+    #doc-history table {
+        grid-row: 3 / 4;
+        grid-column: 1 / 3;
+    }
+
+    #doc-history .trackingId {
+        font-size: 16px;
+        color: var(--primary-color);
+    }
+
+    </style>
     </table>
 </section>

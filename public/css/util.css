@@ -1,6 +1,8 @@
 
 
 
+.grid {display: grid !important;}
+.hidden {display: none !important;}
 .mag10 { margin: 10px; }
 .mag20 { margin: 20px; }
 .center { text-align: center !important}
@@ -8,6 +10,7 @@
 .left { text-align:   left  !important}
 .block { display: block}
 .border { padding: 5px; border: 1px solid #ababab; }
+.white-bg { background-color: white }
 
 .indent15 { padding-left: 15px !important; }
 
@@ -40,3 +43,9 @@ ul.inline > li:last-child {
 .grid-lr > .right { grid-column: 2 / span 1; }
 
 .nobreak { white-space: nowrap; }
+
+.flex-lr {
+    display: flex;
+    justify-content: space-between;
+}
+

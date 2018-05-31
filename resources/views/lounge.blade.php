@@ -10,6 +10,9 @@
     </div>
     <div class="chat-lounge-container">
     </div>
+    <style>
+
+    </style>
     <script src='{{asset("js/view/chat-lounge.js")}}'></script>
     <script>
     var chatLounge

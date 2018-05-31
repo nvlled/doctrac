@@ -1,5 +1,62 @@
 
 
+
+tracking number |                 | [search]
+[search history]
+
+-----
+
+Search History
+
+received:
+    start time: 
+    end   time: 
+
+sent:
+    start time: 
+    end   time: 
+
+campus:  |__________________|
+subject: |__________________| 
+keyword: |__________________|
+
+search results:
+
+1 title | office name | trackingId | time sent | time received
+2 title | office name | trackingId | time sent | time received
+3 title | office name | trackingId | time sent | time received
+4 title | office name | trackingId | time sent | time received
+
+[1] 2 3 4 5
+
+-------------------------------------
+
+login_attempts
+    ipaddr
+    timestamp
+
+account_sanctions
+    username
+    timestamp
+    reason
+    expire_at
+    active
+
+user
+    ...
+
+
+8:00 username ✗
+8:01 username ✗
+8:02 username ✗
+8:03 username ✗
+8:04 username ✓
+8:05 username ✗
+8:06 username ✗
+
+
+-------------------------------------
+
 (1) A -> B
 
 (2) B -> C
@@ -452,3 +509,6 @@ var component = html.div(
 css({
     "asdf":
 });
+
+
+

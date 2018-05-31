@@ -1,15 +1,14 @@
 
 <section id="dispatch">
-    <form>
+    <form class="form-style-1">
+    <h2 class="center">Dispatch Document</h2>
     <p class='user-name hidden'></p>
     <h3 class='user-office hidden'></h3>
-    <input name="title" class="full title" placeholder="document name or title">
-    <textarea name="details" rows="7" class="full details"
+    <input type="text" name="title" class="title" placeholder="document name or title">
+    <textarea name="details" rows="7" class="details"
         placeholder="document details"></textarea>
-    <br><hr>
-    <textarea name="annotations" rows="4" class="full annotations"
+    <textarea name="annotations" rows="4" class="annotations"
         placeholder="notes/annotations"></textarea>
-    </form>
 
     <p>
         Classification level:
@@ -25,15 +24,16 @@
         <input name="attachment" type="file">
     </p>
 
-    <h3>Office destinations</h3>
+    <div class="route-create">
+        <h3>Office destinations</h3>
+        <div class="dom"></div>
+    </div>
 
-    <div class="dom"></div>
-
-    @include("sub.loading")
     <div class="center">
-        <button class="half send action pure-button pure-button-primary">Send</button>
+        <ul class="center errors"></ul>
         <p class='message' style='color: #050'><p>
-        <ul class="left errors"></ul>
+        @include("sub.loading")
+        <button class="half send action pure-button pure-button-primary">Send</button>
     </div>
 
     <p style="font-size: 15px; color: gray">
@@ -41,13 +41,28 @@
     serial: documents are passed from one office to another<br>
     parallel: documents are passed to all the offices at the same time
     </p>
+    </form>
     <script src='{{asset("js/office-graph.js")}}'></script>
     <script src='{{asset("js/view/route-create.js")}}'></script>
     <script src='{{asset("js/sub/office-selection.js")}}'></script>
     <script src="{{asset('js/sub/dispatch.js')}}"></script>
     <style>
     section#dispatch {
-        width: 700px;
+    }
+    section#dispatch form {
+        max-width: 650px;
+    }
+    section#dispatch form > .route-create {
+        border-left: 10px solid #f415;
+        padding: 5px;
+        padding-left: 20px;
+        background-color: #3447;
+    }
+    button.send {
+        width: 300px;
+        height: 50px;
     }
     </style>
+    <link rel="stylesheet" href="/css/route-create.css">
 </section>
+

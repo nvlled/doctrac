@@ -77,6 +77,7 @@ function RouteCreate(graph, args) {
         },
 
         insertRow: function(e) {
+            e.preventDefault();
             self.message = "";
             var lastOffice = self.getLastOffice();
 
@@ -194,12 +195,15 @@ function RouteCreate(graph, args) {
         },
 
         changeType: function(name, type) {
+            if (name == type)
+                return;
             if (self.rows.length > 0 && self.type != name) {
                 var proceed = confirm(
                     "changing the type will clear all the rows, continue?"
                 );
                 if (!proceed) {
                     self.type = type;
+                    self.vm.redraw();
                     return;
                 }
             }
@@ -340,39 +344,58 @@ function RouteCreateView(vm, api) {
                     onclick: [api.changeType, name, api.type],
                     checked: api.getType() == name,
                 }),
+            el("span", " "),
             name,
         ]);
     }
 
     function renderTable() {
         var rows = api.getRows();
-        return el("table.route-create", [
-            el("thead", [
-                el("tr", [
-                    el("th", "campus"),
-                    el("th", "office"),
-                    el("th", ""),
-                ]),
-            ]),
-            el("tbody", {_key: new Date()},
-                rows.map(function(row, index) {
-                    var campus = api.getCampus(row) || {};
-                    var showX = api.type == "parallel" ||
-                        (api.type == "serial" && index == rows.length-1);
-                    return el("tr", {_key: "off-"+row.id+"-"+(+new Date())}, [
-                        el("td", campus.name),
-                        el("td", row.name),
-                        el("td", [
-                            showX && el(
-                                "a",
-                                {onclick: [api.removeRow, row]},
-                                "✗",
-                            ) ,
-                        ]),
-                    ]);
-                })
-            ),
-        ])
+        return el((api.type == "serial" ? "ol" : "ul") + ".list",
+            rows.map(function(row, index) {
+                var campus = api.getCampus(row) || {};
+                var showX = api.type == "parallel" ||
+                    (api.type == "serial" && index == rows.length-1);
+                return el("li", {_key: "off-"+row.id+"-"+(+new Date())}, [
+                    el("span", campus.name),
+                    el("span", row.name),
+                    el("span", [
+                        showX && el(
+                            "a.x",
+                            {onclick: [api.removeRow, row]},
+                            "✗",
+                        ) ,
+                    ]),
+                ]);
+            })
+        )
+        //return el("table.route-create", [
+        //    el("thead", [
+        //        el("tr", [
+        //            el("th", "campus"),
+        //            el("th", "office"),
+        //            el("th", ""),
+        //        ]),
+        //    ]),
+        //    el("tbody", {_key: new Date()},
+        //        rows.map(function(row, index) {
+        //            var campus = api.getCampus(row) || {};
+        //            var showX = api.type == "parallel" ||
+        //                (api.type == "serial" && index == rows.length-1);
+        //            return el("tr", {_key: "off-"+row.id+"-"+(+new Date())}, [
+        //                el("td", campus.name),
+        //                el("td", row.name),
+        //                el("td", [
+        //                    showX && el(
+        //                        "a",
+        //                        {onclick: [api.removeRow, row]},
+        //                        "✗",
+        //                    ) ,
+        //                ]),
+        //            ]);
+        //        })
+        //    ),
+        //])
     }
 
     return function() {
@@ -382,52 +405,57 @@ function RouteCreateView(vm, api) {
         var isDeadEnd       = api.isDeadEnd();
 
         var panel = el("div.panel", [
-            el("div", [el("em", api.message)]),
-            el(
-                "select.campuses[name=campuses]",
-                {
-                    _ref: "campuses",
-                    disabled: api.noSelect || api.isCampusDisabled() || isDeadEnd,
-                    onchange: [api.changeCampus]
-                },
-                api.getCampuses().map(function(obj, idx) {
-                    return el("option", {
-                        value: obj.id,
-                        selected: idx == api.campusIndex,
-                    }, obj.name);
-                })
-            ),
-            el(
-                "select.offices[name=offices]",
-                {
-                    _ref: "offices",
-                    disabled: api.noSelect || isDeadEnd,
-                    onchange: [api.changeOffice]
-                },
-                api.getOffices().map(function(obj, idx) {
-                    return el("option", {
-                        value: obj.id,
-                        disabled: disabledOffices.indexOf(obj.id) >= 0,
-                        selected: idx == api.officeIndex,
-                    }, obj.name);
-                })
-            ),
-            api.showAddButton && el("button.add", {
-                onclick: api.insertRow,
-                disabled: isDeadEnd,
-            }, "add"),
-            api.showType && el("div", [
-                createRadio("serial"),
-                el("span", " "),
-                createRadio("parallel"),
-            ]),
         ]);
         return el("div.route-create", [
-            el("div", [
-                el("small", "(current office: "+api.currentOffice.complete_name+")"),
-            ]),
             table,
-            panel,
+            el("div.messages", [el("em", api.message)]),
+            el("div.sel", [
+                el(
+                    "select.campuses[name=campuses]",
+                    {
+                        _ref: "campuses",
+                        disabled: api.noSelect || api.isCampusDisabled() || isDeadEnd,
+                        onchange: [api.changeCampus]
+                    },
+                    api.getCampuses().map(function(obj, idx) {
+                        return el("option", {
+                            value: obj.id,
+                            selected: idx == api.campusIndex,
+                        }, obj.name);
+                    })
+                ),
+                el(
+                    "select.offices[name=offices]",
+                    {
+                        _ref: "offices",
+                        disabled: api.noSelect || isDeadEnd,
+                        onchange: [api.changeOffice]
+                    },
+                    api.getOffices().map(function(obj, idx) {
+                        return el("option", {
+                            value: obj.id,
+                            disabled: disabledOffices.indexOf(obj.id) >= 0,
+                            selected: idx == api.officeIndex,
+                        }, obj.name);
+                    })
+                ),
+                el("div.button", [
+                    api.showAddButton && el("button.add", {
+                        onclick: api.insertRow,
+                        disabled: isDeadEnd,
+                    }, "Add"),
+                ]),
+            ]),
+            el("div.radio", [
+                api.showType && el("div", [
+                    createRadio("serial"),
+                    el("span", " "),
+                    createRadio("parallel"),
+                ]),
+            ]),
         ]);
     }
 }
+
+
+

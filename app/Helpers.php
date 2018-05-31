@@ -216,6 +216,7 @@ function addQueryString($url, $queryStr) {
 }
 
 function dateInBetween($time, $from, $to) {
+
     //if ( !($time || $from || $to))
     //    return true;
     if ( ! $time && ($from || $to))

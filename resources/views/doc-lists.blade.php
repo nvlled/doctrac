@@ -10,14 +10,16 @@
     $currentName = $currentName ?? "";
 @endphp
 <section id="doc-lists">
-    <ul class="list-names inline">
-        @foreach ($listNames as $name)
-            <li>
-                <a class="{{textIf($name == $currentName, 'bracket')}}"
-                   href="?name={{$name}}">{{$name}}</a>
-            </li>
-        @endforeach
-    </ul>
+    <div class="center">
+        <ul class="list-names inline">
+            @foreach ($listNames as $name)
+                <li>
+                    <a class="{{textIf($name == $currentName, 'bracket')}}"
+                    href="?name={{$name}}">{{$name}}</a>
+                </li>
+            @endforeach
+        </ul>
+    </div>
     <ol start="{{$pageInfo->startNo}}" class="docs">
         @foreach ($pageInfo->items as $doc)
             <li>

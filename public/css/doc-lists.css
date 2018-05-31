@@ -1,9 +1,24 @@
 
 
 
+#doc-lists {
+    padding: 20px;
+}
+
 ul.list-names li a {
-    color: green;
+    text-decoration: underline;
+    color: var(--secondary-color);
 }
 ul.list-names li a.bracket {
-    color: orange;
+    color: var(--primary-color);
+}
+
+ol.docs li a {
+    color: var(--secondary-color);
+}
+ol.docs li a small {
+    color: var(--primary-color);
+}
+
+.route-create {
 }

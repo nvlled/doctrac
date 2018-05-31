@@ -3,75 +3,55 @@
 
 @section("contents")
 <section id="settings">
-<form class="change-pass pure-form pure-form-aligned">
+<form class="form-style-1 change-pass pure-form pure-form-aligned">
+    <h2 class="center">Settings</h2>
     {{ csrf_field() }}
+    <script>
+    </script>
+</form>
+<form class="form-style-1 settings pure-form pure-form-aligned">
+    {{ csrf_field() }}
+    <div class="pure-control-group">
+        <label for="name">Primary Email</label>
+        <input id="email" name="email" type="email" placeholder="email">
+        <span class="pure-form-message-inline"></span>
+    </div>
+
+    <div class="pure-control-group hidden">
+        <label for="name">Other emails</label>
+        <textarea id="emails" name="emails" rows="8"></textarea>
+        <span class="pure-form-message-inline"></span>
+    </div>
+
+    <div class="pure-control-group hidden">
+        <label for="phoneno">Primary Mobile</label>
+        <input id="phoneno" name="phoneno" placeholder="090XXXXXXX">
+        <span class="pure-form-message-inline"></span>
+    </div>
+    <div class="pure-control-group">
+        <label for="name">Mobile numbers</label>
+        <textarea id="phonenumbers" name="other-phoneno" rows="8"></textarea>
+        <span class="pure-form-message-inline"></span>
+    </div>
+    <div class='pure-controls subtext'>
+        <s>To register, send INFO to {{env("GLOBE_CODE")}}.
+            To unregister, send STOP.</s>
+        <br>
+        The globe API balance has unfortunately expired, and<br>
+        will for the mean time be disabled.<br>
+
+    </div>
+
     <div class="pure-controls">
+        <ul class='msgs'></ul>
+        <button type="submit" class="save pure-button pure-button-primary">Save Changes</button>
+    </div>
+    <div class="pure-controls right">
+        <a href="/change-password">change password</a>
         <button type="submit" class="logout pure-button pure-button-secondary">
             Logout
         </button>
-        <a href="/change-password">change password</a>
     </div>
-    <script>
-    var $changePassForm = $("form.change-pass");
-    var $fieldset = $changePassForm.find("fieldset");
-    var $btnLogout = $changePassForm.find("button.logout");
-    var $btnShow = $changePassForm.find("button.show-fields")
-    $btnShow.click(function(e) {
-        return alert("not yet implemented...");
-        e.preventDefault();
-        $fieldset.removeClass("hidden").show();
-        $btnShow.hide();
-    });
-    $btnLogout.click(function(e) {
-        e.preventDefault();
-        api.user.logout()
-            .then(function(resp) {
-                util.redirect("/login");
-            });
-    });
-    </script>
-</form>
-<hr>
-<form class="settings pure-form pure-form-aligned">
-    {{ csrf_field() }}
-    <fieldset>
-        <div class="pure-control-group">
-            <label for="name">Primary Email</label>
-            <input id="email" name="email" type="email" placeholder="email">
-            <span class="pure-form-message-inline"></span>
-        </div>
-
-        <div class="pure-control-group hidden">
-            <label for="name">Other emails</label>
-            <textarea id="emails" name="emails" rows="8"></textarea>
-            <span class="pure-form-message-inline"></span>
-        </div>
-
-        <hr>
-        <div class="pure-control-group hidden">
-            <label for="phoneno">Primary Mobile</label>
-            <input id="phoneno" name="phoneno" placeholder="090XXXXXXX">
-            <span class="pure-form-message-inline"></span>
-        </div>
-        <div class="pure-control-group">
-            <label for="name">Mobile numbers</label>
-            <textarea id="phonenumbers" name="other-phoneno" rows="8"></textarea>
-            <span class="pure-form-message-inline"></span>
-        </div>
-        <div class='pure-controls subtext'>
-            <s>To register, send INFO to {{env("GLOBE_CODE")}}.
-                To unregister, send STOP.</s>
-            <br>
-            The globe API balance has unfortunately expired, and<br>
-            will for the mean time be disabled.<br>
-
-        </div>
-
-        <div class="pure-controls">
-            <ul class='msgs'></ul>
-            <button type="submit" class="save pure-button pure-button-primary">Save Changes</button>
-        </div>
-    </fieldset>
     <script>
     var $settingsForm = $("form.settings");
     var $btnSave = $settingsForm.find("button.save");
@@ -109,7 +89,28 @@
             $("textarea#phonenumbers").val(otherNumbers);
         }
     });
+    var $fieldset = $settingsForm.find("fieldset");
+    var $btnLogout = $settingsForm.find("button.logout");
+    var $btnShow = $settingsForm.find("button.show-fields")
+    $btnShow.click(function(e) {
+        return alert("not yet implemented...");
+        e.preventDefault();
+        $fieldset.removeClass("hidden").show();
+        $btnShow.hide();
+    });
+    $btnLogout.click(function(e) {
+        e.preventDefault();
+        api.user.logout()
+            .then(function(resp) {
+                util.redirect("/login");
+            });
+    });
     </script>
 </form>
+<style>
+form {
+    max-width: 600px !important;
+}
+</style>
 </section>
 @endsection

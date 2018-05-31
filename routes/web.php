@@ -168,6 +168,9 @@ Route::middleware(['auth'])->group(function() {
         ]);
     });
 
+    Route::get('/office/{username}', function(Request $req, $username) {
+    });
+
     Route::get('/change-password', function (Request $req) {
         return view("change-pass", [
             "errors" => [],

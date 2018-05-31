@@ -13,7 +13,7 @@ const {
 }= require("./common");
 
 module.exports = async function({browser, getPage}) {
-    let page = await getPage(process.env.PWD);
+    let page = await getPage();
     page.setDefaultNavigationTimeout(15500);
 
     console.log("dispatching from records");
