@@ -56,6 +56,12 @@
             padding: 0px !important;
             margin: 0px !important;
         }
+        #site-wrapper > .site-contents {
+            background-color: #444;
+            background-image: url(/images/bg.jpg);
+            background-size: 110%;
+            background-repeat: repeat-y;
+        }
         </style>
         <link rel="stylesheet" href="/css/typeahead.css">
         <script src="{{asset('/js/lib/typeahead.bundle.min.js')}}"></script>
