@@ -1,0 +1,63 @@
+
+
+
+.dom .route-create {
+    display: grid;
+    grid-template-rows: 1fr fr;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 5px;
+}
+
+.route-create .list {
+    grid-row: 1 / 2;
+    grid-column: 2 / -1;
+}
+.route-create .radio {
+    grid-row: 2 / 3;
+    grid-column: 1 / 2;
+    justify-self: center;
+}
+.route-create .messages {
+    justify-self: center;
+    align-self: center;
+}
+.route-create .radio label {
+}
+
+.route-create .sel {
+    grid-row: 2 / 3;
+    grid-column: 2 / -1;
+}
+
+
+.route-create select {
+    width: 100% !important;
+}
+
+.route-create ul {
+    color: white;
+    list-style-type: inherit !important;
+    padding: 0;
+    margin: 0;
+}
+.route-create ol {
+    list-style-type: inherit !important;
+    padding: 0;
+    margin: 0;
+}
+
+.route-create ol li span,
+.route-create ul li span{
+    padding: 10px;
+}
+
+.route-create .button {
+    text-align: right;
+}
+.route-create .sel {
+    text-align: right;
+}
+
+.route-create a.x {
+    cursor: pointer;
+}
