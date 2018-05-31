@@ -11,7 +11,9 @@
     <div class="chat-lounge-container">
     </div>
     <style>
-
+    .chat-lounge-container {
+        padding: 10px;
+    }
     </style>
     <script src='{{asset("js/view/chat-lounge.js")}}'></script>
     <script>

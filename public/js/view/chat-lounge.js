@@ -147,7 +147,7 @@ ChatLounge.View = function(vm, api) {
 
     var sheet = j2c.sheet({
         ".chat-lounge": {
-            width: "800px",
+            "max-width": "800px",
         },
         ".messages": {
             "border": "1px solid #552",
@@ -168,7 +168,6 @@ ChatLounge.View = function(vm, api) {
         ".msg-footer": {
             color: "gray",
             "font-size": "9px",
-            "border-bottom": "1px solid #ddd",
         },
         ".msg-date": {
             "padding": "5px",
@@ -177,8 +176,7 @@ ChatLounge.View = function(vm, api) {
         },
         ".full-width": {
             display: "block",
-            "max-width": "98%",
-            "width": "500px",
+            "max-width": "800px",
             "color": "blue",
         },
         ".red": { "color": "red" },
