@@ -50,6 +50,9 @@ var dispatch = {
 
         function setupSendButton() {
             $btnSend.click(function() {
+                if (!confirm("Proceed sending document?"))
+                    return false;
+
                 $btnSend.attr("disabled", true);
                 $message.text("");
                 UI.clearErrors($container);

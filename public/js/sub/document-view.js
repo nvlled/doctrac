@@ -174,6 +174,9 @@ window.addEventListener("load", function() {
 
         function makeHandler($btn, onClick) {
             $btn.click(function(e) {
+                if (!confirm("Proceed action?"))
+                    return false;
+
                 e.preventDefault();
                 UI.disableButton($btn);
                 UI.showLoadingMeow();
