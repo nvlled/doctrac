@@ -48,21 +48,6 @@
                 <input class="hidden" type="file" name="attachment">
                 <button class="hidden upload small">upload new file</button>
                 <script>
-                var $inputFile = $(".info.attachment input[name=attachment]");
-                var $uploadBtn = $(".info.attachment button.upload");
-                var $changeBtn = $(".info.attachment button.change");
-                $changeBtn.click(function(e) {
-                    e.preventDefault();
-                    $inputFile.click();
-                    console.log("X");
-                });
-                $inputFile.change(function() {
-                    if ($inputFile[0].files.length > 0) {
-                        $uploadBtn.removeClass("hidden").show();
-                    } else {
-                        $uploadBtn.addClass("hidden").hide();
-                    }
-                });
                 </script>
             </span>
         </div>
@@ -133,6 +118,24 @@
         var trackingId = $("input#trackingId").val().trim();
         var $fileLink  = $("div.attachment a");
         var channel = UI.createChannel("doc."+trackingId);
+        var $inputFile = $(".info.attachment input[name=attachment]");
+        var $changeBtn = $(".info.attachment button.change");
+
+        $changeBtn.click(function(e) {
+            e.preventDefault();
+            $inputFile.click();
+            console.log("X");
+        });
+        $inputFile.change(function() {
+            if ($inputFile[0].files.length > 0) {
+                $uploadBtn
+                    .removeClass("hidden")
+                    .attr("disabled", false)
+                    .show();
+            } else {
+                $uploadBtn.addClass("hidden").hide();
+            }
+        });
 
         if (!channel)
             return;
@@ -143,6 +146,7 @@
                 .then(function(href) {
                     UI.flashMessage("file uploaded: " + file.name, "file-upload");
                     $fileLink.text(file.name).attr("href", href);
+                    $uploadBtn.addClass("hidden").hide();
                 });
         });
 
