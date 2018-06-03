@@ -258,10 +258,10 @@ function RouteCreate(graph, args) {
 
         isCampusDisabled() {
             var lastOffice = self.getLastOffice();
-            var currentOffice = self.currentOffice;
-            if (currentOffice && self.getType() == "parallel") {
-                return !currentOffice.main;
-            }
+            //var currentOffice = self.currentOffice;
+            //if (currentOffice && self.getType() == "parallel") {
+            //    return !currentOffice.main;
+            //}
             return self.getType() == "serial"
                 && lastOffice && !lastOffice.gateway;
 

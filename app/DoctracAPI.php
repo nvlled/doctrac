@@ -344,7 +344,7 @@ class DoctracAPI {
         dump($this->getTree($routeOrId, $formatter));
     }
 
-    public function mapTree($routeOrId, $fn = null) {
+    public function mapTree($routeOrId, $fn = null, $depth = 0) {
         $fn = $fn ?? function($route) {
             return "({$route->id}) {$route->office_name} {$route->actionTaken}";
         };
@@ -361,14 +361,15 @@ class DoctracAPI {
             return null;
 
         $next = $route->allNextRoutes()->map(
-            function($route) use ($fn) {
-                return $this->mapTree($route, $fn);
+            function($route) use ($fn, $depth) {
+                return $this->mapTree($route, $fn, $depth+1);
             }
         );
 
         $node = [
             "val" => $route,
             "next" => $next->toArray(),
+            "depth" => $depth,
         ];
         $fn($route, $next, $node);
         return $node;
@@ -1049,6 +1050,7 @@ class DoctracAPI {
         $tree = $this->mapTree($routeOrId,
             function($route, $next, &$node) use ($routes) {
                 $node["val"] = $route->id;
+                $route->depth = $node["depth"];
                 $routes->prepend($route);
             }
         );

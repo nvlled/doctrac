@@ -99,11 +99,8 @@
         <tr>
             @php
             $office = optional($route->office);
-            $level  = $office->level;
-            if ($level >= 3 && $root->campus_id == $office->campusId && !$office->gateway)
-                $level++;
             @endphp
-            <td class='{{textIf($doc->type == "parallel", "indent-$level")}}'>
+            <td class='{{textIf($doc->type == "parallel", "indent-{$route->depth}")}}'>
                 <a href="{{$route->link}}">{{$office->complete_name}}</a>
             </td>
             <td>{{$route->actionTaken}}</td>
