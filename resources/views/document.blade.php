@@ -72,9 +72,12 @@
             </ul>
         </p>
 
-        @include("sub.loading")
 
+        <form class="form-style-1">
         <div class="send-data hidden">
+            <div class="center">
+                @include("sub.loading")
+            </div>
             <!--TODO-->
             <textarea name="annotation" rows="5" class="full annots"
                 placeholder="comments, notes or annotation" ></textarea>
@@ -90,10 +93,16 @@
             <button class='hidden pure-button-default hidden action reject half red'>reject</button>
             <button class='hidden pure-button-primary hidden action return half '>return</button>
         </div>
+        </form>
     </div>
     <script src='{{asset("js/office-graph.js")}}'></script>
     <script src='{{asset("js/view/route-create.js")}}'></script>
     <!--<script src='{{asset("js/sub/office-selection.js")}}'></script>-->
     <script src="{{asset('js/sub/document-view.js')}}"></script>
+    <style>
+    #document {
+        padding: 20px;
+    }
+    </style>
 </section>
 @endsection
