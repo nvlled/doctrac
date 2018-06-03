@@ -46,7 +46,7 @@
                     @if (!$user)
                     <li><a href='/login'>login</a></li>
                     @else
-                    <li><a href='/settings'>{{$user->office_name ?? "home"}}</a></li>
+                    <li><a href='/settings'>{{$user->fullname ?? "home"}}</a></li>
                     @php
                         $notifCount = Notif::countUnread();
                         $has = $notifCount > 0 ? "has" : "";
@@ -124,14 +124,14 @@
             <nav class='sub right'>
                 <ul class='lstype-none inline right'>
                     @if ($user)
-                        <li><a href="/">browse</a></li>
+                        <li><a href="/">{{$user->office_name}}</a></li>
                         @if ($user && optional($user->office)->gateway)
                         <li><a href='/dispatch'>dispatch</a></li>
                         @endif
-                        <li><a href='/lounge'>lounge</a></li>
+                        <li class="hidden"><a href='/lounge'>lounge</a></li>
                     @endif
                     @if (optional($user)->admin)
-                    <li><a href='/admin'>#</a></li>
+                    <li><a href='/admin'>admin</a></li>
                     @endif
                 </ul>
             </nav>

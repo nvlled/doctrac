@@ -61,5 +61,31 @@ class Maint {
                 }
             }
         }
+        foreach ($data->users as $username => $userData) {
+            $campuses = \App\Campus::where("code", $userData->campus);
+            $offices = \App\Office::where("name", $userData->office)->get();
+            echo "* $userData->office\n";
+            foreach ($offices as $office) {
+                echo "{$office->campus_code} {$office->name}";
+                if ($office->campus_code != $userData->campus)
+                    continue;
+
+                echo "creating user: $username\n";
+                $user = new \App\User();
+                $user->username = $username;
+                $user->firstname = $userData->fname;
+                $user->lastname = $userData->lname;
+                $user->password = bcrypt("x");
+                $user->officeId = $office->id;
+                $user->admin = $user->username == "main-records";
+
+                try {
+                    $user->save();
+                } catch (\Exception $e) {
+                    echo $e->getMessage() . "\n";
+                    continue;
+                }
+            }
+        }
     }
 }
