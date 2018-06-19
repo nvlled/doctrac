@@ -339,3 +339,11 @@ table tbody td.details {
 table.routes td.indent-3::before { content: ""; red;   padding-left: 10px; }
 table.routes td.indent-2::before { content: ""; blue;  padding-left: 30px; }
 table.routes td.indent-1::before { content: ""; green; padding-left: 50px; }
+
+
+div.notif-msg {
+    margin: 10px;
+}
+div.notif-msg.unread {
+    border-left: 10px solid rgba(200, 200, 90, 0.6);
+}

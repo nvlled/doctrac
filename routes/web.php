@@ -86,6 +86,8 @@ Route
 
     Route::post('/search', function(Request $req) {
         $id = $req->trackingId;
+        if (!$id)
+            return view('search');
         $doc = \App\Document::where("trackingId", $id)->first();
 
         $retries = SearchRetry::count();
