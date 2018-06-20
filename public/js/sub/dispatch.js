@@ -80,7 +80,7 @@ var dispatch = {
                         var trackingId = resp.trackingId;
                         var fileInput = $container.find("input[name=attachment]")[0];
                         var file = fileInput.files[0];
-                        UI.uploadFile(trackingId, $btnSend, file).then(function() {
+                        UI.uploadFile(trackingId, $btnSend, file, $container).then(function() {
                             $message.text("document sent: " + trackingId);
                             $container.find("form")[0].reset();
                             $btnSend.text("Send");

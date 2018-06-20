@@ -335,8 +335,8 @@ function RouteCreateView(vm, api) {
     //}
 
     function createRadio(name) {
-        return el("label", [
-            el("input",
+        return el("div.form-check.form-check-inline", [
+            el("input.form-check-input#radio-"+name,
                 {
                     name: "type",
                     value: name,
@@ -344,27 +344,45 @@ function RouteCreateView(vm, api) {
                     onclick: [api.changeType, name, api.type],
                     checked: api.getType() == name,
                 }),
-            el("span", " "),
-            name,
+            el("label.form-check-label", {"for": "radio-"+name}, name),
         ]);
+        //return el("label", [
+        //    el("input.form-control",
+        //        {
+        //            name: "type",
+        //            value: name,
+        //            type: "radio",
+        //            onclick: [api.changeType, name, api.type],
+        //            checked: api.getType() == name,
+        //        }),
+        //    el("span", " "),
+        //    name,
+        //]);
     }
 
     function renderTable() {
         var rows = api.getRows();
-        return el((api.type == "serial" ? "ol" : "ul") + ".list",
+        return el((api.type == "serial" ? "ol" : "ul") + ".list.list-group",
             rows.map(function(row, index) {
                 var campus = api.getCampus(row) || {};
                 var showX = api.type == "parallel" ||
                     (api.type == "serial" && index == rows.length-1);
-                return el("li", {_key: "off-"+row.id+"-"+(+new Date())}, [
-                    el("span", campus.name),
-                    el("span", row.name),
-                    el("span", [
+                return el("li.list-group-item", {_key: "off-"+row.id+"-"+(+new Date())}, [
+                    el("span.m-1", campus.name),
+                    el("span.m-1", row.name),
+                    el("span.m-1", [
                         showX && el(
-                            "a.x",
-                            {onclick: [api.removeRow, row]},
-                            "✗",
+                            "button.close w-1",
+                            {
+                                type: "button",
+                                "aria-label": "Close",
+                                onclick: [api.removeRow, row],
+                            },
+                            [el("span", {"aria-hidden": "true"}, "✗")],
                         ) ,
+                        //<button type="button" class="close" aria-label="Close">
+                        //  <span aria-hidden="true">&times;</span>
+                        //</button>
                     ]),
                 ]);
             })
@@ -406,47 +424,51 @@ function RouteCreateView(vm, api) {
 
         var panel = el("div.panel", [
         ]);
-        return el("div.route-create", [
-            table,
-            el("div.messages", [el("em", api.message)]),
-            el("div.sel", [
-                el(
-                    "select.campuses[name=campuses]",
-                    {
-                        _ref: "campuses",
-                        disabled: api.noSelect || api.isCampusDisabled() || isDeadEnd,
-                        onchange: [api.changeCampus]
-                    },
-                    api.getCampuses().map(function(obj, idx) {
-                        return el("option", {
-                            value: obj.id,
-                            selected: idx == api.campusIndex,
-                        }, obj.name);
-                    })
-                ),
-                el(
-                    "select.offices[name=offices]",
-                    {
-                        _ref: "offices",
-                        disabled: api.noSelect || isDeadEnd,
-                        onchange: [api.changeOffice]
-                    },
-                    api.getOffices().map(function(obj, idx) {
-                        return el("option", {
-                            value: obj.id,
-                            disabled: disabledOffices.indexOf(obj.id) >= 0,
-                            selected: idx == api.officeIndex,
-                        }, obj.name);
-                    })
-                ),
-                el("div.button", [
-                    api.showAddButton && el("button.add", {
-                        onclick: api.insertRow,
-                        disabled: isDeadEnd,
-                    }, "Add"),
+        return el("div.route-create.row", [
+            el("div.col-12", [
+                table,
+            ]),
+            el("div.messages.col-10.text-center", [el("em", api.message)]),
+            el("div.m-3.col-10", [
+                el("div.sel.row", [
+                    el(
+                        "select.offset-0.col-4.form-control.campuses[name=campuses]",
+                        {
+                            _ref: "campuses",
+                            disabled: api.noSelect || api.isCampusDisabled() || isDeadEnd,
+                            onchange: [api.changeCampus]
+                        },
+                        api.getCampuses().map(function(obj, idx) {
+                            return el("option", {
+                                value: obj.id,
+                                selected: idx == api.campusIndex,
+                            }, obj.name);
+                        })
+                    ),
+                    el(
+                        "select.col-4.form-control.offices[name=offices]",
+                        {
+                            _ref: "offices",
+                            disabled: api.noSelect || isDeadEnd,
+                            onchange: [api.changeOffice]
+                        },
+                        api.getOffices().map(function(obj, idx) {
+                            return el("option", {
+                                value: obj.id,
+                                disabled: disabledOffices.indexOf(obj.id) >= 0,
+                                selected: idx == api.officeIndex,
+                            }, obj.name);
+                        })
+                    ),
+                    el("div.button.col.2", [
+                        api.showAddButton && el("button.add.btn.btn-default", {
+                            onclick: api.insertRow,
+                            disabled: isDeadEnd,
+                        }, "Add"),
+                    ]),
                 ]),
             ]),
-            el("div.radio", [
+            el("div.radio.offset-1.col-10", [
                 api.showType && el("div", [
                     createRadio("serial"),
                     el("span", " "),

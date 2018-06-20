@@ -18,7 +18,7 @@ class DoctracAPI {
     public $user = null;
     public $debug = false;
 
-    public function __construct($user) {
+    public function __construct($user=null) {
         $this->user = optional($user);
         $this->errors = collect();
     }
@@ -28,8 +28,16 @@ class DoctracAPI {
         return null;
     }
 
-    public static function new() {
-        return new DoctracAPI(\Auth::user());
+    public static function new($user=null) {
+        $user = $user ?? \Auth::user();
+        return new DoctracAPI($user);
+    }
+    
+    public static function withUsername($username) {
+        $user = \App\User::where("username", $username)->first();
+        if (!$user)
+            throw new \Exception("user not found: $username");
+        return new self($user);
     }
 
     public function setUser($obj) {
@@ -1072,6 +1080,8 @@ class DoctracAPI {
         $notifications = collect();
         if ( ! $user)
             return $notifications;
+        if (! $user->notifications)
+            return $notifications;
 
         $pageSize = \App\Config::$notifPageSize;
         $notifications  = $user->notifications;
@@ -1172,12 +1182,25 @@ class DoctracAPI {
     }
 
     public function searchHistory($options) {
+        $pageSize = 10;
+        $page = $options["page"] ?? 0;
         $officeId = $options["officeId"] ?? null;
         $campusId = $options["campusId"] ?? null;
         $title = $options["title"] ?? "";
-        $query = \App\DocumentRoute::whereHas("document", function($query) use ($title) {
+        $keyword = $options["keyword"] ?? "";
+
+        $query = \App\DocumentRoute::whereHas("document", function($query) use ($title, $keyword) {
+            if ($title)
                 $query->where("title", "like", "%$title%");
+            else if ($keyword) {
+                $query->where("details", "like", "%$keyword%");
+            }
         });
+
+        if ($keyword) {
+            $query->where("annotations", "like", "%$keyword%");
+        }
+
         if ($campusId) {
             $query = $query->whereHas("office", function($query) use ($campusId) {
                 $query->where("campusId", $campusId);
@@ -1187,18 +1210,33 @@ class DoctracAPI {
         }
 
         $result = $query->get();
-
         $added = collect();
-        return $result->filter(function($route) use ($options, $added) {
-            //if ($added->get($route->trackingId))
-            //    return false;
+
+        $rows =  $result->filter(function($route) use ($options, $added) {
             $timeSentFrom = $options["timeSentFrom"] ?? null;
             $timeSentTo   = $options["timeSentTo"] ?? null;
             $timeRecvFrom = $options["timeRecvFrom"] ?? null;
             $timeRecvTo   = $options["timeRecvTo"] ?? null;
             $added[$route->trackingId] = true;
+
+            if (!($timeRecvFrom || $timeRecvTo))
+                return dateInBetween($route->forwardTime, $timeSentFrom, $timeSentTo);
+            else if (!($timeSentFrom || $timeSentTo))
+                return dateInBetween($route->arrivalTime, $timeRecvFrom, $timeSentTo);
+
             return dateInBetween($route->forwardTime, $timeSentFrom, $timeSentTo)
-                && dateInBetween($route->arrivalTime, $timeRecvFrom, $timeRecvTo);
+                || dateInBetween($route->arrivalTime, $timeRecvFrom, $timeRecvTo);
         })->values();
+
+        $numItems = count($rows) ;
+        $numPages = ceil($numItems / $pageSize);
+        $rows = $rows->forPage($page, $pageSize)->values();
+
+        return [
+            "rows" => $rows,
+            "page" => $page,
+            "numPages" => $numPages,
+            "numItems" => $numItems,
+        ];
     }
 }

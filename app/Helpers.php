@@ -112,7 +112,7 @@ function crap(...$objs) {
 
 function hiddenIf($cond) {
     if ($cond)
-        return "hidden";
+        return "d-none hidden";
     return "";
 }
 

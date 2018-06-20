@@ -1,68 +1,80 @@
 
-<section id="dispatch">
-    <form class="form-style-1">
+<section id="dispatch" class="container mt-3 mb-5">
+<form class="form-style-1 border offset-lg-2 col-lg-8">
     <h2 class="center">Dispatch Document</h2>
-    <p class='user-name hidden'></p>
-    <h3 class='user-office hidden'></h3>
-    <input type="text" name="title" class="title" placeholder="document name or title">
-    <textarea name="details" rows="7" class="details"
-        placeholder="document details"></textarea>
-    <textarea name="annotations" rows="4" class="annotations"
-        placeholder="notes/annotations"></textarea>
 
-    <p>
-        Classification level:
-        <select class='classification'>
-            @foreach (\App\Enums::$classification as $level)
-            <option value='{{$level}}'>{{$level}}</option>
-            @endforeach
-        </select>
-    </p>
+    <!--probably unused -->
+    <!--------------------!>
 
-    <p class="">
-        Attachment:
-        <input name="attachment" type="file">
-    </p>
-
-    <div class="route-create">
-        <h3>Office destinations</h3>
-        <div class="dom"></div>
+    <div class="row ">
+        <div class="col">
+        <input class="form-control title" type="text" name="title" placeholder="document name or title">
+        </div>
+    </div>
+    <div class="row ">
+        <div class="col">
+        <textarea class="form-control details" name="details" rows="7" placeholder="document details"></textarea>
+        </div>
+    </div>
+    <div class="row ">
+        <div class="col">
+        <textarea class="form-control annotations" name="annotations" rows="4" placeholder="notes/annotations"></textarea>
+        </div>
     </div>
 
-    <div class="center">
-        <ul class="center errors"></ul>
-        <p class='message' style='color: #050'><p>
+    <div class="row">
+        <label class="col-form-label col-lg-3 col-sm-12">classification level</label>
+        <div class="col-lg-5 col-md-12">
+            <select class='custom-select classification form-control'>
+                @foreach (\App\Enums::$classification as $level)
+                    <option value='{{$level}}'>{{$level}}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <label class="col-lg-3 col-md-12" for="customFile">choose attachment</label>
+        <div class="col-lg-5 col-md-12">
+            <input name="attachment" type="file" class="form-control-file" id="customFile">
+        </div>
+    </div>
+
+    <div class="row route-create">
+        <div class="offset-1 col-10 bg-light p-3">
+            <h3>Office destinations</h3>
+            <div class="dom p-2"></div>
+        </div>
+        <div class="col-3 text-center d-flex flex-column align-self-end justify-content-start">
+        </div>
+    </div>
+
+    <div class="row mt-2 text-center">
+    <ul class="col-12 center errors text-danger"></ul>
+        <p class='col-12 message text-danger' style='color: #050'><p>
+    </div>
+
+    <div class="row text-center d-flex align-items-center justify-content-center">
         @include("sub.loading")
-        <button class="half send action pure-button pure-button-primary">Send</button>
+    </div>
+    <div class="row mt-1 ">
+        <button class="offset-4 col-5 btn btn-primary half send action">send </button>
     </div>
 
-    <p style="font-size: 15px; color: gray">
-    *note: <br>
-    serial: documents are passed from one office to another<br>
-    parallel: documents are passed to all the offices at the same time
-    </p>
-    </form>
-    <script src='{{asset("js/office-graph.js")}}'></script>
-    <script src='{{asset("js/view/route-create.js")}}'></script>
-    <script src='{{asset("js/sub/office-selection.js")}}'></script>
-    <script src="{{asset('js/sub/dispatch.js')}}"></script>
-    <style>
-    section#dispatch {
-    }
-    section#dispatch form {
-        max-width: 650px;
-    }
-    section#dispatch form > .route-create {
-        border-left: 10px solid #f415;
-        padding: 5px;
-        padding-left: 20px;
-        background-color: #3447;
-    }
-    button.send {
-        width: 300px;
-        height: 50px;
-    }
-    </style>
-    <link rel="stylesheet" href="/css/route-create.css">
+    <div class="row ">
+        <small class="offset-3 col-7 text-secondary">
+        *note:
+        serial: documents are passed from one office to another
+        parallel: documents are passed to all the offices at the same time
+        </small>
+    </div>
+</form>
+<script src='{{asset("js/office-graph.js")}}'></script>
+<script src='{{asset("js/view/route-create.js")}}'></script>
+<script src='{{asset("js/sub/office-selection.js")}}'></script>
+<script src="{{asset('js/sub/dispatch.js')}}"></script>
+<style></style>
+<link rel="stylesheet" href="/css/route-create.cssXX">
 </section>
+
 

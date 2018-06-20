@@ -201,6 +201,7 @@ window.addEventListener("load", function() {
     }
 
     function updateButtonAction() {
+        $("button.action").removeClass("d-none");
         $sendData.hide();
         $btnActions.hide();
         $sendData.hide();

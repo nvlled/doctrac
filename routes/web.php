@@ -257,7 +257,7 @@ Route::get('/login', function () {
 
 Route::get('/logout', function () {
     Auth::logout();
-    return redirect()->route("login");
+    return redirect()->route("search");
 })->name("logout");
 
 Route::get('/scratch', function () {

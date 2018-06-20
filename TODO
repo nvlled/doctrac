@@ -1,44 +1,5 @@
 
-TODO:
-
-* file non-existence of file
-* complete activity log
-* fix site layout
-* add rejected list category
-* recent document sidebar
-* office page (details, last-login)
-* should be able to replace seen notifications with received
-
--------------------
-
-* psu.edu.ph domain
-
-* add send test button to sms/email
-* export data
-* account management
-* email interface
-
-* fix logout
-    autologout: check even if tab is not active
-    delete cookies when browser is closed
-
-* add further protection from search
-    /document/urd-2018-12348/routes/
-    /document/13/urd-2018-12348
-  - count 404 on these pages
 
 
-* I remember hearing something about an audit trail
-  in the last meeting, but then I'm not even sure
-
-* editable routes
-
---------------------------------------------
-
-* num of days/minutes
-* subject searching
-* page queries
-* handle deletion (or prevent)
-
---------------------------------------------
-- restrict API access
+* remove campusId advanced search-field
+* only origin routes can finalize

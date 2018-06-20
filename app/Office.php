@@ -194,7 +194,7 @@ class Office extends Model
         $routes = collect();
         foreach ($routeIds as $r) {
             $route = \App\DocumentRoute::find($r->id);
-            if ($route && $route->document->isDone())
+            if ($route && optional($route->document)->isDone())
                 $routes->push($route);
         }
 

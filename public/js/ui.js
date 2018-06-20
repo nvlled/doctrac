@@ -383,8 +383,8 @@ var UI = {
         $flashContainer.removeClass("hidden");
     },
 
-    hideLoadingMeow: function() { $("img.loading-meow").hide() },
-    showLoadingMeow: function() { $("img.loading-meow").show() },
+    hideLoadingMeow: function() { $("div.loading").hide() },
+    showLoadingMeow: function() { $("div.loading").show() },
 
     init: function() {
         var $flashContainer = $("div.flash-success");
@@ -401,7 +401,7 @@ var UI = {
         });
     },
 
-    uploadFile: function(trackingId, $btn, file) {
+    uploadFile: function(trackingId, $btn, file, $errorDiv) {
         var text = $btn.text();
         UI.clearErrors($btn.parent());
         if (file) {
@@ -413,7 +413,7 @@ var UI = {
                 filedata: file,
             }).then(function(resp) {
                 if (resp && resp.errors)
-                    return UI.showErrors($btn.parent(), resp.errors);
+                    return UI.showErrors($errorDiv || $btn.parent(), resp.errors);
                 $btn.text(text);
                 return resp;
             }).fail(function(resp) {
@@ -423,7 +423,7 @@ var UI = {
                 if (resp.status == 413) {
                     message = "upload failed, file is too large";
                 }
-                return UI.showErrors($btn.parent(), [message]);
+                return UI.showErrors($errorDiv || $btn.parent(), [message]);
                 console.log("fail", args);
             });
 

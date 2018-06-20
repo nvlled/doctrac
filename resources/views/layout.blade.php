@@ -1,154 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta charset="UTF-8">
-    <title>doctrac</title>
+    <head>
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!--Import Google Icon Font-->
-    <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
-    <!--Import materialize.css-->
-    <!--<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">-->
+        <link rel="stylesheet" href="{{asset('css/fontawesome-all.min.css')}}">
+        <link rel="stylesheet" href="{{asset('bootstrap/css/bootstrap.min.css')}}">
+        <link rel="stylesheet" href="{{asset('css/doctrac.css')}}">
 
-    <!--Let browser know website is optimized for mobile-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <script src="{{asset('js/jquery.min.js')}}"></script>
+        <script src="{{asset('js/popper.min.js')}}"></script>
+        <script src="{{asset('js/tooltip.min.js')}}"></script>
+        <script src="{{asset('js/lib/domvm.dev.js')}}"></script>
+        <script src="{{asset('js/events.js')}}"></script>
+        <script src="{{asset('js/util.js')}}"></script>
+        <script src="{{asset('js/ui.js')}}"></script>
+        <script src="{{asset('js/api.js')}}"></script>
+        @yield("styles")
 
-    <!--
-    <link rel="stylesheet" href="{{asset('css/pure-min.css')}}">
-    <link rel="stylesheet" href="{{asset('css/site.css')}}">
-    -->
-    <link rel="stylesheet" href="{{asset('css/util.css')}}">
-    <link rel="stylesheet" href="{{asset('css/normalize.css')}}">
-    <link rel="stylesheet" href="{{asset('css/site.css')}}">
-    <link rel="stylesheet" href="{{asset('css/sanwebe-form1.css')}}">
+        <title>doctrac</title>
+    </head>
 
-    <script src="{{asset('js/jquery.min.js')}}"></script>
-    <script src="{{asset('js/lib/domvm.dev.js')}}"></script>
-    <script src="{{asset('js/events.js')}}"></script>
-    <script src="{{asset('js/util.js')}}"></script>
-    <script src="{{asset('js/ui.js')}}"></script>
-    <script src="{{asset('js/api.js')}}"></script>
-    @yield("styles")
-</head>
-<body>
-    <div id="site-wrapper">
-        <header class='site'>
-            <div class="prefetch hidden">
-                @yield("prefetch")
-            </div>
-            <h1 class='site-name'>
-                <a class="name" href="/">dtrac</a>
-                <small class="desc">document tracking system</small>
-            </h1>
-            <nav class='main'>
-                <ul class='lstype-none left'>
-                    @php $user = Auth::user() @endphp
-                    @if (!$user)
-                    <li><a href='/login'>login</a></li>
-                    @else
-                    <li><a href='/settings'>{{$user->fullname ?? "home"}}</a></li>
-                    @php
-                        $notifCount = Notif::countUnread();
-                        $has = $notifCount > 0 ? "has" : "";
-                    @endphp
-                    <li><a class='notifications {{$has}}' href='/notifications'>
-                            <span class='count {{$notifCount ? "" : "hidden"}}'>{{$notifCount}}</span>
-                            <img class="icon" src="{{asset('images/notify.png')}}">
-                        </a>
-                    </li>
-                    @endif
-                </ul>
-                <ul class='lstype-none right'>
-                    @if (!request()->is("search"))
-                    <li class="search">
-                        <form method="POST" action="/search" class="form-style-1 inline">
-                            {{ csrf_field() }}
-                            <input class="search" name="trackingId" 
-                                   type="text" size="15" placeholder="tracking-number"><button class="search">
-                                <img class="icon" src="{{asset('images/search.png')}}">
+    @php
+        $user = Auth::user();
+    @endphp
+    <body>
+        <header id="site" class="">
+            <!-- Fixed navbar -->
+            <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+                <a class="navbar-brand" href="/">
+                    <div>
+                        <img src="{{asset('images/logo.png')}}" class="logo">
+                        <div class="align-top site-desc" class="text-small">DOCUMENT TRACKING SYSTEM</div>
+                    </div>
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" 
+                                role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{optional(Auth::user())->username}}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/">documents</a>
+                                @if ($user && optional($user->office)->gateway)
+                                <a class="dropdown-item" href="/dispatch">dispatch</a>
+                                @endif
+                                <a class="dropdown-item" href="/settings">settings</a>
+                                <a class="dropdown-item" href="/logout">logout</a>
+                            </div>
+                        </li>
+                        @php
+                            $notifCount = Notif::countUnread();
+                            $has = $notifCount > 0 ? "has" : "";
+                        @endphp
+                        <li class="nav-item">
+                            <button href="/notifications" type="button" class="btn btn-{{$notifCount > 0 ? 'primary' : 'outline-info'}}"
+                                onclick="location='/notifications'">
+                                <i class="fas fa-globe"></i> <span class="badge badge-dark">{{$notifCount}}</span>
                             </button>
-                        </form>
-                    </li>
+                        </li>
+                    </ul>
+                    @if (!request()->is("search"))
+                    <form action="/search" method="POST" class="form-inline mt-2 mt-md-0">
+                        {{ csrf_field() }}
+                        <input name="trackingId" class="form-control form-control-sm mr-sm-2" type="text" placeholder="tracking number" aria-label="Search">
+                        <button class="btn btn-outline-info my-2 my-sm-0 btn-sm " type="submit">search</button>
+                    </form>
                     @endif
-                </ul>
+                    <script>
+                    </script>
+                </div>
             </nav>
         </header>
-        <div class="site-contents">
 
-            <div class='flash-success {{\Flash::has() ? "grid" : "hidden"}}'>
-                @foreach (\Flash::getAll() as $msg)
-                <div class="flex-lr">
-                    <span>
-                        <span class="icon">♫</span>
-                        <span class="msg">{{$msg}}</span><br>
-                    </span>
-                    <span>
-                        <a href="#" class="close">[x]</a>
-                    </span>
-                </div>
-                @endforeach
-                <div class="templ hidden flex-lr">
-                    <span>
-                        <span class="icon">♫</span>
-                        <span class="msg">Message here</span><br>
-                    </span>
-                    <span>
-                        <a href="#" class="close">[x]</a>
-                    </span>
-                </div>
-            </div>
-
-            <div class='flash-error {{\Flash::hasError() ? "grid" : "hidden"}}'>
-                @foreach (\Flash::errorAll() as $msg)
-                <div class="flex-lr">
-                    <span>
-                        <span class="icon">✗</span>
-                        <span class="msg">{{$msg}}</span><br>
-                    </span>
-                    <span>
-                        <a href="#" class="close">[x]</a>
-                    </span>
-                </div>
-                @endforeach
-                <div class="templ hidden flex-lr">
-                    <span>
-                        <span class="icon">✗</span>
-                        <span class="msg"></span><br>
-                    </span>
-                    <span>
-                        <a href="#" class="close">[x]</a>
-                    </span>
-                </div>
-            </div>
-
-            <nav class='sub right'>
-                <ul class='lstype-none inline right'>
-                    @if ($user)
-                        <li><a href="/">{{$user->office_name}}</a></li>
-                        @if ($user && optional($user->office)->gateway)
-                        <li><a href='/dispatch'>dispatch</a></li>
-                        @endif
-                        <li class="hidden"><a href='/lounge'>lounge</a></li>
-                    @endif
-                    @if (optional($user)->admin)
-                    <li><a href='/admin'>admin</a></li>
-                    @endif
-                </ul>
-            </nav>
-            <div class='site-contents'>
+        <main id="contents" role="main" class="container pt-3">
             @yield("contents")
+        </main>
+
+        <footer class="footer fixed-bottom">
+            <div class="container">
+                <div id="copyright">
+                    Copyright 2018 - PSU Document Tracking System
+                </div>
+            </div>
+        </footer>
+
+        <div id="login" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Login</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <footer>
-            <a class="red" href="https://github.com/nvlled/doctrac">project repository</a> /
-            <a class="red" href="https://gitter.im/doctrac/Lobby">developer chat messaging</a> |
-            <a href="#">about</a> |
-            copyright © 2018
-        </footer>
-    </div>
+    </body>
 
     @yield("scripts")
+    <script src="{{asset('bootstrap/js/bootstrap.min.js')}}"></script>
+
     <script src="{{asset('js/lib/j2c.js')}}"></script>
     <!--<script src="{{asset('material/js/materialize.min.js')}}"></script>-->
     <script src="{{asset('js/combobox.js')}}"></script>
@@ -175,5 +141,13 @@
            value="{{$currentUser->toJson() ?? ''}}">
     <input id="current-office" type="hidden"
            value="{{$currentOffice->toJson() ?? ''}}">
-</body>
+
+    <script>
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    });
+    </script>
+
 </html>
+
+
