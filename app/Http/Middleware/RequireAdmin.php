@@ -15,7 +15,7 @@ class RequireAdmin
      */
     public function handle($request, Closure $next)
     {
-        if (optional(\Auth::user())->admin) {
+        if (optional(\Auth::user())->isAdmin()) {
             return $next($request);
         }
         if ($request->ajax())

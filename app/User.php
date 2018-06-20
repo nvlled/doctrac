@@ -86,4 +86,8 @@ class User extends Authenticatable
             return false;
         return $this->officeId == $doc->officeId;
     }
+
+    public function isAdmin() {
+        return $this->privilegeId == 0;
+    }
 }

@@ -4,7 +4,8 @@
 @php
 $errors = $errors ?? [];
 @endphp
-<ul class="errors">
+<div class="">
+<ul class="errors text-danger">
 @foreach($errors as $k => $v)
     @if (is_array($v))
         @foreach($v as $err)
@@ -15,3 +16,4 @@ $errors = $errors ?? [];
     @endif
 @endforeach
 </ul>
+</div>

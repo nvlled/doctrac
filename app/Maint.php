@@ -18,6 +18,18 @@ class Maint {
         return "okay";
     }
 
+    static function createRootAccount() {
+        $root = new \App\User();
+        $root->username = "root";
+        $root->password = bcrypt("doctrac");
+        $root->firstname = "Hoverth";
+        $root->middlename = "Staxtosux";
+        $root->lastname = "Zhempei";
+        $root->email = "root@localhost";
+        $root->privilegeId = 0;
+        $root->save();
+    }
+
     static function initializeDB() {
         if ( ! \App::environment("local")) {
             return null;

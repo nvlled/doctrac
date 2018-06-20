@@ -3,3 +3,9 @@
 * only origin routes can finalize
 * fix autologout notice
 * btn loading status
+
+* actually, the login attempt timeout is broke,
+  the timeout should apply per requesting IP,
+  not per username.
+
+

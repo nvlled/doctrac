@@ -1,6 +1,5 @@
 
 
-
 tracking number |                 | [search]
 [search history]
 
@@ -512,9 +511,7 @@ css({
 
 
 ===========================================================================
-# anon-layout
-
-                                     o login
+# anon-layout o login
 ------------------------------------------------------
 PSU Document Tracking System
 
@@ -540,11 +537,24 @@ Document Tracking System                                            |           
 Tracking Number |              |
 [search] 
 
-
-
-
 ------------------ footer -----------------------------
 
 
+-----------------------------------------------------
 
+account administration
+
+username     | office      | last login | actions 
+urd-records  | urd-records |            | [change pass] [disable]
+arni         | urd-records |
+
+---------
+
+New User
+username |            |
+password |            |
+password |            |
+again
+
+[create]
 

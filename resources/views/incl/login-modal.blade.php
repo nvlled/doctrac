@@ -12,7 +12,7 @@
                 <div class="form-group row">
                     <label for="name" class="col-3 col-form-label text-right">Username</label>
                     <div class="col-7">
-                        <input id="name" class="form-control" name="username" required type="text" placeholder="campus-name">
+                        <input id="name" class="form-control" name="username" required type="text" placeholder="username">
                     </div>
                     <span class="pure-form-message-inline"></span>
                 </div>

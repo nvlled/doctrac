@@ -17,6 +17,8 @@ PSU document tracking system
 1. Install package dependencies listed on `apt-dependencies.sh`, e.g.
 ```
 sudo apt install php-domstring php-xml php-mysql
+note: I haven't fixed this yet, but redis-server must be installed 
+although it should be optional.
 ```
 
 2. Run ```composer update``` to install php vendor dependencies required by laravel

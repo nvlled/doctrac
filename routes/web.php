@@ -19,8 +19,13 @@ Route::get('/tests', function () {
 });
 
 Route::get('/', function() {
-    if (Auth::user())
-        return redirect()->route("doc-lists");
+    $user = Auth::user();
+    if ($user) {
+        if ($user->office)
+            return redirect()->route("doc-lists");
+        else if ($user->isAdmin())
+            return redirect()->route("admin");
+    }
     return redirect()->route("search");
 });
 
@@ -193,8 +198,69 @@ Route::middleware(['auth'])->group(function() {
     });
 
     Route::get('/admin', function () {
-        return view('admin');
+        $user = Auth::user();
+        if (!$user)
+            return redirect("/login");
+        if (!$user->isAdmin()) {
+            Flash::addError("access denied");
+            return redirect("/");
+        }
+        $users = \App\User::all();
+        return view('admin', [
+            "users" => $users,
+        ]);
+    })->name("admin");
+    Route::post('/admin', function (Request $req) {
+        $user = Auth::user();
+        if (!$user)
+            return redirect("/login");
+        if (!$user->isAdmin()) {
+            Flash::addError("access denied");
+            return redirect("/");
+        }
+        $users = \App\User::all();
+
+        $username  = trim($req->username);
+        $password  = trim($req->password);
+        $password2 = trim($req->password2);
+
+        $error = null;
+        if (!$username) {
+            $error = "username is required";
+        }
+        if (!$password) {
+            $error = "password is required";
+        }
+        if ($password != $password2) {
+            $error = "password does not match";
+        }
+
+        try {
+            $newUser = new \App\User();
+            $newUser->username = $username;
+            $newUser->password = bcrypt($password);
+            $newUser->firstname = $req->firstname ?? $username;
+            $newUser->middlename = $req->middlename;
+            $newUser->lastname = $req->lastname;
+            $newUser->privilegeId = !!$req->admin ? 0 : -1;
+            $newUser->save();
+            Flash::add("account created: $username");
+        } catch (\Exception $e) {
+            $error = $e->getMessage();
+            if ($e->errorInfo[0] === "23000" ) {
+                $error = "username is taken";
+            } else {
+                $error = $e->errorInfo[2];
+            }
+        }
+
+        return view('admin', [
+            "data" => $req,
+            "users" => $users,
+            "error" => $error,
+        ]);
     });
+
 
     Route::get('/proto', function () {
         return view('proto');

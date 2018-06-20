@@ -287,22 +287,28 @@ class DocumentRoute extends Model
         $nextRoutes = $this->allNextRoutes();
 
         if ($prevRoute && $prevRoute->sender) {
+            $senderName = $prevRoute->sender->fullname;
             $activities->push(joinLines(
                 "Dispatched from ({$prevRoute->office_name})
-                 on {$prevRoute->forwardTime}"
+                 on {$prevRoute->forwardTime} 
+                 by {$senderName}"
             ));
         }
         if ($this->arrivalTime && $this->prevId != null) {
+            $recvrName = optional($this->receiver)->fullname;
             $activities->push(joinLines(
-                "Received on {$this->arrivalTime}"
+                "Received on {$this->arrivalTime}
+                by {$recvrName}"
             ));
         }
         if ($this->sender && $nextRoutes->count() > 0) {
+            $senderName = $this->sender->fullname;
             $routeNames = $nextRoutes->map(function($route) {
                 return $route->office_name;
             })->implode(", ");
             $activities->push(joinLines(
                 "Forwarded on {$this->forwardTime}
+                by {$senderName}
                 to {$routeNames}"
             ));
         }

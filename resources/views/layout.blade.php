@@ -47,24 +47,31 @@
                                 {{optional(Auth::user())->username}}
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                @if ($user->office)
                                 <a class="dropdown-item" href="/">documents</a>
+                                @endif
                                 @if ($user && optional($user->office)->gateway)
-                                <a class="dropdown-item" href="/dispatch">dispatch</a>
+                                    <a class="dropdown-item" href="/dispatch">dispatch</a>
+                                @endif
+                                @if ($user && $user->isAdmin())
+                                <a class="dropdown-item" href="/admin">accounts</a>
                                 @endif
                                 <a class="dropdown-item" href="/settings">settings</a>
                                 <a class="dropdown-item" href="/logout">logout</a>
                             </div>
                         </li>
-                        @php
-                            $notifCount = Notif::countUnread();
-                            $has = $notifCount > 0 ? "has" : "";
-                        @endphp
-                        <li class="nav-item">
-                            <button href="/notifications" type="button" class="btn btn-{{$notifCount > 0 ? 'primary' : 'outline-info'}}"
-                                onclick="location='/notifications'">
-                                <i class="fas fa-globe"></i> <span class="badge badge-dark">{{$notifCount}}</span>
-                            </button>
-                        </li>
+                        @if ($user->office)
+                            @php
+                                $notifCount = Notif::countUnread();
+                                $has = $notifCount > 0 ? "has" : "";
+                            @endphp
+                            <li class="nav-item">
+                                <button href="/notifications" type="button" class="btn btn-{{$notifCount > 0 ? 'primary' : 'outline-info'}}"
+                                    onclick="location='/notifications'">
+                                    <i class="fas fa-globe"></i> <span class="badge badge-dark">{{$notifCount}}</span>
+                                </button>
+                            </li>
+                        @endif
                     </ul>
                     @if (!request()->is("search"))
                     <form action="/search" method="POST" class="form-inline mt-2 mt-md-0">

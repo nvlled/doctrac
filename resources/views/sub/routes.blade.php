@@ -76,6 +76,7 @@
                     <th>office name</th>
                     <th>actions taken</th>
                     <th>time elapsed</th>
+                    <th class="d-none">sender/receiver</th>
                     @if ($doc->type == "serial")
                         <th>status</th>
                         <th>annotations</th>
@@ -96,6 +97,14 @@
                         </td>
                         <td>{{$route->actionTaken}}</td>
                         <td>{{$route->time_elapsed}}</td>
+                        <td class="d-none">
+                            @if ($route->receiver)
+                                received by: {{$route->receiver->fullname}}
+                            @endif
+                            @if ($route->sender)
+                                sent by: {{$route->sender->fullname}}
+                            @endif
+                        </td>
                         @if ($doc->type == "serial")
                             <td>{{$route->approvalState}}</td>
                             <td>{{$route->annotations}}</td>
