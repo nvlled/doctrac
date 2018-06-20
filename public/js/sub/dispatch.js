@@ -53,10 +53,10 @@ var dispatch = {
                 if (!confirm("Proceed sending document?"))
                     return false;
 
-                $btnSend.attr("disabled", true);
                 $message.text("");
                 UI.clearErrors($container);
-                UI.showLoadingMeow();
+                //UI.showLoadingMeow();
+                UI.buttonWait($btnSend);
 
                 var officeIds = officeSel.getRowIds();
                 var type = officeSel.getType();
@@ -71,10 +71,9 @@ var dispatch = {
                     type: type,
                 }
                 api.doc.send(doc, function(resp) {
-                    UI.hideLoadingMeow();
+                    //UI.hideLoadingMeow();
                     if (resp.errors) {
-                        $btnSend.text("Send");
-                        $btnSend.attr("disabled", false);
+                        UI.buttonIdle($btnSend);
                         UI.showErrors($container, resp.errors);
                     } else {
                         var trackingId = resp.trackingId;
@@ -83,9 +82,7 @@ var dispatch = {
                         UI.uploadFile(trackingId, $btnSend, file, $container).then(function() {
                             $message.text("document sent: " + trackingId);
                             $container.find("form")[0].reset();
-                            $btnSend.text("Send");
-                            $btnSend.attr("disabled", false);
-
+                            UI.buttonIdle($btnSend);
                             util.redirectRoute("view-routes",{
                                 trackingId: trackingId,
                             });

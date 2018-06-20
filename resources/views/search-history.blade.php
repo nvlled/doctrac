@@ -143,12 +143,11 @@
     });
 
     function fetchData(page) {
-        $searchButton.attr("disabled", true);
         var time = getTime();
 
         var vals = {};
         vals[getQueryType()] = $("input[name=query]").val();
-        console.log(vals, getQueryType());
+        UI.buttonWait($searchButton);
 
         api.route.searchHistory({
             title:        vals["title"],
@@ -160,7 +159,7 @@
             timeSentTo:   time.sentFrom,
             page: page,
         }).then(function(resp) {
-            $searchButton.attr("disabled", false);
+            UI.buttonIdle($searchButton);
             $table.html("");
             if (!resp) {
                 return;
@@ -189,6 +188,11 @@
             });
         });
     };
+
+    function disableButtons() {
+    }
+    function enableButtons() {
+    }
 
     function getQueryType() {
         var sel = "input[name=query-type]";

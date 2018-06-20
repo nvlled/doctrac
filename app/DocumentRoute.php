@@ -14,6 +14,7 @@ class DocumentRoute extends Model
         "document_type",
         "document_link",
         "document_state",
+        "document_office_id",
         "time_elapsed",
         "seconds_elapsed",
         "campus_id",
@@ -55,6 +56,10 @@ class DocumentRoute extends Model
 
     public function nextRoute() {
         return $this->hasOne("App\DocumentRoute", "id", "nextId");
+    }
+
+    public function getDocumentOfficeIdAttribute() {
+        return $this->document->officeId;
     }
 
     public function getDocumentLinkAttribute() {

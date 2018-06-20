@@ -70,3 +70,11 @@ div.notif-msg {
 div.notif-msg.unread {
     border-left: 10px solid rgba(200, 200, 90, 0.6);
 }
+
+.alert.notif {
+    margin-bottom: 1px;
+}
+
+.templ {
+    display: none;
+}

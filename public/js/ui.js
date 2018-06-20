@@ -197,29 +197,43 @@ var UI = {
         if (!errors)
             return;
 
-        if (errors.forEach) {
-            errors.forEach(function(err) {
-                var $li = $("<li>");
-                $li.text(err);
-                $errors.append($li);
-            });
-            return;
+        function setErrorText(error) {
+            var $li = $("<li class='text-danger error'>");
+            if (typeof error == "string") {
+                try {
+                    var obj = JSON.parse(error);
+                    $li.text(obj.error || obj.message);
+                } catch (e) {
+                    $li.text(error);
+                }
+            } else if (typeof error == "object") {
+                $li.text(error.error || error.message);
+            } else {
+                $li.text(error+"");
+            }
+            $errors.append($li);
         }
 
-        Object.keys(errors).forEach(function(errName) {
-            var subErrors = errors[errName];
-            if (subErrors.forEach) {
-                subErrors.forEach(function(err) {
-                    var $li = $("<li>");
-                    $li.text(err);
-                    $errors.append($li);
-                });
-            } else if (typeof subErrors == "string") {
-                var $li = $("<li>");
-                $li.text(subErrors);
-                $errors.append($li);
-            }
-        });
+        if (errors.forEach) {
+            errors.forEach(function(err) {
+                setErrorText(err);
+            });
+        } else if (typeof errors == "string") {
+            setErrorText(errors);
+        } else if (errors.message) {
+            setErrorText(errors.message);
+        } else {
+            Object.keys(errors).forEach(function(errName) {
+                var subErrors = errors[errName];
+                if (subErrors.forEach) {
+                    subErrors.forEach(function(err) {
+                        setErrorText(err);
+                    });
+                } else if (typeof subErrors == "string") {
+                    setErrorText(subErrors);
+                }
+            });
+        }
     },
 
     clearErrors: function($div) {
@@ -383,6 +397,18 @@ var UI = {
         $flashContainer.removeClass("hidden");
     },
 
+    buttonWait: function($button) {
+        $button.attr("disabled", true);
+        var loadingIcon = " <i class='load-icon fas fa-spinner fa-spin'></i>";
+        $button[0].innerHTML += loadingIcon;
+    },
+
+    buttonIdle: function($button) {
+        $button.attr("disabled", false);
+        $button.find(".load-icon").remove();
+    },
+
+
     hideLoadingMeow: function() { $("div.loading").hide() },
     showLoadingMeow: function() { $("div.loading").show() },
 
@@ -405,8 +431,7 @@ var UI = {
         var text = $btn.text();
         UI.clearErrors($btn.parent());
         if (file) {
-            $btn.text("uploading file...");
-            $btn.attr("disabled", true);
+            UI.buttonWait($btn);
             var promise = api.doc.setAttachment({
                 trackingId: trackingId,
                 filename: file.name,
@@ -417,7 +442,7 @@ var UI = {
                 $btn.text(text);
                 return resp;
             }).fail(function(resp) {
-                $btn.attr("disabled", false);
+                UI.buttonIdle($btn);
                 $btn.text(text);
                 var message = resp.statusText;
                 if (resp.status == 413) {
@@ -429,11 +454,12 @@ var UI = {
 
             return promise;
         } else {
-            $btn.attr("disabled", false);
+            UI.buttonIdle($btn);
             return Promise.resolve();
         }
     },
 }
+
 UI._templates = {
     $flash: null,
 }

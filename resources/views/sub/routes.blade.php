@@ -46,7 +46,7 @@
             </span>
         </div>
         <div class='row info attachment'>
-            <strong class="col-2 text-right" for="customFile">aaattachment</strong>
+            <strong class="col-2 text-right" for="customFile">attachment</strong>
             @php $url = $doc->attachment_url @endphp
             <a href="{{$url ? $url :  "#" }}" 
                 target="{{textIf($url, '_blank')}}">{{$doc->attachment_filename ?? "--"}}

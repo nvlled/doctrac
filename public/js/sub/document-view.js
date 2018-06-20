@@ -178,8 +178,7 @@ window.addEventListener("load", function() {
                     return false;
 
                 e.preventDefault();
-                UI.disableButton($btn);
-                UI.showLoadingMeow();
+                UI.buttonWait($btn);
                 UI.clearErrors($container);
                 var promise = onClick();
                 if (promise) {
@@ -189,11 +188,13 @@ window.addEventListener("load", function() {
                         } else {
                             location.reload();
                         }
-                        UI.enableButton($btn);
-                        UI.hideLoadingMeow();
+                        UI.buttonIdle($btn);
+                    }).fail(function(err) {
+                        UI.showErrors($container, err.responseJSON);
+                        UI.buttonIdle($btn);
                     });
                 } else {
-                    UI.enableButton($btn);
+                    UI.buttonIdle($btn);
                     UI.hideLoadingMeow();
                 }
             });
@@ -222,7 +223,9 @@ window.addEventListener("load", function() {
                     $btnSend.show();
                     if (currentDoc.document_type == "serial" &&
                         currentDoc.document_state != "disapproved") {
-                        if (currentUser.gateway) {
+                        //if (currentUser.gateway) {
+                        debugger;
+                        if (currentUser.officeId == currentDoc.document_office_id) {
                             $btnFinalize.show();
                         } else {
                             $btnReject.show();
@@ -237,3 +240,4 @@ window.addEventListener("load", function() {
         });
     }
 });
+

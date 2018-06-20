@@ -79,6 +79,18 @@
             </nav>
         </header>
 
+        <div class="row">
+            @include("incl.notify-success", ["msg" => "{name}", "class" => "templ"])
+            @foreach (\Flash::getAll() as $msg)
+                @include("incl.notify-success", ["msg" => $msg])
+            @endforeach
+
+            @include("incl.notify-error", ["msg" => "{name}", "class" => "templ"])
+            @foreach (\Flash::errorAll() as $msg)
+                @include("incl.notify-error", ["msg" => $msg])
+            @endforeach
+        </div>
+
         <main id="contents" role="main" class="container pt-3">
             @yield("contents")
         </main>
