@@ -109,6 +109,13 @@ Table.prototype = Object.assign(Table.prototype, {
 });
 
 var UI = {
+    mapTextByClass: function($node, obj) {
+        Object.keys(obj).forEach(function(k) {
+            $node.find("."+k).text(obj[k]);
+        });
+        return $node;
+    },
+
     selectOther: function($select, val) {
         var select = $select[0];
         if (select) {
@@ -291,14 +298,11 @@ var UI = {
         return $div;
     },
 
-    addNotification: function(notif) {
-        var $a = $("nav.main a.notifications")
-            .addClass("has");
-        var count = parseInt($a.find(".count").text()) || 0;
-        $a.find(".count")
-            .text(count+1)
-            .removeClass("hidden")
-            .show();
+    addNotification: function(msg) {
+        var $notif = $(".notif-success.templ").clone().removeClass("templ");
+        var $notifs = $(".notifications");
+        $notif.find(".msg").text(msg);
+        $notifs.append($notif);
     },
 
 
@@ -408,6 +412,17 @@ var UI = {
         $button.find(".load-icon").remove();
     },
 
+    formWait: function($form) {
+        $form.find("button, input[type=submit]").each(function() {
+            UI.buttonWait($(this));
+        });
+    },
+    formIdle: function($form) {
+        $form.find("button, input[type=submit]").each(function() {
+            UI.buttonIdle($(this));
+        });
+    },
+
 
     hideLoadingMeow: function() { $("div.loading").hide() },
     showLoadingMeow: function() { $("div.loading").show() },
@@ -457,6 +472,16 @@ var UI = {
             UI.buttonIdle($btn);
             return Promise.resolve();
         }
+    },
+
+    formatErrors: function(errors) {
+        if (typeof errors == "string")
+            return errors;
+        if (typeof errors == "object")
+            errors = Object.values(errors);
+        return errors.map(function(msg) {
+            return "*"+msg;
+        }).join(" ");
     },
 }
 

@@ -54,7 +54,8 @@
                                     <a class="dropdown-item" href="/dispatch">dispatch</a>
                                 @endif
                                 @if ($user && $user->isAdmin())
-                                <a class="dropdown-item" href="/admin">accounts</a>
+                                <a class="dropdown-item" href="/admin">manage accounts</a>
+                                <a class="dropdown-item" href="/admin/offices">manage offices</a>
                                 @endif
                                 <a class="dropdown-item" href="/settings">settings</a>
                                 <a class="dropdown-item" href="/logout">logout</a>
@@ -86,7 +87,7 @@
             </nav>
         </header>
 
-        <div class="row">
+        <div class="row notifications">
             @include("incl.notify-success", ["msg" => "{name}", "class" => "templ"])
             @foreach (\Flash::getAll() as $msg)
                 @include("incl.notify-success", ["msg" => $msg])
