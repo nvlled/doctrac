@@ -223,8 +223,6 @@ window.addEventListener("load", function() {
                     $btnSend.show();
                     if (currentDoc.document_type == "serial" &&
                         currentDoc.document_state != "disapproved") {
-                        //if (currentUser.gateway) {
-                        debugger;
                         if (currentUser.officeId == currentDoc.document_office_id) {
                             $btnFinalize.show();
                         } else {

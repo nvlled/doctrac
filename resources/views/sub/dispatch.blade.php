@@ -51,7 +51,6 @@
 
     <div class="row mt-2 text-center">
     <ul class="col-12 center errors text-danger"></ul>
-        <p class='col-12 message text-danger' style='color: #050'><p>
     </div>
 
     <div class="row text-center d-flex align-items-center justify-content-center">
