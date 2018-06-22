@@ -8,7 +8,7 @@ class LoginAttempt extends Model
 {
     static function record($username, $ipaddr, $success) {
         $attempt = new \App\LoginAttempt();
-        $attempt->username = $username;
+        $attempt->username = $username ?? "";
         $attempt->ipaddr = $ipaddr;
         $attempt->success = $success;
         $attempt->save();

@@ -27,10 +27,11 @@ class AccountSanction extends Model
             ->get();
     }
 
-    static function getActive($username) {
+    static function getActive($username, $ip) {
         $sanctions = AccountSanction
             ::where("username", $username)
             ->where("active", true)
+            ->orWhere("ipaddr", $ip)
             ->get();
 
         $active = collect();
@@ -49,7 +50,7 @@ class AccountSanction extends Model
         return AccountSanction::getActive($username)->count() > 0;
     }
 
-    static function disable($username, $reason, $minutes=NULL) {
+    static function disable($username, $reason, $ipaddr="127.0.0.1", $minutes=NULL) {
         if (!$minutes) {
             $minutes = \App\Config::$accountBanMinutes;
         }
@@ -57,6 +58,7 @@ class AccountSanction extends Model
         $sanction->username  = $username;
         $sanction->reason    = $reason;
         $sanction->active    = true;
+        $sanction->ipaddr    = $ipaddr;
         $sanction->expire_at = Carbon::now()->addMinutes($minutes);
         $sanction->save();
     }

@@ -41,6 +41,7 @@ ul.errors {
 }
 
 ul.errors li {
+    list-style-type: none;
 }
 
 .bracket::before { content: "[" }

@@ -378,7 +378,8 @@ Route::any('/users/login', function (Request $req) {
     $password = $req->password;
     \Log::info("username: $username *");
 
-    $sanctions = \App\AccountSanction::getActive($username);
+    $ipaddr = $req->getClientIp();
+    $sanctions = \App\AccountSanction::getActive($username, $ipaddr);
     if ($sanctions->count() > 0) {
         $sanc = $sanctions[0];
         return [
@@ -388,18 +389,19 @@ Route::any('/users/login', function (Request $req) {
     }
 
     if (Auth::attempt(["username"=>$username, "password"=>$password])) {
-        \App\LoginAttempt::success($username, $req->getClientIp());
+        \App\LoginAttempt::success($username, $ipaddr);
         return ["okay" => true];
     }
 
     // TODO: check if username exists
 
-    \App\LoginAttempt::fail($username, $req->getClientIp());
-    $count = \App\LoginAttempt::countFailed($username, $req->getClientIp());
+    \App\LoginAttempt::fail($username, $ipaddr);
+    $count = \App\LoginAttempt::countFailed($username, $ipaddr);
     if ($count >= \App\Config::$loginAttempts) {
         \App\AccountSanction::disable(
             $username,
-            "login attempts exceeded"
+            "login attempts exceeded",
+            $ipaddr
         );
     }
 

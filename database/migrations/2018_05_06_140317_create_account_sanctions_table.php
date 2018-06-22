@@ -20,6 +20,7 @@ class CreateAccountSanctionsTable extends Migration
             $table->string('reason');
             $table->boolean('active');
             $table->dateTime('expire_at');
+            $table->string('ipaddr');
             $table->timestamps();
         });
     }
