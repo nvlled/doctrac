@@ -152,7 +152,6 @@ function load(offices) {
                 UI.showErrors($form, resp.errors);
                 return;
             }
-            console.log("add office", resp);
             location.reload();
         });
     });

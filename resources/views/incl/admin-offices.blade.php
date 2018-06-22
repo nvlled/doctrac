@@ -120,6 +120,7 @@ function load(campuses, offices) {
                 $err.text(errMsg);
                 return;
             }
+            location.reload();
         });
     });
     $searchInput.change(function() {
