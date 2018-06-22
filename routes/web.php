@@ -208,8 +208,11 @@ Route::middleware(['auth'])->group(function() {
         $users = \App\User::all();
         return view('admin', [
             "users" => $users,
+            "campuses"=>\App\Campus::all(),
+            "offices"=>\App\Office::all(),
         ]);
     })->name("admin");
+
     Route::post('/admin', function (Request $req) {
         $user = Auth::user();
         if (!$user)
@@ -260,6 +263,10 @@ Route::middleware(['auth'])->group(function() {
             "error" => $error,
         ]);
     });
+
+    Route::get('/admin/offices', function (Request $req) {
+        return view("admin.offices");
+    })->name("admin-offices");
 
 
     Route::get('/proto', function () {

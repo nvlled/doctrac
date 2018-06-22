@@ -17,9 +17,5 @@
         "MIS",
         "Registrar",
         "Accounting"
-    ],
-    "users": {
-        "arni": {"campus": "urd", "office": "MIS", "fname":"AAA", "lname":"BBB"},
-        "ernest": {"campus": "urd", "office": "MIS", "fname":"CCC", "lname":"DDD"}
-    }
+    ]
 }

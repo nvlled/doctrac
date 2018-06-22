@@ -66,9 +66,6 @@ class User extends Authenticatable
         return Validator::make($data, [
             'username'  => 'required|unique:users,username',
             'password'  => 'required',
-            'firstname'  => 'required',
-            'lastname'   => 'required',
-            'officeId' => 'required|exists:offices,id',
         ]);
     }
 

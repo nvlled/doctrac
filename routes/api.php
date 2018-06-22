@@ -376,6 +376,7 @@ Route
 Route::any('/users/login', function (Request $req) {
     $username = $req->username;
     $password = $req->password;
+    \Log::info("username: $username *");
 
     $sanctions = \App\AccountSanction::getActive($username);
     if ($sanctions->count() > 0) {
@@ -407,7 +408,6 @@ Route::any('/users/login', function (Request $req) {
 
 Route::any('/users/logout', function (Request $req) {
     Auth::logout();
-    \Flash::add("You are now logged out");
     return "logout";
 });
 
@@ -507,8 +507,13 @@ Route
         $user->middlename = $req->middlename;
         $user->lastname = $req->lastname;
         $user->password = bcrypt($req->password);
-        $user->positionId = $req->positionId;
+        $user->positionId = $req->positionId ?? 0;
+        $user->privilegeId = !!$req->admin ? 0 : -1;
         $user->officeId = $req->officeId;
+
+        if ($req["office-name"] && ! \App\Office::where("id", $req->officeId)->first()) {
+            return ["errors"=>["invalid or unknown office"]];
+        }
 
         $v = $user->validate();
         if ($v->fails())
@@ -723,42 +728,36 @@ Route
             ->where("name",     $req->name)
             ->where("campusId", $req->campusId)
             ->first();
-
     });
 
     Route::post('/add', function (Request $req) {
-        $office = new App\Office();
-        $office->name = $req->name;
-        $office->gateway = $req->gateway ?? 0;
-        $office->campusId = $req->campusId;
-
-        $campus = \App\Campus::where("name", $req->campus)->orWhere("name", $req->campus)->first();
-        if (!$campus) {
-            $campus = new \App\Campus();
-            $campus->name = $req->campus;
-            $campus->code = substr($req->campus, 0, 3);
-            $v = $campus->validate();
-            if ($v->fails())
-                return ["errors"=>$v->errors()];
-            $campus->save();
+        if (!$req->campusCode) {
+            return ["errors"=> ["campus is invalid or unknown"]];
         }
 
+        $campus = \App\Campus::where("code", $req->campusCode)->first();
+        if (!$campus) {
+            return ["errors"=> ["invalid campus code: {$req->campusCode}"]];
+        }
+
+        $office_ = \App\Office::where("name", $req->name)
+            ->whereHas("campus", function($query) use ($req) {
+                $query->where("code", $req->campusCode);
+            })
+            ->first();
+        if ($office_ && $office_->campus_code == $req->campusCode) {
+            return ["errors"=> ["{$office_->campus_name} has already an office named {$req->name}"]];
+        } 
+
         $office = new \App\Office();
-        $office->name = $req->office;
+        $office->name = $req->name;
         $office->campusId = $campus->id;
-        $office->gateway = !!$req->records;
+        $office->gateway = !!$req->isGateway;
+
         $v = $office->validate();
         if ($v->fails())
             return ["errors"=>$v->errors()];
         $office->save();
-
-        $user = new \App\User();
-        $user->username = $campus->code . "-" . strtolower($office->name);
-        $user->firstname = $office->name;
-        $user->lastname  = $campus->name;
-        $user->password = bcrypt("x");
-        $user->officeId    = $office->id;
-        $user->save();
 
         return \App\Office::find($office->id);
     })->middleware("require-admin");

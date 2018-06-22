@@ -41,8 +41,6 @@ ul.errors {
 }
 
 ul.errors li {
-    list-style-type: none;
-    display: inline-block;
 }
 
 .bracket::before { content: "[" }
@@ -77,4 +75,20 @@ div.notif-msg.unread {
 
 .templ {
     display: none;
+}
+
+.awesomplete span[role=status] {
+    display: none;
+}
+.awesomplete ul {
+    margin: 0;
+    padding: 0;
+}
+.awesomplete li {
+    list-style-type: none;
+    cursor: pointer;
+    border: 1px solid #eee;
+}
+.awesomplete li[aria-selected=true] {
+    color: #a00;
 }

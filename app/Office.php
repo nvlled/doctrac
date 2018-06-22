@@ -266,7 +266,6 @@ class Office extends Model
 
     public function validate() {
         return Validator::make($this->toArray(), [
-            'name'     => 'required|unique:offices,name',
             'campusId' => 'required',
         ]);
     }

@@ -6,12 +6,31 @@
     $data = $data ?? optional();
 @endphp
 
-<section id="offices" class="container">
+<section id="accounts" class="container">
 <h2 class="text-center">Account Management</h2>
+<div class="add-office">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>username</th>
+            <th>office</th>
+            <th>action</th>
+        </tr>
+        </thead>
+        <tbody>
+            @foreach (($users ?? []) as $user)
+            <tr class="{{textIf($user->isAdmin(), 'text-danger')}}">
+                <td></em>{{$user->username}}</td>
+                <td>{{$user->office_name ?? "(none)"}}</td>
+                <td></td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
 <div class="row">
-    <div class="col-7">
-    <h3>New Account</h3>
-    <form method="POST">
+    <form id="accounts" method="POST">
+        <h3>New Account</h3>
         {{ csrf_field() }}
         <div class="form-group row">
             <label for="name" class="col-3 col-form-label text-right">Username</label>
@@ -54,38 +73,91 @@
                 </div>
             </div>
         </div>
+        <div class="form-group row">
+            <label for="firstname" class="col-3 col-form-label text-right">Office</label>
+            <div class="col-9">
+                <input type="hidden" name="officeId">
+                <input name="office-name">
+                <a class="bracket" href="/admin/offices">new office</a>
+            </div>
+        </div>
         <div class="form-group row text-danger">
             <div class="offset-3 col">
-                {{$error ?? ""}}
+                <ul class="errors">
+                </ul>
             </div>
         </div>
         <div class="form-group row">
             <div class="offset-3 col">
-            <button type="submit" class="w-25 create btn btn btn-primary">create</button>
+            <button type="submit" class="create btn btn btn-primary">create</button>
             </div>
         </div>
     </form>
-    </div>
 </div>
-<div class="add-office">
-    <table class="table">
-        <thead>
-        <tr>
-            <th>username</th>
-            <th>office</th>
-            <th>action</th>
-        </tr>
-        </thead>
-        <tbody>
-            @foreach (($users ?? []) as $user)
-            <tr>
-                <td>{{$user->username}}</td>
-                <td>{{$user->office_name ?? "(none)"}}</td>
-                <td></td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
+
+<script src="{{asset('js/awesomplete.min.js')}}"></script>
+<script>
+api.office.fetch(load);
+function load(offices) {
+    var $form = $("form#accounts");
+    var $officeSel = $form.find("select.offices");
+
+    $officeSel.html("");
+
+    var officeNameInput = $("input[name=office-name]")[0];
+    var officeIdInput = $("input[name=officeId]")[0];
+    new Awesomplete(officeNameInput, {
+        filter: function(obj, input) {
+            var off = obj.value;
+            var name = off.complete_name || "";
+            var matches = !! name.match(new RegExp(input, "i"));
+            return matches;
+        },
+        replace: function(obj, input) {
+            this.input.value = obj.value.complete_name;
+        },
+        item: function(obj, input) {
+            var off = obj.value;
+            console.log(">", off);
+            var $li = $("<li>");
+            $li.text(off.complete_name);
+            return Awesomplete.ITEM(off.complete_name, input.match(/[^,]*$/)[0]);
+        },
+
+        list: offices.map(function(off) {
+                return off;
+            }),
+    });
+    
+    officeNameInput.addEventListener("awesomplete-select", function(data) {
+        console.log(data, data.text.value.id, officeIdInput);
+        officeIdInput.value = data.text.value.id;
+    });
+
+    (offices||[]).forEach(function(off) {
+        var $opt = $("<option>");
+        $opt.text(off.complete_name);
+        $opt.val(off.id);
+        $officeSel.append($opt);
+    });
+
+    $form.submit(function(e) {
+        e.preventDefault();
+        UI.clearErrors($form);
+        var formData = util.getFormData($form);
+        UI.formWait($form);
+        api.user.add(formData).then(function(resp) {
+            UI.formIdle($form);
+            if (resp.errors) {
+                UI.showErrors($form, resp.errors);
+                return;
+            }
+            console.log("add office", resp);
+            location.reload();
+        });
+    });
+}
+</script>
 </section>
 @endsection
+
