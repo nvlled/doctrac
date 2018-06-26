@@ -517,6 +517,11 @@ class DoctracAPI {
         return null;
     }
 
+    public function allRoutes($trackingId) {
+        return $this->searchRoutes($trackingId, false,
+            function($route) { return true; });
+    }
+
     public function allEndRoutes($trackingId) {
         return $this->searchRoutes($trackingId, true,
             function($route) {

@@ -33,8 +33,8 @@ Route::get('/lists', function(Request $req) {
     $listNames = [
         "recent",
         "all",
-        "delivering",
-        "waiting",
+        "outgoing",
+        "ingoing",
         "processing",
         "finished",
     ];
@@ -47,9 +47,9 @@ Route::get('/lists', function(Request $req) {
         $routes = $office->getAllRoutes(); break;
     case "recent":
         $routes = $office->getRecentRoutes(); break;
-    case "delivering":
+    case "outgoing":
         $routes = $office->getDeliveringRoutes(); break;
-    case "waiting":
+    case "ingoing":
         $routes = $office->getIncomingRoutes(); break;
     case "processing":
         $routes = $office->getProcessingRoutes(); break;
@@ -147,6 +147,8 @@ Route
             }
         }
 
+        $logs = $doc->routeActivityLogs();
+
         return view('routes', [
             "doc" => $doc,
             "office" => optional($user)->office,
@@ -155,6 +157,7 @@ Route
             "routes" => @$routeGraph["routes"] ?? [],
             "tree"   =>  @$routeGraph["tree"] ?? [],
             "user"   => $user,
+            "logs" => $logs,
         ]);
     })->name("view-routes");
 });

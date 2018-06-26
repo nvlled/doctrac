@@ -303,6 +303,9 @@ var UI = {
         var $notifs = $(".notifications");
         $notif.find(".msg").text(msg.message);
         $notifs.append($notif);
+        setTimeout(function() {
+            $notif.fadeOut();
+        }, 5200);
     },
 
 

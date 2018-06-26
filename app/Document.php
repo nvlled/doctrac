@@ -300,6 +300,46 @@ class Document extends Model
         return $this->type == "parallel";
     }
 
+    public function routeActivityLogs() {
+        $routes =  DoctracAPI::new()->allRoutes($this);
+        if (is_empty($routes))
+            return [];
+        $activities = collect();
+
+        $origin = $routes[0];
+        $activities->push("Dispatched from {$origin->office_name} on {$origin->forwardTime}");
+        $routes = $routes->slice(1);
+
+        foreach ($routes as $route) {
+            if ($route->arrivalTime) {
+                $recvr = optional($route->receiver);
+                $recvrName = $recvr->fullname;
+                if (!trim($recvrName))
+                    $recvrName = $recvr->username;
+                $activities->push(joinLines(
+                    "Received on {$route->arrivalTime}
+                    by {$recvrName}"
+                ));
+            }
+
+            if ($route->arrivalTime) {
+                $senderName = trim(optional($route->sender)->fullname);
+                if (!$senderName)
+                    $senderName = optional($route->sender)->username;
+                $routeNames = $route->allNextRoutes()->map(function($route) {
+                    return $route->office_name;
+                })->implode(", ");
+
+                $activities->push(joinLines(
+                    "Forwarded on {$route->forwardTime}
+                    by {$senderName}
+                    to {$routeNames}"
+                ));
+            }
+        }
+        return $activities;
+    }
+
     public function isDone() {
         $state = $this->state;
         $returned = false;

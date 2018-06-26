@@ -390,18 +390,6 @@ class DocumentRoute extends Model
         } catch (Exception $_) { /* ignore */ }
     }
 
-    public function followRoutesInPath() {
-        $route = $this;
-        $sortedRoutes = collect();
-
-        while($route) {
-            $sortedRoutes->push($route);
-            $route = $route->nextRoute;
-        }
-
-        return $sortedRoutes;
-    }
-
     public function getAttachmentFilenameAttribute() {
         return optional($this->document)->attachment_filename;
     }

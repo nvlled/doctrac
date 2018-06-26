@@ -64,6 +64,8 @@ Route
     });
 
     Route::any('/parallel/{trackingId}', function (Request $req, $trackingId) {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
+
         $doc = App\Document::where("trackingId", $trackingId)->first();
         if (!$doc)
             return collect();
@@ -100,6 +102,7 @@ Route
     });
 
     Route::any('/next-offices/{trackingId}', function (Request $req, $trackingId) {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
         $doc = App\Document::where("trackingId", $trackingId)->first();
         if (!$doc)
             return collect();

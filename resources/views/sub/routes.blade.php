@@ -6,8 +6,8 @@
         <input id="user" value="{{$user->toJson()}}" type="hidden">
 
         <div class="row ">
-            <div class="col-8">
-                <h2 class="title ">
+            <div class="col-12">
+                <h2 class="title text-center">
                     {{$doc->title}}
                     <small class='trackingId'>({{$doc->trackingId}})</small>
                 </h2>
@@ -27,7 +27,7 @@
             </span>
         </div>
         <div class="row">
-            <strong class="col-2 mr-2 text-right">classification </strong>
+            <strong class="col-2 text-right">classification </strong>
             <span class="doc-state ">
                 {{$doc->classification}}
             </span>
@@ -44,7 +44,9 @@
             </strong>
             <pre class="details">{{trim($doc->details ?? "--")}}</pre>
             <div class="ml-2">
+                @if ($user && $user->ownsDocument($doc))
                 <button type="button" class="edit-details btn btn-sm btn-outline-secondary">edit</button>
+                @endif
             </div>
         </div>
         <div class='row info attachment'>
@@ -65,6 +67,19 @@
             <ul class="errors inline indent15"></ul>
         </div>
 
+        <div class="row">
+            <strong class="col-2 text-right" for="customFile">activity log</strong>
+        </div>
+        <div class="row">
+            <div class="offset-1">
+            <ul class="p-0 m-0 ml-5">
+                @foreach ($logs as $log)
+                    <li>{{$log}}</li>
+                @endforeach
+            </ul>
+            </div>
+        </div>
+
         <table class='table full routes'>
             <colgroup>
                 <col span="1" style="">
@@ -80,7 +95,7 @@
                     <th>time elapsed</th>
                     <th class="d-none">sender/receiver</th>
                     @if ($doc->type == "serial")
-                        <th>status</th>
+                        <th class="d-none">status</th>
                         <th>annotations</th>
                     @endif
                 </tr>
@@ -95,7 +110,7 @@
                             $office = optional($route->office);
                         @endphp
                         <td class='{{textIf($doc->type == "parallel", "indent-{$route->depth}")}}'>
-                            <a href="{{$route->link}}">{{$office->complete_name}}</a>
+                            {{$office->complete_name}}
                         </td>
                         <td>{{$route->actionTaken}}</td>
                         <td>{{$route->time_elapsed}}</td>
@@ -108,7 +123,7 @@
                             @endif
                         </td>
                         @if ($doc->type == "serial")
-                            <td>{{$route->approvalState}}</td>
+                            <td class="d-none">{{$route->approvalState}}</td>
                             <td><pre>{{$route->annotations}}<pre></td>
                         @endif
                     </tr>
