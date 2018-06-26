@@ -483,6 +483,43 @@ var UI = {
             return "*"+msg;
         }).join(" ");
     },
+
+    editTextDialog: function(title, value, onsubmit) {
+        var $dialog = $("#modal-edit-text");
+        $dialog.modal();
+        $dialog.find(".title").text(title || "");
+        $dialog.find("textarea").val(value || "");
+        var $saveButton = $dialog.find("button.save");
+        $saveButton[0].onclick = function(e) {
+            e.preventDefault();
+            UI.buttonWait($saveButton);
+            $dialog.find(".error").text("");
+
+            var promise = onsubmit($dialog.find("textarea").val());
+
+            if (!promise.then) {
+                console.log("third parameter of editTextDialog must be a function that returns a promise");
+                return;
+            }
+
+            promise.then(function(ctrl) {
+                UI.buttonIdle($saveButton);
+                if (!ctrl)
+                    return;
+
+                if (ctrl.error) {
+                    $dialog.find(".error").text(ctrl.error);
+                } else if (ctrl.errors) {
+                    $dialog.find(".error").text(ctrl.errors.join(" / "));
+                }
+                $dialog.modal("hide");
+            }).fail(function(e) {
+                UI.buttonIdle($saveButton);
+                $dialog.find(".error").text(e.statusText);
+                console.warn("error on editTextDialog: " + e.responseText);
+            });
+        }
+    },
 }
 
 UI._templates = {

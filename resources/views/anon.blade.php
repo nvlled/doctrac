@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="offset-4 col-2 text-right">
-                <button id="popup-login" data-toggle="modal" data-target="#login" 
+                <button id="popup-login" data-toggle="modal" data-target="#login"
                     class="btn btn-outline-light my-2 my-sm-0" type="submit">
                     <i class="fas fa-sign-in-alt"></i> login
                 </button>
@@ -93,6 +93,3 @@
     </script>
 
 </html>
-
-
-

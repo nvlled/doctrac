@@ -79,6 +79,8 @@ var api = {
         reject:        makeHandler("/api/docs/reject/{trackingId}"),
         unfinishedRoutes: makeHandler("/api/docs/unfinished-routes/{trackingId}"),
 
+        updateDetails: makeHandler("/api/docs/update-details/{trackingId}"),
+
         emit: function(data) {
             events.trigger("doc-change", data);
         },

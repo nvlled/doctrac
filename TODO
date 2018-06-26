@@ -9,3 +9,10 @@
   not per username.
 
 * add campus/office on account creation
+
+
+* fix per-user notification
+* move action button to routes page
+* create return and forward buttons
+* activity log page
+* remove status column

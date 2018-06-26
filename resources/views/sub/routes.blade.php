@@ -40,20 +40,22 @@
         </div>
 
         <div class="row">
-            <strong class="col-2 text-right">details </strong>
-            <span class="details">
-                {{$doc->details ?? "--"}}
-            </span>
+            <strong class="col-2 text-right">details
+            </strong>
+            <pre class="details">{{trim($doc->details ?? "--")}}</pre>
+            <div class="ml-2">
+                <button type="button" class="edit-details btn btn-sm btn-outline-secondary">edit</button>
+            </div>
         </div>
         <div class='row info attachment'>
             <strong class="col-2 text-right" for="customFile">attachment</strong>
             @php $url = $doc->attachment_url @endphp
-            <a href="{{$url ? $url :  "#" }}" 
+            <a href="{{$url ? $url :  "#" }}"
                 target="{{textIf($url, '_blank')}}">{{$doc->attachment_filename ?? "--"}}
             </a>
             <span class="col offset-0 {{hiddenIf(!$user || !$user->ownsDocument($doc))}}">
                 <input class="hidden" type="file" name="attachment">
-                <button class="btn btn-sm btn-info change small">change</button>
+                <button class="btn btn-sm btn-outline-secondary change small">change</button>
                 <button class="btn btn-sm btn-success d-none upload small">upload new file</button>
                 <script>
                 </script>
@@ -107,7 +109,7 @@
                         </td>
                         @if ($doc->type == "serial")
                             <td>{{$route->approvalState}}</td>
-                            <td>{{$route->annotations}}</td>
+                            <td><pre>{{$route->annotations}}<pre></td>
                         @endif
                     </tr>
                 @endforeach
@@ -117,6 +119,22 @@
             </style>
             <input id="trackingId" type="hidden" value="{{$doc->trackingId}}">
             <script>
+                $("button.edit-details").click(function() {
+                    UI.editTextDialog("Edit Details", $(".details").text().trim(),
+                        function(newDetails) {
+                            var data = {
+                                trackingId: $("#trackingId").val(),
+                                details: newDetails,
+                            }
+                            return api.doc.updateDetails(data, function(resp) {
+                                if (resp && resp.errors)
+                                    return {error: Object.values(resp.errors).join(" / ")};
+                                $(".details").text(newDetails);
+                                return {done: true};
+                            });
+                        }
+                    );
+                });
                 window.addEventListener("load", function() {
                     var $inputFile = $("input[name=attachment");
                     var $uploadBtn = $("button.upload");

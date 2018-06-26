@@ -22,11 +22,11 @@
             <th>Campus Code</th>
             <th>Campus Name</th>
             <th>Office Name</th>
-    
+
             <th>
                 <div class="row">
                     <label class="col-lg-3 col-md-12 col-form-label">
-                        action 
+                        action
                     </label>
                     <div class="col-lg-8 col-md-12">
                     <input class="form-control search" size="4" placeholder="search">
@@ -86,7 +86,7 @@ function load(campuses, offices) {
                 return off;
             }),
     });
-    
+
     campusNameInput.addEventListener("awesomplete-select", function(data) {
         console.log(data, data.text.value.id, campusCodeInput);
         campusCodeInput.value = data.text.value.code;
@@ -97,7 +97,7 @@ function load(campuses, offices) {
     $form.find("input[name=campus-code]").change(function(e) {
         var input = this;
         campuses.forEach(function(c) {
-            if (c.code == input.value) 
+            if (c.code == input.value)
                 $form.find("input[name=campus-name]").val(c.name);
         });
     });
@@ -132,8 +132,8 @@ function load(campuses, offices) {
         var search = $searchInput.val();
         var rx = new RegExp(search, "i");
         (offices || []).forEach(function(c) {
-            if (c.campus_code.match(rx) || 
-                c.campus_name.match(rx) || 
+            if (c.campus_code.match(rx) ||
+                c.campus_name.match(rx) ||
                 c.name.match(rx)) {
 
                 var $tr = UI.mapTextByClass($trTempl.clone(), c);

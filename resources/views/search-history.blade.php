@@ -24,7 +24,7 @@
 
     <div class="row">
         <div class="col-12">
-            <a class="btn btn-outline-info" data-toggle="collapse" href="#collapseExample" 
+            <a class="btn btn-outline-info" data-toggle="collapse" href="#collapseExample"
                 role="button" aria-expanded="false" aria-controls="collapseExample">
                 set time
             </a>

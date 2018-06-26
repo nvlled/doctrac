@@ -17,6 +17,7 @@ header#site  nav {
 }
 
 main#contents {
+    margin-bottom: 100px;
 }
 
 .site-desc {
@@ -92,4 +93,18 @@ div.notif-msg.unread {
 }
 .awesomplete li[aria-selected=true] {
     color: #a00;
+}
+
+pre {
+    margin: 0px;
+    padding: 0px;
+    font-weight: 400;
+    font-size: 16px;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Roboto",
+        "Helvetica Neue", Arial, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
 }

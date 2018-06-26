@@ -128,7 +128,7 @@ function load(offices) {
                 return off;
             }),
     });
-    
+
     officeNameInput.addEventListener("awesomplete-select", function(data) {
         console.log(data, data.text.value.id, officeIdInput);
         officeIdInput.value = data.text.value.id;
@@ -159,4 +159,3 @@ function load(offices) {
 </script>
 </section>
 @endsection
-

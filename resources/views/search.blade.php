@@ -10,8 +10,8 @@
 
 @section("contents")
 <section id="search-doc" class="container">
-    <form method="POST" 
-            class="form-style-1 pure-form pure-form-aligned" 
+    <form method="POST"
+            class="form-style-1 pure-form pure-form-aligned"
             novalidate>
         {{ csrf_field() }}
         <div class="form-group row">

@@ -292,7 +292,7 @@ class DocumentRoute extends Model
                 $senderName = $prevRoute->sender->username;
             $activities->push(joinLines(
                 "Dispatched from ({$prevRoute->office_name})
-                 on {$prevRoute->forwardTime} 
+                 on {$prevRoute->forwardTime}
                  by {$senderName}"
             ));
         }

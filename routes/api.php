@@ -165,6 +165,21 @@ Route
 ::prefix("docs")
 ->middleware(["auth"])
 ->group(function() {
+    Route::any('/update-details/{trackingId}', function (Request $req, $trackingId) {
+        $user = Auth::user();
+        $doc = App\Document::where("trackingId", $trackingId)->first();
+        if (!$doc) {
+            return ["errors"=>["invalid tracking id: $trackingId"]];
+        }
+        if ($doc->officeId == $user->officeId) {
+            $doc->details = $req->details;
+            $doc->save();
+            return "okay";
+        } else {
+            return ["errors"=>["unauthorized access"]];
+        }
+    });
+
     Route::any('/search', function (Request $req) {
         $q = "%{$req->q}%";
         return App\Document::where("trackingId", "like", $q)
@@ -749,7 +764,7 @@ Route
             ->first();
         if ($office_ && $office_->campus_code == $req->campusCode) {
             return ["errors"=> ["{$office_->campus_name} has already an office named {$req->name}"]];
-        } 
+        }
 
         $office = new \App\Office();
         $office->name = $req->name;

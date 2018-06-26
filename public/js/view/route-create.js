@@ -478,6 +478,3 @@ function RouteCreateView(vm, api) {
         ]);
     }
 }
-
-
-

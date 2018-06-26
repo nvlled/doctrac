@@ -32,7 +32,7 @@ class DoctracAPI {
         $user = $user ?? \Auth::user();
         return new DoctracAPI($user);
     }
-    
+
     public static function withUsername($username) {
         $user = \App\User::where("username", $username)->first();
         if (!$user)
