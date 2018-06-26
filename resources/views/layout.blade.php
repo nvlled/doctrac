@@ -24,7 +24,7 @@
     </head>
 
     @php
-        $user = Auth::user();
+        $user = optional(Auth::user());
     @endphp
     <body>
         <header id="site" class="">

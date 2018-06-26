@@ -301,7 +301,7 @@ var UI = {
     addNotification: function(msg) {
         var $notif = $(".notif-success.templ").clone().removeClass("templ");
         var $notifs = $(".notifications");
-        $notif.find(".msg").text(msg);
+        $notif.find(".msg").text(msg.message);
         $notifs.append($notif);
     },
 

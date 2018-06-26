@@ -27,7 +27,7 @@
             </span>
         </div>
         <div class="row">
-            <strong class="col-2 text-right">classification </strong>
+            <strong class="col-2 mr-2 text-right">classification </strong>
             <span class="doc-state ">
                 {{$doc->classification}}
             </span>
