@@ -2,12 +2,9 @@
 
 * only origin routes can finalize
 * fix autologout notice
-* btn loading status
 
 * fix per-user notification (not actually broke?)
-* move action button to routes page
 * create return and forward buttons
-* activity log page
 * route print form
 * make notification view resemble gmail UI
 * parallel to serial hybrid 
