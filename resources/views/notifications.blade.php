@@ -3,6 +3,9 @@
 
 @section("contents")
 <section id="notifications container">
+
+<h2>Notifications/Events</h2>
+
 @php
     $numItems = $notifications->numItems;
     $startNo = $notifications->startNo;
@@ -11,26 +14,37 @@
 @endphp
 @if ($numItems > 0)
 <div class="notifs row">
-<div class="col-10">
+<div class="col-12">
+<table class="table">
 @foreach($notifications->items as $notif)
-    <ul class="list-group notif-msg ">
-        <li class="list-group-item {{textIf($notif["unread"], "bg-light")}}">
+    @php
+        $url = $notif["url"];
+        if ($notif["unread"])
+            $url = addQueryString($url, "?notifid={$notif['id']}")
+    @endphp
+    <tr class="notif-msg d-flex">
+        <td>
             <span class='num'>{{$startNo+$loop->index}}.</span>
-            @php
-                $url = $notif["url"];
-                if ($notif["unread"])
-                    $url = addQueryString($url, "?notifid={$notif['id']}")
-            @endphp
-            <a href="{{$url}}">
-                <span class='contents '>{{$notif["message"]}}</span>
-            </a>
-            (<small class='diff'>{{$notif["diff"]}}</small>)
+        </td>
+        <td style="width: 30px">
             @if ($notif["unread"])
                 <i class="fas fa-exclamation-circle"></i>
             @endif
-        </li>
-    </ul>
+        </td>
+        <td class="col-2">
+            <a href="{{$url}}">{{$notif["officeName"]}}</a>
+        </td>
+        <td class="col-4">
+            <a href="{{$url}}">{{$notif["title"]}}</a>
+        </td>
+        <td class="col-3">
+            {{$notif["date"]}}
+            (<small class='diff'>{{$notif["diff"]}}</small>)
+        </td>
+    </tr>
 @endforeach
+</table>
+
 </div>
 </div>
 
