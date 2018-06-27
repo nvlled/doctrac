@@ -134,7 +134,7 @@ Route
         api()->readNotification(request());
 
         $office = $user->office;
-        list($seen, $route) = api()->seeDocument($office, $doc);
+        list($seen, $route) = $api->seeDocument($office, $doc);
         if ($seen) {
             \Flash::add("document first seen");
             $prevRoute = $route->prevRoute;
@@ -148,9 +148,11 @@ Route
         }
 
         $logs = $doc->routeActivityLogs();
+        $currentRoute = $api->currentRoute($trackingId, $user->officeId);
 
         return view('routes', [
             "doc" => $doc,
+            "currentRoute" => $currentRoute,
             "office" => optional($user)->office,
             "action"=> $actionRes["action"] ?? "",
             "routeLink"=> $routeLink,

@@ -114,7 +114,8 @@ class DocumentRoute extends Model
     public function isCurrent() {
         $actionTaken = $this->actionTaken;
         return $actionTaken == "processing"
-            || $actionTaken == "delivering";
+            || $actionTaken == "delivering"
+            || $actionTaken == "waiting";
     }
 
     public function isDone() {

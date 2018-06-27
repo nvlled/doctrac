@@ -316,10 +316,12 @@ class Document extends Model
                 $recvrName = $recvr->fullname;
                 if (!trim($recvrName))
                     $recvrName = $recvr->username;
-                $activities->push(joinLines(
-                    "Received on {$route->arrivalTime}
-                    by {$recvrName}"
-                ));
+                if ($recvrName) {
+                    $activities->push(joinLines(
+                        "Received on {$route->arrivalTime}
+                        by {$recvrName}"
+                    ));
+                }
             }
 
             if ($route->arrivalTime) {
@@ -330,11 +332,13 @@ class Document extends Model
                     return $route->office_name;
                 })->implode(", ");
 
-                $activities->push(joinLines(
-                    "Forwarded on {$route->forwardTime}
-                    by {$senderName}
-                    to {$routeNames}"
-                ));
+                if ($senderName && $routeNames) {
+                    $activities->push(joinLines(
+                        "Forwarded on {$route->forwardTime}
+                        by {$senderName}
+                        to {$routeNames}"
+                    ));
+                }
             }
         }
         return $activities;

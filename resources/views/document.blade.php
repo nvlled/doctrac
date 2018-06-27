@@ -64,13 +64,11 @@
             </div>
         </div>
 
-
         <form class="form-style-1">
         <div class="send-data row hidden">
             <div class="text-center">
                 @include("sub.loading")
             </div>
-            <!--TODO-->
             <div class="offset-lg-1 col-lg-8 offset-md-0 col-md-12">
                 <textarea name="annotation" rows="5" class="full annots form-control"
                     placeholder="comments, notes or annotation" ></textarea>

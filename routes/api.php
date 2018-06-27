@@ -327,7 +327,41 @@ Route
     });
 
     Route::any('/forward/{trackingId}', function (Request $req, $trackingId) {
-        throw new \Exception("deprecated");
+        $user = Auth::user();
+        if (!$user)
+            return ["errors"=>["user"=>"invalid user"]];
+
+        if (!$user->office)
+            return ["errors"=>["user"=>"user has no valid office"]];
+
+        $office = $user->office;
+        $annotations = $req->annotations;
+
+        if ($route->final) {
+            return ["errors"=>["doc"=>
+                "cannot forward document route={$route->id}, destination is final"
+            ]];
+        }
+        $officeIds = $req->officeIds ?? [];
+        $api = DoctracAPI::new();
+        $api->forwardDocument([
+            "annotations"=> $annotations,
+            "document"   => $trackingid,
+            "office"     => $office,
+            "officeIds"  => $officeIds,
+        ]);
+
+        if ($api->hasErrors())
+            return $api->getErrors();
+
+        broadcast(new \App\Events\DocUpdate($doc));
+        \Flash::add("document forwarded: {$route->trackingId}");
+        $route = $api->getRoute($route->id); // reflect changes
+        $routes = $route->allNextRoutes();
+        foreach ($routes as $nextRoute) {
+            \Notif::sent($office, $nextRoute->office, $nextRoute);
+        }
+        return $routes;
     });
 
     Route::any('/{trackingId}/set-attachment',

@@ -40,13 +40,14 @@
         </div>
 
         <div class="row">
-            <strong class="col-2 text-right">details
+            <strong class="col-2 text-right">
+                @if ($user && $user->ownsDocument($doc))
+                <button type="button" class="edit-details btn btn-sm btn-outline-secondary">edit</button>
+                <span>details</span>
+                @endif
             </strong>
             <pre class="details">{{trim($doc->details ?? "--")}}</pre>
             <div class="ml-2">
-                @if ($user && $user->ownsDocument($doc))
-                <button type="button" class="edit-details btn btn-sm btn-outline-secondary">edit</button>
-                @endif
             </div>
         </div>
         <div class='row info attachment'>
@@ -110,6 +111,7 @@
                             $office = optional($route->office);
                         @endphp
                         <td class='{{textIf($doc->type == "parallel", "indent-{$route->depth}")}}'>
+                            ({{$route->id}})
                             {{$office->complete_name}}
                         </td>
                         <td>{{$route->actionTaken}}</td>
@@ -202,5 +204,53 @@
                 });
             </script>
         </table>
+    </div>
+</section>
+
+<section id="document" class="container">
+    <div class="row">
+    <div class="col-10">
+    <p class='error'>{{$error ?? ""}}</p>
+    <div id="view-document">
+        <input id="trackingId" value="{{$currentRoute->trackingId ?? ""}}" type="hidden">
+        <input id="routeId" value="{{$currentRoute->id ?? ""}}" type="hidden">
+        <input id="route" value="{{optional($currentRoute)->toJson() ?? ""}}"
+               type="hidden">
+
+        <form class="form-style-1">
+        <div class="send-data row hidden">
+            <div class="text-center">
+                @include("sub.loading")
+            </div>
+            <div class="offset-lg-1 col-lg-8 offset-md-0 col-md-12">
+                <textarea name="annotation" rows="5" class="full annots form-control"
+                    placeholder="comments, notes or annotation" ></textarea>
+            </div>
+            <div class="offset-lg-1 col-lg-6 offset-md-0 col-md-11">
+                <div class="dom"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="offset-lg-1 col-lg-11 offset-md-0 col-md-12">
+            <button class='d-none w-25 btn btn-primary hidden action half send'>send</button>
+            <div class="col-12"></div>
+            <button class='d-none w-25 btn btn-primary hidden action half recv'>receive</button>
+            <div class="col-12"></div>
+            <button class='d-none w-25 btn btn-default hidden action finalize half affirm green'>finalize</button>
+            <div class="col-12"></div>
+            <button class='d-none w-25 btn btn-default hidden action reject half red'>reject</button>
+            <div class="col-12"></div>
+            <button class='d-none w-25 btn btn-primary hidden action return half '>return</button>
+            <div class="col-12"></div>
+            </div>
+        </div>
+        <ul class="errors"></ul>
+        </form>
+    </div>
+    <script src='{{asset("js/office-graph.js")}}'></script>
+    <script src='{{asset("js/view/route-create.js")}}'></script>
+    <!--<script src='{{asset("js/sub/office-selection.js")}}'></script>-->
+    <script src="{{asset('js/sub/routes-action.js')}}"></script>
+    </div>
     </div>
 </section>

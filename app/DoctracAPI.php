@@ -529,13 +529,15 @@ class DoctracAPI {
             });
     }
 
-    public function currentRoute($trackingId) {
-        return $this->allCurrentRoutes($trackingId)[0] ?? null;
+    public function currentRoute($trackingId, $officeId=null) {
+        return $this->allCurrentRoutes($trackingId, $officeId)->first();
     }
 
-    public function allCurrentRoutes($trackingId) {
+    public function allCurrentRoutes($trackingId, $officeId=null) {
         return $this->searchRoutes($trackingId, true,
-            function($route) {
+            function($route) use ($officeId) {
+                if ($officeId != null && $route->officeId != $officeId)
+                    return false;
                 return $route->isCurrent();
             });
     }
@@ -1100,7 +1102,7 @@ class DoctracAPI {
             }
             $data = $notif->data;
             $data['diff'] = (new \Carbon\Carbon($data["date"]))->diffForHumans();
-            $data['url'] = route("view-document", $data["routeId"]);
+            $data['url'] = route("view-routes", $data["trackingId"]);
             $data['id'] = $notif->id;
             $data['unread'] = $notif->read_at == null;
             $items->push($data);
