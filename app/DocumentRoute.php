@@ -25,6 +25,7 @@ class DocumentRoute extends Model
         "office_name",
         "next_office_name",
         "next_office_id",
+        "prev_office_id",
         "sender_name", "receiver_name",
         "detailed_info",
         "activities",
@@ -190,6 +191,12 @@ class DocumentRoute extends Model
         if ( ! $this->nextRoute)
             return "";
         return optional($this->nextRoute->office)->id;
+    }
+
+    public function getPrevOfficeIdAttribute() {
+        if ( ! $this->prevRoute)
+            return "";
+        return optional($this->prevRoute->office)->id;
     }
 
     public function findNextRoute($officeId) {

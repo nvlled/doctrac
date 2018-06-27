@@ -3,9 +3,7 @@
 * only origin routes can finalize
 * fix autologout notice
 
-* make notification view resemble gmail UI
 * route print form
-
 * search and paging on account management
 * action buttons on management
 * set logout timeout duration
@@ -15,4 +13,7 @@
 * parallel to serial hybrid 
   (I expected it will come to this, 
    good thing I made this generalization beforehand...)
+
+
+
 

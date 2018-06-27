@@ -4,14 +4,13 @@
 @section("contents")
 <section id="notifications container">
 
-<h2>Notifications/Events</h2>
-
 @php
     $numItems = $notifications->numItems;
     $startNo = $notifications->startNo;
     $pageNo = $notifications->pageNo;
     $numPages = $notifications->numPages;
 @endphp
+
 @if ($numItems > 0)
 <div class="notifs row">
 <div class="col-12">

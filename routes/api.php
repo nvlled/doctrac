@@ -245,7 +245,9 @@ Route
         $route->save();
     });
 
+
     Route::any('/reject/{trackingId}', function (Request $req, $trackingId) {
+        trigger_error("Deprecated function called.", E_USER_DEPRECATED);
         $doc = App\Document::where("trackingId", $trackingId)->first();
 
         // TODO: use a middleware for these common validations

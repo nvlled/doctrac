@@ -44,6 +44,9 @@ function RouteCreate(graph, args) {
         officeIndex: args.officeIndex || 0,
         campusIndex: args.campusIndex || 0,
         message: "",
+        routes: [],
+        onChangeOffice: args.onChangeOffice || function() {},
+        officeLink: args.officeLink || null,
 
         getCampus: function(row) {
             return self.graph.getCampus(row.campusId);
@@ -273,26 +276,42 @@ function RouteCreate(graph, args) {
             self.updateOfficeSelection();
             self.vm.redraw();
         },
+
         changeOffice: function(e) {
             self.officeIndex = self.vm.refs.offices.el.selectedIndex;
             self.vm.redraw();
+            if (typeof self.onChangeOffice == "function") {
+                var off = self.getOffices()[self.officeIndex];
+                self.onChangeOffice(off);
+            }
         },
 
         getOffices: function() {
             var lastOffice = self.getLastOffice();
             var currentOffice = self.currentOffice;
             var campus = self.getSelectedCampus();
+
+            var offices = [];
             if (campus) {
-                var offices = self.graph.getLocalOffices(campus.id);
+                offices = self.graph.getLocalOffices(campus.id);
                 if ((lastOffice && lastOffice.campusId != campus.id) ||
                     currentOffice.campusId != campus.id) {
                     offices = offices.filter(function(off) {
                         return off.gateway;
                     });
                 }
-                return offices;
             }
-            return [];
+
+            if (self.officeLink && !self.currentOffice.gateway) {
+                var link = self.officeLink;
+                offices = offices.filter(function(off) {
+                    return off.gateway
+                        || off.id == link.prevId
+                        || off.id == link.nextId;
+                });
+            }
+
+            return offices;
         },
 
         getCampuses: function() {

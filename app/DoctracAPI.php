@@ -717,17 +717,8 @@ class DoctracAPI {
         });
     }
 
-    public function deleteFollowingRoutes($route) {
-        $oldRoutes = $this->followRoute($route);
-        $oldRoutes->slice(1)->each(function($r) {
-            $r->delete();
-        });
-    }
-
     // Note: not yet sent
     public function serialConnect($route, $officeIds) {
-        $this->deleteFollowingRoutes($route);
-
         $doc = $route->document;
         if (!$doc) {
             return $this->appendError("route has no document");
@@ -752,14 +743,31 @@ class DoctracAPI {
             return $this->appendError("cannot send documents to self");
         }
 
-        $routes = $offices->map(function($office) use ($doc) {
-             $route = new \App\DocumentRoute();
-             $route->officeId   = $office->id;
-             $route->trackingId = $doc->trackingId;
-             $route->save();
-             return $route;
+        $oldRoutes = $this->followRoute($route)->slice(1)->values();
+        $newRoutes = $offices->map(function($office, $i)
+            use ($doc, $oldRoutes) {
+                $route = new \App\DocumentRoute();
+                if ($i < $oldRoutes->count()) {
+                    if ($oldRoutes[$i]->officeId == $office->id) {
+                        $route =  $oldRoutes[$i];
+                    } else {
+                        $oldRoutes[$i]->delete();
+                    }
+                }
+
+                $route->officeId   = $office->id;
+                $route->trackingId = $doc->trackingId;
+                $route->save();
+                return $route;
         });
-        $routes->prepend($route);
+
+        $routes = collect([$route])
+            ->concat($newRoutes)
+            ->values();
+
+        if ($routes->count() <= 1) {
+            throw new \Exception("huh...");
+        }
 
         // check if nested transaction if allowed
         $okay = \DB::transaction(function() use ($routes) {

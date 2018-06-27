@@ -575,6 +575,96 @@ office |name       |
 [create]
 
 
+--------------------------------------------------------
+
+actions:
+    accept
+    forward
+    return
+
+
+| Urdaneta | Records [v] |  (shows up only for records)
+
+[forward] [ return ]
+
+
+--------
+
+Records
+|annotations     |
+|                |
+|                |
+|                |
+
+| Urdaneta | Records [v] |
+[forward]
+
+----------
+
+Non-Records
+|annotations     |
+|                |
+|                |
+|                |
+
+[forward to $nextRoute]
+[return to $prevRoute]
+[return to $records]
+
+----------
+
+
+Records / Non-Records
+|annotations     |
+|                |
+|                |
+|                |
+
+| Urdaneta | Records [v] |
+* For non-records, the contents of office selection
+  should consist of records, previous office and next office 
+
+[forward] (just change the label here)
+(I'll go with this one then)
+
+
+
+At this point, I'm left wondering if the distinction
+of serial and parallel still makes sense.
+
+
+urd-records -> urd-mis -> urd-records -> main-records
+
+
+
+---------------------
+
+A -> B -> C -> D -> E
+     *
+forward to [F]
+A -> B -> F
+
+
+A -> B -> C -> D -> E
+     *
+forward to [C, D]
+A -> B -> C -> D -> E
+  
+
+A -> B -> C -> D -> E
+     *
+forward to [C, D, F]
+A -> B -> C -> D -> F
+
+
+A -> B -> C -> D -> E
+     *
+forward to [C, F]
+A -> B -> C -> F
+
+
+
+
 
 
 

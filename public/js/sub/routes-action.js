@@ -56,16 +56,43 @@ window.addEventListener("load", function() {
             var canParallelSend = docType == "parallel" &&
                 !!currentOffice.gateway;
 
+            var route = util.parseJSON($("input#route").val());
+            var officeLink  = {
+                prevId: route.prev_office_id,
+                nextId: route.next_office_id,
+            }
+
+            function updateBtnCaption(off) {
+                if (currentOffice.gateway) {
+                    return;
+                }
+
+                if (off.gateway || officeLink.prevId == off.id) {
+                    $btnSend.text("return");
+                } else if (officeLink.nextId == off.id) {
+                    $btnSend.text("forward");
+                }
+            }
+
+            var isShown = !!(canParallelSend || currentOffice.gateway);
             var nextOffice = graph.getOffice(doc.next_office_id);
             officeSel = RouteCreate(graph, {
-                showTable: canParallelSend,
                 showType: false,
-                showAddButton: canParallelSend,
+                showTable: isShown,
+                showAddButton: isShown,
                 currentOffice:  currentOffice,
                 type: docType,
                 noSelect: doc.document_state == "disapproved",
                 selectedOffice: (docType == "serial") && nextOffice ? nextOffice : null,
+
+                officeLink,
+
+                onChangeOffice: function(off) {
+                    updateBtnCaption(off);
+                },
             });
+            updateBtnCaption(officeSel.getSelectedOffice());
+
             var vm = officeSel.vm;
             vm.mount(document.querySelector("div.dom"));
         });
@@ -120,6 +147,7 @@ window.addEventListener("load", function() {
         var user = currentUser;
         var trackingId = currentDoc.trackingId;
         var route = util.parseJSON($("input#route").val());
+
         if (!route) {
             console.warn("no route found");
             return Promise.resolve();
@@ -127,8 +155,11 @@ window.addEventListener("load", function() {
 
         var officeId = officeSel.getSelectedOfficeId();
         var officeIds = officeSel.getRowIds();
-        if (currentDoc.document_type == "serial")
-            var officeIds = [officeId].concat(officeIds);
+        //if (currentDoc.document_type == "serial")
+            //var officeIds = [officeId].concat(officeIds);
+        if (officeIds.length == 0)
+            officeIds = [officeId];
+
         var params = {
             officeIds: officeIds,
             annotations: $annots.val(),
@@ -222,9 +253,9 @@ window.addEventListener("load", function() {
                         currentDoc.document_state != "disapproved") {
                         if (currentUser.officeId == currentDoc.document_office_id) {
                             $btnFinalize.show();
-                        } else {
+                        } /*else {
                             $btnReject.show();
-                        }
+                        }*/
                     }
                     break;
 

@@ -41,6 +41,16 @@
 
         <div class="row">
             <strong class="col-2 text-right">
+                <i class="fas fa-print"></i>
+            </strong>
+            <span class="info {{$doc->state}}">
+                <a href="#" onclick="alert('todo'); return false">route form</a>
+            </span>
+        </div>
+
+
+        <div class="row">
+            <strong class="col-2 text-right">
                 @if ($user && $user->ownsDocument($doc))
                 <button type="button" class="edit-details btn btn-sm btn-outline-secondary">edit</button>
                 <span>details</span>
@@ -64,6 +74,7 @@
                 </script>
             </span>
         </div>
+
         <div class="row text-danger">
             <ul class="errors inline indent15"></ul>
         </div>
@@ -111,7 +122,6 @@
                             $office = optional($route->office);
                         @endphp
                         <td class='{{textIf($doc->type == "parallel", "indent-{$route->depth}")}}'>
-                            ({{$route->id}})
                             {{$office->complete_name}}
                         </td>
                         <td>{{$route->actionTaken}}</td>
@@ -232,7 +242,7 @@
         </div>
         <div class="row">
             <div class="offset-lg-1 col-lg-11 offset-md-0 col-md-12">
-            <button class='d-none w-25 btn btn-primary hidden action half send'>send</button>
+            <button class='d-none w-25 btn btn-primary hidden action half send'>forward</button>
             <div class="col-12"></div>
             <button class='d-none w-25 btn btn-primary hidden action half recv'>receive</button>
             <div class="col-12"></div>

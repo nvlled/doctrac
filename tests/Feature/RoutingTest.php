@@ -514,6 +514,52 @@ class RoutingTest extends TestCase
         $this->assertEquals("processing", $api->routeStatus($doc, "Y-B"));
     }
 
+    public function testSerial2() {
+        self::createUserOffices();
+
+        $officeXA = Office::withUserName("X-A");
+        $officeXB = Office::withUserName("X-B");
+        $officeXC = Office::withUserName("X-C");
+        $officeXD = Office::withUserName("X-D");
+        $officeYA = Office::withUserName("Y-A");
+        $officeYB = Office::withUserName("Y-B");
+        $officeYC = Office::withUserName("Y-C");
+        $officeYD = Office::withUserName("Y-D");
+
+        $api = new DoctracAPI($officeXA->user);
+        $doc = $api->dispatchDocument([
+            "title"=>str_random(),
+            "officeIds"=>[
+                $officeXB->id,
+                $officeXC->id,
+                $officeXD->id,
+            ],
+            "type"=>"serial",
+        ]);
+        dump("testing {$doc->trackingId}");
+
+        $this->assertFalse($api->hasErrors());
+        $this->assertEquals("delivering", $api->routeStatus($doc, "X-A"));
+        $this->assertEquals("waiting", $api->routeStatus($doc, "X-B"));
+        $this->assertEquals("*", $api->routeStatus($doc, "X-C"));
+
+        $api->setUser("X-B")->receiveFromOffice($doc, "X-B");
+        $api->dumpErrors();
+        $this->assertFalse($api->hasErrors());
+        $this->assertEquals("done", $api->routeStatus($doc, "X-A"));
+        $this->assertEquals("processing", $api->routeStatus($doc, "X-B"));
+        $this->assertEquals("*", $api->routeStatus($doc, "X-C"));
+        $this->assertEquals("*", $api->routeStatus($doc, "X-D"));
+
+        $api->setUser("X-B")->forwardToOffice($doc, "X-C");
+        $api->dumpTree($doc);
+        $this->assertFalse($api->hasErrors());
+        $this->assertEquals("done", $api->routeStatus($doc, "X-A"));
+        $this->assertEquals("delivering", $api->routeStatus($doc, "X-B"));
+        $this->assertEquals("waiting", $api->routeStatus($doc, "X-C"));
+        $this->assertEquals("*", $api->routeStatus($doc, "X-D"));
+    }
+
     public static function createUserOffices() {
         if (Office::withUsername("X-A"))
             return;
