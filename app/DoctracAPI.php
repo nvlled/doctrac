@@ -19,7 +19,7 @@ class DoctracAPI {
     public $debug = false;
 
     public function __construct($user=null) {
-        $this->user = optional($user);
+        $this->user = $user;
         $this->errors = collect();
     }
 

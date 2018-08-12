@@ -49,20 +49,6 @@
 form[name=change-pass] label {
 }
 </style>
-<script>
-var $form = $("form[name=change-pass");
-var $btnChangePass = $form.find("button.change-pass");
-$btnChangePass.click(function(e) {
-    return;
-    //e.preventDefault();
-    api.user.changePassword({
-        oldpass: $("input#oldpass").val(),
-        newpass1: $("input#newpass1").val(),
-        newpass2: $("input#newpass2").val(),
-    }).then(function(resp) {
-    });
-});
-</script>
 </section>
 
 @endsection
