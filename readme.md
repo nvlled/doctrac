@@ -17,9 +17,11 @@ PSU document tracking system
 1. Install package dependencies listed on `apt-dependencies.sh`, e.g.
 ```
 sudo apt install php-domstring php-xml php-mysql
-note: I haven't fixed this yet, but redis-server must be installed 
-although it should be optional.
 ```
+note: I haven't fixed this yet, but redis-server must be installed
+although it should be optional. Alternatively, if you are compiling
+php from source, include the configure options:
+./configure --with-openssl --enable-mbstring --with-mysqli --with-pdo-mysql --with-gd --enable-zip --with-curl
 
 2. Run ```composer update``` to install php vendor dependencies required by laravel
 
@@ -38,7 +40,7 @@ although it should be optional.
 2. edit ```.env```, set BROADCAST_DRIVER and QUEUE_DRIVER to redis
 3. run the worker: ```php artisan queue:work```
    supervisor can also be used to daemonize the work queue
-4. setup and run the echo server: 
+4. setup and run the echo server:
 ```
 laravel-echo-server init
 laravel-echo-server client:add
